@@ -1,0 +1,6 @@
+.idea/
+db/
+node_modules/
+bower_components/
+command_line/
+public/bower_components

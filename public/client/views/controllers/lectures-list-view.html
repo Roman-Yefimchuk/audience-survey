@@ -1,0 +1,65 @@
+<div class="row clearfix" style="margin-top: 80px">
+
+    <div class="col-sm-8 col-sm-offset-2 column">
+
+        <section class="panel tasks-widget" style="padding: 15px">
+
+            <div class="panel-body" style="padding: 0;">
+
+                <div ng-switch="activeLectures.length > 0">
+                    <div ng-switch-when="true">
+
+                        <ul class="list-group"
+                            style="margin-bottom: 0">
+                            <li ng-repeat="lecture in activeLectures" class="list-group-item"
+                                ng-class="{ 'disabled' : lecture.status == 'suspended' }">
+
+                                <span>
+                                    Тема: "<b>{{ lecture.name }}</b>", автор <b>{{ lecture.author }}</b>
+                                </span>
+
+                                <div class="pull-right" style="margin-top: -2px;margin-right: -6px">
+
+                                    <span style="padding-right: 6px;vertical-align: middle;">
+                                        <i class="fa fa-users"
+                                           tooltip="Присутні слухачі"></i>&nbsp;<b>{{ (lecture.presentListeners || []).length }}</b>
+                                    </span>
+
+                                    <span style="padding-right: 3px;vertical-align: middle;">
+                                        <i class="fa fa-clock-o"
+                                           tooltip="Продовження леції"></i>&nbsp;<b>{{ lecture.duration || 0 | duration
+                                        }}</b>
+                                    </span>
+
+                                    <a class="btn btn-success btn-xs"
+                                       ng-href="/#/lecture-room/{{ lecture.id }}">
+                                        <i class="fa fa-sign-in"></i>&nbsp;Приєднатися
+                                    </a>
+
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div ng-switch-when="false">
+
+                        <div class="text-center">
+                            <div class="row clearfix">
+                                <div class="col-md-12 column">
+                                    Немає активних лекції
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>

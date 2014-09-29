@@ -1,0 +1,53 @@
+<div>
+
+    <div class="modal-header">
+        <span class="close" ng-click="cancel()">×</span>
+        <h4 style="margin-bottom: 0;margin-top: 0;">
+            <i class="fa fa-pencil"></i>
+            &nbsp;
+            {{ dialogTitle }}
+        </h4>
+    </div>
+
+    <div class="modal-body">
+
+        <form ng-submit="save()">
+
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+
+                    <div class="form-group-sm" ng-class="{ 'has-feedback' : !!model.title }"
+                         style="margin-bottom: 0">
+                        <label class="control-label" ng-show="false"></label>
+                        <input type="text" class="form-control input-sm"
+                               placeholder="Введіть назву"
+                               autofocus autocomplete="off" ng-model="model.title">
+                        <span class="form-control-feedback" style="top: 0"
+                              ng-show="!!model.title">
+                            <i class="fa fa-times" style="cursor: pointer"
+                               tooltip="Очистити"
+                               ng-click="model.title = ''"></i>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </form>
+
+    </div>
+    <div class="modal-footer ng-scope" style="margin-top: 0">
+        <span class="btn btn-warning btn-sm" ng-click="cancel()">
+            <i class="fa fa-share"></i>
+            &nbsp;
+            Відміна
+        </span>
+        <span class="btn btn-primary btn-sm" ng-click="save()"
+              ng-class="{ 'disabled' : !canSaveItem() }">
+            <i class="fa fa-floppy-o"></i>
+            &nbsp;
+            Зберегти
+        </span>
+    </div>
+</div>
