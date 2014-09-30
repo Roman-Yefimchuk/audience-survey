@@ -1,5 +1,5 @@
 .idea/
-db/
+local_db/
 node_modules/
 bower_components/
 command_line/
