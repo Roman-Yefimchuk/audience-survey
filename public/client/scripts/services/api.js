@@ -128,6 +128,21 @@ angular.module('application')
                         method: 'GET',
                         url: '/api/questions/get-by-id/' + questionId
                     }, handler);
+                },
+                getUserById: function (userId, handler) {
+                    httpClientService.sendRequest({
+                        method: 'GET',
+                        url: '/api/users/get-by-id/' + userId
+                    }, handler);
+                },
+                getUsersById: function (ids, handler) {
+                    httpClientService.sendRequest({
+                        method: 'POST',
+                        data: {
+                            ids: ids
+                        },
+                        url: '/api/users/get-by-id'
+                    }, handler);
                 }
             };
         }

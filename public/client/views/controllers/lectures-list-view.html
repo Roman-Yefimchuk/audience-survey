@@ -15,19 +15,21 @@
                                 ng-class="{ 'disabled' : lecture.status == 'suspended' }">
 
                                 <span>
-                                    Тема: "<b>{{ lecture.name }}</b>", автор <b>{{ lecture.author }}</b>
+                                    Тема: "<b>{{ lecture.name }}</b>", автор <b>{{ lecture.author['name'] }}</b>
                                 </span>
 
                                 <div class="pull-right" style="margin-top: -2px;margin-right: -6px">
 
-                                    <span style="padding-right: 6px;vertical-align: middle;">
+                                    <span style="padding-right: 6px;vertical-align: middle;"
+                                          ng-click="showPresentListeners(lecture)">
                                         <i class="fa fa-users"
-                                           tooltip="Присутні слухачі"></i>&nbsp;<b>{{ (lecture.presentListeners || []).length }}</b>
+                                           tooltip="Присутні слухачі"></i>&nbsp;<b>{{ (lecture.presentListeners ||
+                                        []).length }}</b>
                                     </span>
 
                                     <span style="padding-right: 3px;vertical-align: middle;">
                                         <i class="fa fa-clock-o"
-                                           tooltip="Продовження леції"></i>&nbsp;<b>{{ lecture.duration || 0 | duration
+                                           tooltip="Продовження леції"></i>&nbsp;<b>{{ lecture.duration || 0 | formatTime
                                         }}</b>
                                     </span>
 

@@ -15,15 +15,86 @@ angular.module('application')
         'socketsService',
         'userService',
         'dialogsService',
+        'notificationsService',
         'SOCKET_URL',
 
-        function ($scope, $rootScope, $location, $routeParams, $timeout, $interval, apiService, loaderService, socketsService, userService, dialogsService, SOCKET_URL) {
+        function ($scope, $rootScope, $location, $routeParams, $timeout, $interval, apiService, loaderService, socketsService, userService, dialogsService, notificationsService, SOCKET_URL) {
 
             var lectureId = $routeParams.lectureId;
+
+            var donutModel = [
+                {value: 83, label: 'Ясно-понятно'},
+                {value: 17, label: 'Ніпанятна'}
+            ];
+
+            var teacherQuestions = [];
+            var activityCollection = [];
+            var message = {
+                text: ''
+            };
+
+            var tabs = [
+                {
+                    id: 'lecture-info',
+                    title: 'Інформація',
+                    icon: 'fa-info-circle',
+                    templateUrl: '/client/views/controllers/lecture-room/tabs/info-tab-view.html',
+                    isActive: false
+                },
+                {
+                    id: 'survey',
+                    title: 'Опитування',
+                    icon: 'fa-pie-chart',
+                    templateUrl: '/client/views/controllers/lecture-room/tabs/survey-tab-view.html',
+                    isActive: true
+                },
+                {
+                    id: 'activity',
+                    title: 'Активність',
+                    icon: 'fa-bolt',
+                    templateUrl: '/client/views/controllers/lecture-room/tabs/activity-tab-view.html',
+                    isActive: false
+                },
+                {
+                    id: 'questions',
+                    title: 'Запитання лектора',
+                    icon: 'fa-question-circle',
+                    templateUrl: '/client/views/controllers/lecture-room/tabs/teacher-questions-tab-view.html',
+                    isActive: false
+                }
+            ];
+
+            function addActivityItem(title) {
+                activityCollection.push({
+                    timestamp: _.now(),
+                    title: title
+                });
+
+                setTimeout(function () {
+                    var activityList = $('#activity-list');
+                    var listHeight = activityList[0].scrollHeight;
+                    activityList.scrollTop(listHeight);
+                }, 100);
+            }
+
+            function setActiveTab(tab) {
+                tab.isActive = true;
+                $scope.tab = tab;
+            }
 
             function interval(fn, delay, count, invokeApply) {
                 fn();
                 return $interval(fn, delay, count, invokeApply);
+            }
+
+            function getUserName(userId, callback) {
+                apiService.getUserById(userId, {
+                    success: function (response) {
+                        var user = response.user;
+                        var userName = user.name;
+                        callback(userName);
+                    }
+                });
             }
 
             function subscribeForSocketEvent() {
@@ -32,8 +103,12 @@ angular.module('application')
                     if (data['lectureId'] == lectureId) {
                         var lecture = $scope.lecture;
                         var userId = data['userId'];
-                        $timeout(function () {
-                            lecture.presentListeners = _.without(lecture.presentListeners || [], userId);
+
+                        getUserName(userId, function (userName) {
+                            $timeout(function () {
+                                lecture.presentListeners = _.without(lecture.presentListeners || [], userId);
+                                addActivityItem(userName + ' покинув лекцію');
+                            });
                         });
                     }
                 });
@@ -49,6 +124,10 @@ angular.module('application')
                         }, 1000, 0, false);
 
                         $rootScope.$broadcast('suspendDialog:close');
+
+                        $timeout(function () {
+                            addActivityItem('Лекція продовжена');
+                        });
                     }
                 });
 
@@ -61,6 +140,10 @@ angular.module('application')
                         if (timer) {
                             $interval.cancel(timer);
                         }
+
+                        $timeout(function () {
+                            addActivityItem('Лекція призупинена');
+                        });
 
                         dialogsService.showSuspendedDialog({
                             leaveCallback: function (closeCallback) {
@@ -107,16 +190,17 @@ angular.module('application')
                 $scope.$on('socketsService:questionAsked', function (event, data) {
                     var lecture = $scope.lecture;
                     if (data['lectureId'] == lecture.id) {
+
                         var question = data['question'];
-                        dialogsService.showConfirmation({
-                            title: 'Як ви вважаєте?..',
-                            message: question,
-                            onAccept: function (closeCallback) {
-                                closeCallback();
-                            },
-                            onReject: function (closeCallback) {
-                                closeCallback();
-                            }
+
+                        teacherQuestions.push({
+                            id: question.id,
+                            title: question.title,
+                            answer: undefined
+                        });
+
+                        $timeout(function () {
+                            addActivityItem('Викладач задав питання: ' + question.title);
                         });
                     }
                 });
@@ -134,9 +218,13 @@ angular.module('application')
                     if (data['lectureId'] == lectureId) {
                         var lecture = $scope.lecture;
                         var userId = data['userId'];
-                        $timeout(function () {
-                            var presentListeners = lecture.presentListeners || [];
-                            presentListeners.push(userId);
+
+                        getUserName(userId, function (userName) {
+                            $timeout(function () {
+                                var presentListeners = lecture.presentListeners || [];
+                                presentListeners.push(userId);
+                                addActivityItem(userName + ' приєднався до лекції');
+                            });
                         });
                     }
                 });
@@ -145,20 +233,56 @@ angular.module('application')
                     if (data['lectureId'] == lectureId) {
                         var lecture = $scope.lecture;
                         var userId = data['userId'];
-                        $timeout(function () {
-                            var presentListeners = lecture.presentListeners || [];
-                            lecture.presentListeners = _.without(presentListeners, userId);
+
+                        getUserName(userId, function (userName) {
+                            $timeout(function () {
+                                var presentListeners = lecture.presentListeners || [];
+                                lecture.presentListeners = _.without(presentListeners, userId);
+                                addActivityItem(userName + ' покинув лекцію');
+                            });
                         });
                     }
+                });
+
+                $scope.$on('socketsService:onMessage', function (event, data) {
+
+                    var userId = data['userId'];
+                    var message = data['message'];
+
+                    getUserName(userId, function (userName) {
+                        $timeout(function () {
+                            addActivityItem(userName + ': ' + message);
+                        });
+                    });
+                });
+            }
+
+            function sendMessage() {
+                var message = $scope.message;
+                var socketConnection = $scope.socketConnection;
+                socketConnection.sendMessage(lectureId, message.text);
+
+                addActivityItem('Ви: ' + message.text);
+
+                message.text = '';
+            }
+
+            function replyForTeacherQuestion(question, answer) {
+                var socketConnection = $scope.socketConnection;
+                var questionId = question.id;
+                question.answer = answer;
+                socketConnection.replyForTeacherQuestion(lectureId, questionId, answer);
+            }
+
+            function showPresentListeners() {
+                dialogsService.showPresentListeners({
+                    lecture: $scope.lecture
                 });
             }
 
             function quit() {
                 $location.path('/lectures-list');
             }
-
-            $scope.understandable = 65;
-            $scope.notUnderstandable = 35;
 
             $scope.$on('$destroy', function () {
 
@@ -173,7 +297,21 @@ angular.module('application')
                 $rootScope.$broadcast('suspendDialog:close');
             });
 
+            $scope.activityCollection = activityCollection;
+            $scope.message = message;
+            $scope.teacherQuestions = teacherQuestions;
+            $scope.showView = true;
+            $scope.donutModel = donutModel;
+            $scope.tabs = tabs;
+            $scope.tab = _.find(tabs, function (tab) {
+                return tab.isActive;
+            });
+
+            $scope.setActiveTab = setActiveTab;
+            $scope.showPresentListeners = showPresentListeners;
             $scope.quit = quit;
+            $scope.replyForTeacherQuestion = replyForTeacherQuestion;
+            $scope.sendMessage = sendMessage;
 
             loaderService.showLoader();
 
@@ -232,11 +370,40 @@ angular.module('application')
                                             socketConnection.updatePresentListeners(id);
                                             break;
                                         }
+                                        default :
+                                        {
+                                            dialogsService.showAlert({
+                                                title: 'Лекція закінчена',
+                                                message: 'Лекція на тему "<b>' + lecture.name + '"</b> закінчена',
+                                                onClose: function (closeCallback) {
+                                                    quit();
+                                                    closeCallback();
+                                                }
+                                            });
+                                            break;
+                                        }
                                     }
 
+                                    addActivityItem('Ви приєдналися до лекції');
+
+                                    $scope.showView = lecture.status != 'stopped';
                                     loaderService.hideLoader();
                                 });
                             });
+                        },
+                        failure: function (error) {
+
+                            dialogsService.showAlert({
+                                title: 'Помилка',
+                                message: 'Лекція не знайдена',
+                                onClose: function (closeCallback) {
+                                    quit();
+                                    closeCallback();
+                                }
+                            });
+
+                            $scope.showView = false;
+                            loaderService.hideLoader();
                         }
                     });
                 },

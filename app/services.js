@@ -198,4 +198,34 @@ module.exports = function (app, dbProvider, serviceProvider) {
             });
         });
     });
+
+    serviceProvider.get('/api/users/get-by-id/:userId', function (request, response, resultCallback) {
+
+        checkAuthenticated(request);
+
+        var userId = request.params['userId'];
+
+        dbProvider.getUserById(userId, function (user) {
+            resultCallback({
+                data: {
+                    user: user
+                }
+            });
+        });
+    });
+
+    serviceProvider.post('/api/users/get-by-id', function (request, response, resultCallback) {
+
+        checkAuthenticated(request);
+
+        var ids = request.body['ids'];
+
+        dbProvider.getUsersById(ids, function (users) {
+            resultCallback({
+                data: {
+                    users: users
+                }
+            });
+        });
+    });
 };

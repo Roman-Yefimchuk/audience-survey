@@ -12,9 +12,10 @@ angular.module('application')
         'loaderService',
         'socketsService',
         'userService',
+        'dialogsService',
         'SOCKET_URL',
 
-        function ($scope, $timeout, $interval, $location, apiService, loaderService, socketsService, userService, SOCKET_URL) {
+        function ($scope, $timeout, $interval, $location, apiService, loaderService, socketsService, userService, dialogsService, SOCKET_URL) {
 
             function interval(fn, delay, count, invokeApply) {
                 fn();
@@ -24,6 +25,12 @@ angular.module('application')
             function findLectureById(lectureId) {
                 return _.findWhere($scope.activeLectures, {
                     id: lectureId
+                });
+            }
+
+            function showPresentListeners(lecture) {
+                dialogsService.showPresentListeners({
+                    lecture: lecture
                 });
             }
 
@@ -168,6 +175,8 @@ angular.module('application')
                     }
                 });
             });
+
+            $scope.showPresentListeners = showPresentListeners;
 
             loaderService.showLoader();
 

@@ -77,6 +77,32 @@ angular.module('application')
                             }
                         }
                     });
+                },
+                showPresentListeners: function (options) {
+                    return open({
+                        templateUrl: '/client/views/controllers/dialogs/present-listeners-view.html',
+                        controller: 'PresentListenersController',
+                        backdrop: 'static',
+                        keyboard: false,
+                        resolve: {
+                            options: function () {
+                                return options;
+                            }
+                        }
+                    });
+                },
+                showAnsweredListeners: function (options) {
+                    return open({
+                        templateUrl: '/client/views/controllers/dialogs/answered-listeners-view.html',
+                        controller: 'AnsweredListenersController',
+                        backdrop: 'static',
+                        keyboard: false,
+                        resolve: {
+                            options: function () {
+                                return options;
+                            }
+                        }
+                    });
                 }
             };
         }

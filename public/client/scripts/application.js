@@ -5,8 +5,7 @@ angular.module('application', [
     'ui.bootstrap',
     'ngRoute',
     'ngSanitize',
-    'ngCookies',
-    'chart.donut'
+    'ngCookies'
 
 ])
     .config([
@@ -47,6 +46,12 @@ angular.module('application', [
                 options: {
                     title: 'Управління запитаннями лекції'
                 }
+            }).when('/administration/statistic/:lectureId', {
+                templateUrl: '/client/views/controllers/administration/statistic-view.html',
+                controller: 'StatisticController',
+                options: {
+                    title: 'Ститистика'
+                }
             }).when('/login', {
                 templateUrl: '/client/views/controllers/login-view.html',
                 controller: 'LoginController',
@@ -60,7 +65,7 @@ angular.module('application', [
                     title: 'Реєстрація'
                 }
             }).when('/lecture-room/:lectureId', {
-                templateUrl: '/client/views/controllers/lecture-room-view.html',
+                templateUrl: '/client/views/controllers/lecture-room/lecture-room-view.html',
                 controller: 'LectureRoomController',
                 options: {
                     title: 'Лекційна зала'

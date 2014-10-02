@@ -186,25 +186,23 @@
 
                     var authorId = lecture.authorId;
 
-                    UserModel.findById(authorId, function (error, user) {
-
-                        if (error) {
-                            throw error;
-                        }
-
-                        if (user) {
+                    try {
+                        getUserById(authorId, function (user) {
                             callback({
                                 id: extractPropertyId(lecture),
                                 name: lecture.name,
-                                author: user.name,
+                                author: {
+                                    id: user.id,
+                                    name: user.name
+                                },
                                 status: lecture.status
                             });
-                        } else {
-                            throw 'Author not found';
-                        }
-                    });
+                        });
+                    } catch (e) {
+                        throw 'Author not found';
+                    }
                 } else {
-                    callback();
+                    throw 'Lecture not found';
                 }
             });
         }
@@ -387,24 +385,33 @@
             });
         }
 
-        function getUsers(ids, callback) {
+        function getUserById(userId, callback) {
+            UserModel.findById(userId, function (error, model) {
+
+                if (error) {
+                    throw error;
+                }
+
+                if (model) {
+                    callback({
+                        id: userId,
+                        name: model.name,
+                        role: model.role
+                    });
+                } else {
+                    throw 'User not found';
+                }
+            });
+        }
+
+        function getUsersById(ids, callback) {
             var result = [];
 
             asyncEach(ids, function (userId, index, next) {
 
-                UserModel.findById(userId, function (error, model) {
-
-                    if (error) {
-                        throw error;
-                    }
-
-                    if (model) {
-                        var userName = model.name;
-                        result.push(userName);
-                        next();
-                    } else {
-                        throw 'User not found';
-                    }
+                getUserById(userId, function (user) {
+                    result.push(user);
+                    next();
                 });
             }, function () {
                 callback(result);
@@ -431,7 +438,8 @@
             getQuestionsByLectureId: getQuestionsByLectureId,
             getQuestionById: getQuestionById,
 
-            getUsers: getUsers
+            getUserById: getUserById,
+            getUsersById: getUsersById
         };
     };
 

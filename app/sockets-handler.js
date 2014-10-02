@@ -45,6 +45,7 @@ module.exports = function (io, dbProvider, developmentMode) {
             this.id = id;
             this.timeline = [];
             this.status = 'stopped';
+            this.teacherQuestions = {};
         }
 
         Lecture.prototype = {
@@ -347,15 +348,122 @@ module.exports = function (io, dbProvider, developmentMode) {
             }
         });
 
+        on('get_question_info', function (data) {
+
+            var userId = data.userId;
+            var lectureId = data.lectureId;
+            var questionId = data.questionId;
+
+            var lecture = findLectureById(lectureId);
+            var socketSession = findSocketSessionByUserId(userId);
+
+            if (lecture && socketSession) {
+
+                var question = lecture.teacherQuestions[questionId];
+                if (question) {
+                    socketSession.sendCommand('update_question_info', {
+                        isAsked: true,
+                        questionId: questionId,
+                        answers: question.answers
+                    });
+                } else {
+                    socketSession.sendCommand('update_question_info', {
+                        isAsked: false,
+                        questionId: questionId
+                    });
+                }
+            }
+        });
+
+        on('send_message', function (data) {
+
+            var userId = data.userId;
+            var lectureId = data.lectureId;
+            var message = data.message;
+
+            var lecture = findLectureById(lectureId);
+
+            if (lecture) {
+                sendBroadcast('on_message', {
+                    userId: userId,
+                    message: message
+                }, lectureId);
+            }
+        });
+
+        on('reply_for_teacher_question', function (data) {
+
+            var userId = data.userId;
+            var lectureId = data.lectureId;
+            var questionId = data.questionId;
+            var answer = data.answer;
+
+            var lecture = findLectureById(lectureId);
+            if (lecture) {
+
+                var question = lecture.teacherQuestions[questionId];
+
+                if (question) {
+                    question = {
+                        answers: [
+                            {
+                                userId: userId,
+                                answer: answer
+                            }
+                        ]
+                    };
+                    lecture.teacherQuestions[questionId] = question;
+                } else {
+                    var answers = question.answers;
+                    answers.push({
+                        userId: userId,
+                        answer: answer
+                    });
+                }
+
+                sendBroadcast('update_question_info', {
+                    isAsked: true,
+                    questionId: questionId,
+                    answers: question.answers
+                }, lectureId);
+
+                dbProvider.getLectureById(lectureId, function (lecture) {
+                    var authorId = lecture.author['id'];
+
+                    var socketSession = findSocketSessionByUserId(authorId);
+                    if (socketSession) {
+                        socketSession.sendCommand('update_question_info', {
+                            isAsked: true,
+                            questionId: questionId,
+                            answers: question.answers
+                        });
+                    }
+                });
+            }
+        });
+
         on('ask_question', function (data) {
 
+            var userId = data.userId;
             var lectureId = data.lectureId;
             var question = data.question;
 
-            sendBroadcast('question_asked', {
-                lectureId: lectureId,
-                question: question
-            });
+            var lecture = findLectureById(lectureId);
+            if (lecture) {
+                var questionId = question.id;
+
+                if (!lecture.teacherQuestions[questionId]) {
+                    lecture.teacherQuestions[questionId] = {
+                        isAsked: true,
+                        answers: []
+                    };
+                }
+
+                sendBroadcast('question_asked', {
+                    lectureId: lectureId,
+                    question: question
+                }, lectureId);
+            }
         });
 
         on('update_present_listeners', function (data) {

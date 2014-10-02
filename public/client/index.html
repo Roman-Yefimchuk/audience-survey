@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="/bower_components/morris/morris.css">
 
     <link rel="stylesheet" href="/client/styles/styles.css">
     <link rel="stylesheet" href="/client/styles/ajax-loader.css">
@@ -33,10 +34,9 @@
 <script type="text/javascript" src="/bower_components/angular-sanitize/angular-sanitize.js"></script>
 <script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.js"></script>
 <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script type="text/javascript" src="/bower_components/angular-mocks/angular-mocks.js"></script>
 <script type="text/javascript" src="/bower_components/notifyjs/dist/notify-combined.js"></script>
-<script type="text/javascript" src="/bower_components/d3/d3.js"></script>
-<script type="text/javascript" src="/bower_components/angular-chart-donut/src/donut.js"></script>
+<script type="text/javascript" src="/bower_components/raphael/raphael.js"></script>
+<script type="text/javascript" src="/bower_components/morris/morris.js"></script>
 <script type="text/javascript" src="/bower_components/underscore/underscore.js"></script>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 
@@ -52,28 +52,33 @@
 <script type="text/javascript" src="/client/scripts/controllers/index.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/lecture_room.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/lectures_list.js"></script>
-<script type="text/javascript" src="/client/scripts/controllers/administration.js"></script>
-<script type="text/javascript" src="/client/scripts/controllers/questions.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/login.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/logout.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/not-found.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/sign-up.js"></script>
+<script type="text/javascript" src="/client/scripts/controllers/administration/administration.js"></script>
+<script type="text/javascript" src="/client/scripts/controllers/administration/questions.js"></script>
+<script type="text/javascript" src="/client/scripts/controllers/administration/statistic.js"></script>
 
 <script type="text/javascript" src="/client/scripts/controllers/dialogs/confirmation-dialog.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/dialogs/alert-dialog.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/dialogs/feedback-dialog.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/dialogs/item-editor.js"></script>
 <script type="text/javascript" src="/client/scripts/controllers/dialogs/suspend-dialog.js"></script>
+<script type="text/javascript" src="/client/scripts/controllers/dialogs/present-listeners.js"></script>
+<script type="text/javascript" src="/client/scripts/controllers/dialogs/answered-listeners.js"></script>
 <!--end_controllers-->
 
 <!--begin_directives-->
 <script type="text/javascript" src="/client/scripts/directives/static-include.js"></script>
 <script type="text/javascript" src="/client/scripts/directives/info-widget.js"></script>
+<script type="text/javascript" src="/client/scripts/directives/survey-donut.js"></script>
+<script type="text/javascript" src="/client/scripts/directives/lecture-statistic.js"></script>
 <!--end_directives-->
 
 <!--begin_filters-->
 <script type="text/javascript" src="/client/scripts/filters/format-date.js"></script>
-<script type="text/javascript" src="/client/scripts/filters/duration.js"></script>
+<script type="text/javascript" src="/client/scripts/filters/format-time.js"></script>
 <!--end_filters-->
 
 <!--begin_services-->

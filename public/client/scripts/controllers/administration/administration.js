@@ -28,6 +28,12 @@ angular.module('application')
                 });
             }
 
+            function showPresentListeners(lecture) {
+                dialogsService.showPresentListeners({
+                    lecture: lecture
+                });
+            }
+
             function addLecture() {
                 var lectures = $scope.lectures;
 
@@ -247,6 +253,8 @@ angular.module('application')
             $scope.editLecture = editLecture;
             $scope.removeLecture = removeLecture;
             $scope.clearInput = clearInput;
+
+            $scope.showPresentListeners = showPresentListeners;
 
             loaderService.showLoader();
 

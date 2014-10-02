@@ -85,6 +85,28 @@ angular.module('application')
                             userId: userId,
                             lectureId: lectureId
                         });
+                    },
+                    getQuestionInfo: function (lectureId, questionId) {
+                        emit('get_question_info', {
+                            userId: userId,
+                            lectureId: lectureId,
+                            questionId: questionId
+                        });
+                    },
+                    replyForTeacherQuestion: function (lectureId, questionId, answer) {
+                        emit('reply_for_teacher_question', {
+                            userId: userId,
+                            lectureId: lectureId,
+                            questionId: questionId,
+                            answer: answer
+                        });
+                    },
+                    sendMessage: function (lectureId, message) {
+                        emit('send_message', {
+                            userId: userId,
+                            lectureId: lectureId,
+                            message: message
+                        });
                     }
                 };
             }
@@ -128,10 +150,13 @@ angular.module('application')
                             'update_total_lecture_duration': 'updateTotalLectureDuration',
 
                             'question_asked': 'questionAsked',
+                            'update_question_info': 'updateQuestionInfo',
 
                             'update_present_listeners': 'updatePresentListeners',
                             'listener_joined': 'listenerJoined',
-                            'listener_has_left': 'listenerHasLeft'
+                            'listener_has_left': 'listenerHasLeft',
+
+                            'on_message': 'onMessage'
 
                         }, function (value, command) {
                             on(command, function (data) {
