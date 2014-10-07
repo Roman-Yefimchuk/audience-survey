@@ -101,11 +101,11 @@ angular.module('application')
                             answer: answer
                         });
                     },
-                    sendMessage: function (lectureId, message) {
-                        emit('send_message', {
+                    updateStatistic: function (lectureId, value) {
+                        emit('update_statistic', {
                             userId: userId,
                             lectureId: lectureId,
-                            message: message
+                            value: value
                         });
                     }
                 };
@@ -156,7 +156,9 @@ angular.module('application')
                             'listener_joined': 'listenerJoined',
                             'listener_has_left': 'listenerHasLeft',
 
-                            'on_message': 'onMessage'
+                            'on_message': 'onMessage',
+
+                            'update_statistic': 'updateStatistic'
 
                         }, function (value, command) {
                             on(command, function (data) {

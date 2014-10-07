@@ -6,9 +6,8 @@
 
     module.exports = dbHelper.createModel('ChartPoint', {
         timestamp: {type: Number},
-        presentNumber: {type: Number},
-        understandingPercentage: {type: Number},
-        question: {type: String}
+        presentListeners: {type: Number},
+        understandingPercentage: {type: Number}
     });
 
 })(require);

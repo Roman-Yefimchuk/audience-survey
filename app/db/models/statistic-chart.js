@@ -9,7 +9,8 @@
     module.exports = dbHelper.createModel('StatisticChart', {
         date: {type: String},
         chartPoints: [ChartPoint['schema']],
-        timeline: [TimeMarker['schema']]
+        timeline: [TimeMarker['schema']],
+        totalDuration: {type: Number}
     });
 
 })(require);

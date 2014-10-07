@@ -10,9 +10,10 @@
         var ObjectID = require('mongodb')['ObjectID'];
 
         var ChartPointModel = require('./models/chart-point');
+        var TimeMarkerModel = require('./models/time-marker');
         var LectureModel = require('./models/lecture');
         var QuestionModel = require('./models/question');
-        var StatisticChart = require('./models/statistic-chart');
+        var StatisticChartModel = require('./models/statistic-chart');
         var UserModel = require('./models/user');
 
         function extractPropertyId(property) {
@@ -207,10 +208,46 @@
             });
         }
 
-        function getStatisticForLecture(lectureId, callback) {
+        function loadStatisticForLecture(lectureId, callback) {
         }
 
-        function updateStatisticForLecture(lectureId, data, callback) {
+        function saveStatisticForLecture(lectureId, data, callback) {
+
+            var date = data.date;
+            var chartPoints = data.chartPoints;
+            var timeline = data.timeline;
+            var totalDuration = data.totalDuration;
+
+            function getChartPoints() {
+                var result = [];
+
+                _.forEach(chartPoints, function (chartPoint) {
+                    result.push(new ChartPointModel(chartPoint));
+                });
+
+                return result;
+            }
+
+            function getTimeline() {
+                var result = [];
+
+                _.forEach(timeline, function (timeMarker) {
+                    result.push(new TimeMarkerModel(timeMarker));
+                });
+
+                return result;
+            }
+
+            var statisticChart = new StatisticChartModel({
+                date: date,
+                chartPoints: getChartPoints(),
+                timeline: getTimeline(),
+                totalDuration: totalDuration
+            });
+
+            statisticChart.save(function (error, model) {
+                callback();
+            });
         }
 
         function getActiveLectures(callback) {
@@ -427,8 +464,8 @@
             removeLecture: removeLecture,
             getLecturesByAuthorId: getLecturesByAuthorId,
             getLectureById: getLectureById,
-            getStatisticForLecture: getStatisticForLecture,
-            updateStatisticForLecture: updateStatisticForLecture,
+            loadStatisticForLecture: loadStatisticForLecture,
+            saveStatisticForLecture: saveStatisticForLecture,
             getActiveLectures: getActiveLectures,
             updateLectureStatus: updateLectureStatus,
 

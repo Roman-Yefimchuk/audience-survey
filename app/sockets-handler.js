@@ -41,36 +41,93 @@ module.exports = function (io, dbProvider, developmentMode) {
 
         var stopCounter = 0;
 
+        var startTimer = (function () {
+
+            function getPresentListeners(context) {
+                var lectureId = context.id;
+                var count = 0;
+
+                forEach(socketsSession, function (socketSession) {
+                    if (socketSession && socketSession.lectureId == lectureId) {
+                        count++;
+                    }
+                });
+
+                return count;
+            }
+
+            function timerHandler() {
+                var timeline = this.timeline;
+                var timeMarker = timeline[timeline.length - 1];
+
+                var finishTime = timeMarker.finishTime;
+                if (finishTime == 'expected') {
+                    finishTime = _.now();
+                }
+
+                if (Math.floor((finishTime - _.now()) / 1000) <= 60) {
+                    var chartPoints = this.chartPoints;
+                    chartPoints.push({
+                        timestamp: this.getTotalDuration(),
+                        presentListeners: getPresentListeners(this),
+                        understandingPercentage: this.getAverageUnderstandingValue()
+                    });
+                }
+            }
+
+            return function (context) {
+                context.timerId = setInterval(function () {
+                    timerHandler.call(context);
+                }, 1000 * 60);
+            }
+        })();
+
+        var stopTimer = function (context) {
+            var timerId = context.timerId;
+            if (timerId) {
+                clearInterval(timerId);
+                context.timerId = null;
+            }
+        };
+
         function Lecture(id) {
             this.id = id;
             this.timeline = [];
             this.status = 'stopped';
             this.teacherQuestions = {};
+            this.timerId = null;
+            this.chartPoints = [];
         }
 
         Lecture.prototype = {
             runLecture: function (onStartedCallback) {
-                this.status = 'started';
+                var context = this;
 
-                var id = this.id;
-                var timeline = this.timeline;
+                context.status = 'started';
+
+                var id = context.id;
+                var timeline = context.timeline;
                 timeline.push({
                     startTime: _.now(),
                     finishTime: 'expected',
                     status: 'started'
                 });
 
-                activeLectures[id] = this;
+                activeLectures[id] = context;
+
+                startTimer(context);
 
                 dbProvider.updateLectureStatus(id, 'started', function () {
-                    onStartedCallback(this);
+                    onStartedCallback(context);
                 });
             },
             resumeLecture: function (onResumeCallback) {
-                this.status = 'started';
+                var context = this;
 
-                var id = this.id;
-                var timeline = this.timeline;
+                context.status = 'started';
+
+                var id = context.id;
+                var timeline = context.timeline;
                 var timeMarker = timeline[timeline.length - 1];
                 timeMarker.finishTime = _.now();
 
@@ -80,15 +137,19 @@ module.exports = function (io, dbProvider, developmentMode) {
                     status: 'started'
                 });
 
+                startTimer(context);
+
                 dbProvider.updateLectureStatus(id, 'started', function () {
-                    onResumeCallback(this);
+                    onResumeCallback(context);
                 });
             },
             suspendLecture: function (onSuspendedCallback) {
-                this.status = 'suspended';
+                var context = this;
 
-                var id = this.id;
-                var timeline = this.timeline;
+                context.status = 'suspended';
+
+                var id = context.id;
+                var timeline = context.timeline;
                 var timeMarker = timeline[timeline.length - 1];
                 timeMarker.finishTime = _.now();
 
@@ -98,14 +159,18 @@ module.exports = function (io, dbProvider, developmentMode) {
                     status: 'suspended'
                 });
 
+                stopTimer(context);
+
                 dbProvider.updateLectureStatus(id, 'suspended', function () {
-                    onSuspendedCallback(this);
+                    onSuspendedCallback(context);
                 });
             },
             stopLecture: function (onStoppedCallback) {
-                this.status = 'stopped';
+                var context = this;
 
-                var id = this.id;
+                context.status = 'stopped';
+
+                var id = context.id;
                 activeLectures[id] = null;
 
                 if (++stopCounter > 25) {
@@ -113,12 +178,26 @@ module.exports = function (io, dbProvider, developmentMode) {
                     stopCounter = 0;
                 }
 
-                var timeline = this.timeline;
+                var timeline = context.timeline;
                 var timeMarker = timeline[timeline.length - 1];
                 timeMarker.finishTime = _.now();
 
+                stopTimer(context);
+
                 dbProvider.updateLectureStatus(id, 'stopped', function () {
-                    onStoppedCallback(this);
+
+                    var lectureId = context.id;
+                    var chartPoints = context.chartPoints;
+                    var timeline = context.timeline;
+
+                    dbProvider.saveStatisticForLecture(lectureId, {
+                        date: context.getDate(),
+                        chartPoints: chartPoints,
+                        timeline: timeline,
+                        totalDuration: context.getTotalDuration()
+                    }, function () {
+                        onStoppedCallback(context);
+                    });
                 });
             },
             getDuration: function () {
@@ -152,6 +231,30 @@ module.exports = function (io, dbProvider, developmentMode) {
                 }
 
                 return Math.floor((finishTime - startTime) / 1000);
+            },
+            getDate: function () {
+                var timeline = this.timeline;
+                return Math.floor(timeline[0].startTime / 1000);
+            },
+            getAverageUnderstandingValue: function () {
+                var lectureId = this.id;
+
+                var value = 0;
+                var count = 0;
+
+                forEach(socketsSession, function (socketSession) {
+                    if (socketSession && socketSession.lectureId == lectureId) {
+                        if (socketSession.requestCount > 0) {
+                            count++;
+                            value += (socketSession.understandingValue / socketSession.requestCount);
+                        }
+                    }
+                });
+
+                if(count > 0){
+                    return ((value / count) * 100).toFixed(1);
+                }
+                return (0).toFixed(1);
             }
         };
 
@@ -485,6 +588,28 @@ module.exports = function (io, dbProvider, developmentMode) {
             });
         });
 
+        on('update_statistic', function (data) {
+            var userId = data.userId;
+            var lectureId = data.lectureId;
+            var value = data.value;
+
+            var session = findSocketSessionByUserId(userId);
+            if (session) {
+                session.requestCount++;
+                session.understandingValue += value;
+            }
+
+            var lecture = findLectureById(lectureId);
+
+            var response = {
+                lectureId: lectureId,
+                understandingValue: lecture.getAverageUnderstandingValue()
+            };
+
+            sendBroadcast('update_statistic', response);
+            emit('update_statistic', response);
+        });
+
         on('join_to_lecture', function (data) {
             var userId = data.userId;
             var lectureId = data.lectureId;
@@ -492,6 +617,8 @@ module.exports = function (io, dbProvider, developmentMode) {
             var session = findSocketSessionByUserId(userId);
             if (session) {
                 session.lectureId = lectureId;
+                session.requestCount = 0;
+                session.understandingValue = 0;
             }
 
             sendBroadcast('listener_joined', {
@@ -507,6 +634,8 @@ module.exports = function (io, dbProvider, developmentMode) {
             var session = findSocketSessionByUserId(userId);
             if (session) {
                 session.lectureId = null;
+                session.requestCount = null;
+                session.understandingValue = null;
             }
 
             sendBroadcast('listener_has_left', {

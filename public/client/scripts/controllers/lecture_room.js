@@ -23,8 +23,8 @@ angular.module('application')
             var lectureId = $routeParams.lectureId;
 
             var donutModel = [
-                {value: 83, label: 'Ясно-понятно'},
-                {value: 17, label: 'Ніпанятна'}
+                {value: 0, label: 'Зрозуміло'},
+                {value: 100, label: 'Незрозуміло'}
             ];
 
             var teacherQuestions = [];
@@ -255,6 +255,22 @@ angular.module('application')
                         });
                     });
                 });
+
+                $scope.$on('socketsService:updateStatistic', function (event, data) {
+                    if (data['lectureId'] == lectureId) {
+                        var understandingValue = data['understandingValue'];
+
+                        $timeout(function () {
+                            donutModel[0].value = understandingValue;
+                            donutModel[1].value = 100 - understandingValue;
+                        });
+                    }
+                });
+            }
+
+            function updateStatistic(value) {
+                var socketConnection = $scope.socketConnection;
+                socketConnection.updateStatistic(lectureId, value);
             }
 
             function sendMessage() {
@@ -312,6 +328,7 @@ angular.module('application')
             $scope.quit = quit;
             $scope.replyForTeacherQuestion = replyForTeacherQuestion;
             $scope.sendMessage = sendMessage;
+            $scope.updateStatistic = updateStatistic;
 
             loaderService.showLoader();
 
