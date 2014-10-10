@@ -23,7 +23,7 @@
                                         style="margin-bottom: 0">
                                         <li ng-repeat="statisticModel in statisticCollection" class="list-group-item">
 
-                                            <div lecture-statistic statistic-model="statisticModel"
+                                            <div lecture-statistic chart-points="statisticModel.chartPoints"
                                                  graph-id="{{ $index }}"
                                                  style="height: 200px">
                                             </div>

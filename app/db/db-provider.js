@@ -209,6 +209,19 @@
         }
 
         function loadStatisticForLecture(lectureId, callback) {
+            LectureModel.findById(lectureId, function (error, model) {
+
+                if (error) {
+                    throw error;
+                }
+
+                if (model) {
+                    var statisticCharts = model.statisticCharts;
+                    callback(statisticCharts);
+                } else {
+                    throw 'Lecture not found';
+                }
+            });
         }
 
         function saveStatisticForLecture(lectureId, data, callback) {
@@ -243,6 +256,28 @@
                 chartPoints: getChartPoints(),
                 timeline: getTimeline(),
                 totalDuration: totalDuration
+            });
+
+            LectureModel.findById(lectureId, function (error, model) {
+
+                if (error) {
+                    throw error;
+                }
+
+                if (model) {
+                    model.statisticCharts = new StatisticChartModel({
+                        date: date,
+                        chartPoints: getChartPoints(),
+                        timeline: getTimeline(),
+                        totalDuration: totalDuration
+                    });
+
+                    model.save(function (error, model) {
+                        callback();
+                    });
+                } else {
+                    throw 'Lecture not found';
+                }
             });
 
             statisticChart.save(function (error, model) {

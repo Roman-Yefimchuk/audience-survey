@@ -64,7 +64,7 @@ angular.module('application')
                         url: '/api/lectures/get-by-id/' + lectureId
                     }, handler);
                 },
-                getStatisticForLecture: function (lectureId, handler) {
+                getLectureStatisticById: function (lectureId, handler) {
                     httpClientService.sendRequest({
                         method: 'GET',
                         url: '/api/lectures/' + lectureId + '/statistic'

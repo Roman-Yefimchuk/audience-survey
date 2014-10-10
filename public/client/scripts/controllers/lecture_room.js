@@ -22,9 +22,19 @@ angular.module('application')
 
             var lectureId = $routeParams.lectureId;
 
-            var donutModel = [
-                {value: 0, label: 'Зрозуміло'},
-                {value: 100, label: 'Незрозуміло'}
+            var pieModel = [
+                {
+                    value: 0,
+                    label: 'Зрозуміло',
+                    color: "#4cae4c",
+                    highlight: "#FF5A5E"
+                },
+                {
+                    value: 100,
+                    label: 'Незрозуміло',
+                    color: "#ac2925",
+                    highlight: "#5AD3D1"
+                }
             ];
 
             var teacherQuestions = [];
@@ -261,8 +271,8 @@ angular.module('application')
                         var understandingValue = data['understandingValue'];
 
                         $timeout(function () {
-                            donutModel[0].value = understandingValue;
-                            donutModel[1].value = 100 - understandingValue;
+                            pieModel[0].value = understandingValue;
+                            pieModel[1].value = 100 - understandingValue;
                         });
                     }
                 });
@@ -317,7 +327,13 @@ angular.module('application')
             $scope.message = message;
             $scope.teacherQuestions = teacherQuestions;
             $scope.showView = true;
-            $scope.donutModel = donutModel;
+            $scope.pieModel = pieModel;
+            $scope.pieOptions = {
+                segmentShowStroke: true,
+                segmentStrokeColor: "#fff",
+                segmentStrokeWidth: 1,
+                animateRotate: false
+            };
             $scope.tabs = tabs;
             $scope.tab = _.find(tabs, function (tab) {
                 return tab.isActive;

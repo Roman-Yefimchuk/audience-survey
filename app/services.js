@@ -84,11 +84,9 @@ module.exports = function (app, dbProvider, serviceProvider) {
 
         var lectureId = request.params['lectureId'];
 
-        dbProvider.getStatisticForLecture(lectureId, function (statistic) {
+        dbProvider.loadStatisticForLecture(lectureId, function (data) {
             resultCallback({
-                data: {
-                    statistic: statistic
-                }
+                data: data
             });
         });
     });
