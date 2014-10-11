@@ -5,7 +5,7 @@ body {
     padding: 0px !important;
     margin: 0px !important;
     font-size: 13px;
-    min-width: 800px;
+    /*min-width: 800px;*/
 }
 
 .bold-fond {
@@ -13,7 +13,7 @@ body {
 }
 
 .survey-form div[chart] {
-    height: 200px;
+    /*height: 200px;*/
 }
 
 @-webkit-keyframes tada {
@@ -73,4 +73,8 @@ body {
 .tada {
     -webkit-animation-name: tada;
     animation-name: tada;
+}
+svg{
+    height: auto;
+    width: auto;
 }

@@ -26,14 +26,14 @@ angular.module('application')
                 {
                     value: 0,
                     label: 'Зрозуміло',
-                    color: "#4cae4c",
-                    highlight: "#FF5A5E"
+                    color: "#449d44",
+                    highlight: "#398439"
                 },
                 {
                     value: 100,
                     label: 'Незрозуміло',
-                    color: "#ac2925",
-                    highlight: "#5AD3D1"
+                    color: "#c9302c",
+                    highlight: "#ac2925"
                 }
             ];
 
@@ -75,16 +75,10 @@ angular.module('application')
             ];
 
             function addActivityItem(title) {
-                activityCollection.push({
+                activityCollection.unshift({
                     timestamp: _.now(),
                     title: title
                 });
-
-                setTimeout(function () {
-                    var activityList = $('#activity-list');
-                    var listHeight = activityList[0].scrollHeight;
-                    activityList.scrollTop(listHeight);
-                }, 100);
             }
 
             function setActiveTab(tab) {
@@ -271,8 +265,8 @@ angular.module('application')
                         var understandingValue = data['understandingValue'];
 
                         $timeout(function () {
-                            pieModel[0].value = understandingValue;
-                            pieModel[1].value = 100 - understandingValue;
+                            pieModel[0].value = parseFloat(understandingValue).toFixed(1);
+                            pieModel[1].value = (100 - parseFloat(understandingValue)).toFixed(1);
                         });
                     }
                 });

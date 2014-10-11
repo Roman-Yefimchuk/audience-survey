@@ -107,6 +107,13 @@ angular.module('application')
                             lectureId: lectureId,
                             value: value
                         });
+                    },
+                    sendMessage: function (lectureId, message) {
+                        emit('send_message', {
+                            userId: userId,
+                            lectureId: lectureId,
+                            message: message
+                        });
                     }
                 };
             }

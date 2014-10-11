@@ -13,8 +13,7 @@
         "notifyjs": "~0.3.2",
         "json3": "~3.3.2",
         "angular-bootstrap": "~0.11.0",
-        "morris": "~0.5.2",
-        "Chart.js": "latest"
+        "Chart.js": "~0.2.0"
     },
     "appPath": "public/client"
 }

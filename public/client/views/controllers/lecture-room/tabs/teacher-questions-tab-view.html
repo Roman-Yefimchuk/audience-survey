@@ -4,14 +4,14 @@
         <div ng-switch="teacherQuestions.length > 0">
             <div ng-switch-when="true">
 
-                <ul class="list-group" style="margin: 0;">
+                <ul class="list-group" style="/*margin: 0;">
                     <li ng-repeat="question in (teacherQuestions || [])" class="list-group-item text-left">
 
                         <span>
                             {{ question.title }}
                         </span>
 
-                        <span class="pull-right">
+                        <span class="pull-right ">
                             <div ng-switch="!!question.answer">
                                 <div ng-switch-when="true">
                                     Ваша відповідь: <b>{{ {'YES':'Так','NO':'Ні'}[question.answer] }}</b>
@@ -35,7 +35,9 @@
 
             </div>
             <div ng-switch-when="false">
-                Немає запитань, поки що
+                <div class="text-center col-md-12" style="margin-top: 15px;">
+                    Немає запитань, поки що
+                </div>
             </div>
         </div>
     </div>

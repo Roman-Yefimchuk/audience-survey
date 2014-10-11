@@ -7,26 +7,24 @@ angular.module('application')
         function () {
             return {
                 scope: {
-                    donutModel: '='
+                    model: '='
                 },
                 templateUrl: '/client/views/directives/survey-donut-view.html',
                 controller: ['$scope', function ($scope) {
 
-                    var donut = new Morris.Donut({
-                        element: 'graph',
-                        data: $scope.donutModel,
-                        labelColor: '#797979',
-                        colors: [
-                            '#4cae4c',
-                            '#d43f3a'
-                        ],
-                        formatter: function (value) {
-                            return value + "%"
-                        }
+                    var chart = $('#chart')[0];
+                    var context = chart.getContext('2d');
+                    var pieChart = new Chart(context).Pie($scope.model, {
+                        segmentShowStroke: false,
+                        animation: false,
+                        tooltipTemplate: "<%=label%>: <%= value %>%"
                     });
 
-                    $scope.$watch('donutModel', function (donutModel) {
-                        donut.setData(donutModel);
+                    $scope.$watch('model', function (model) {
+                        _.forEach(pieChart.segments, function (segment, index) {
+                            segment.value = parseFloat(model[index].value);
+                        });
+                        pieChart.update();
                     }, true);
                 }]
             };
