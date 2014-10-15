@@ -4,14 +4,16 @@
         <div ng-switch="teacherQuestions.length > 0">
             <div ng-switch-when="true">
 
-                <ul class="list-group" style="/*margin: 0;">
+                <ul class="list-group" style="margin-top: 15px;margin-bottom: 0;">
                     <li ng-repeat="question in (teacherQuestions || [])" class="list-group-item text-left">
 
                         <span>
                             {{ question.title }}
                         </span>
 
-                        <span class="pull-right ">
+                        <br>
+
+                        <span style="margin-top: 15px;">
                             <div ng-switch="!!question.answer">
                                 <div ng-switch-when="true">
                                     Ваша відповідь: <b>{{ {'YES':'Так','NO':'Ні'}[question.answer] }}</b>

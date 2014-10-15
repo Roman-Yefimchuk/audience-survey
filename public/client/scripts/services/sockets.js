@@ -114,6 +114,12 @@ angular.module('application')
                             lectureId: lectureId,
                             message: message
                         });
+                    },
+                    updateChart: function (lectureId) {
+                        emit('update_chart', {
+                            userId: userId,
+                            lectureId: lectureId
+                        });
                     }
                 };
             }
@@ -165,7 +171,8 @@ angular.module('application')
 
                             'on_message': 'onMessage',
 
-                            'update_statistic': 'updateStatistic'
+                            'update_statistic': 'updateStatistic',
+                            'update_chart': 'updateChart'
 
                         }, function (value, command) {
                             on(command, function (data) {

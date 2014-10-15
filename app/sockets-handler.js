@@ -72,6 +72,7 @@ module.exports = function (io, dbProvider, developmentMode) {
                         presentListeners: getPresentListeners(this),
                         understandingPercentage: this.getAverageUnderstandingValue()
                     });
+                    this.updateChart();
                 }
             }
 
@@ -90,7 +91,8 @@ module.exports = function (io, dbProvider, developmentMode) {
             }
         };
 
-        function Lecture(id) {
+        function Lecture(id, starterId) {
+            this.starterId = starterId;
             this.id = id;
             this.timeline = [];
             this.status = 'stopped';
@@ -251,10 +253,19 @@ module.exports = function (io, dbProvider, developmentMode) {
                     }
                 });
 
-                if(count > 0){
+                if (count > 0) {
                     return ((value / count) * 100).toFixed(1);
                 }
                 return (0).toFixed(1);
+            },
+            updateChart: function () {
+                var chartPoints = this.chartPoints;
+                var starterId = this.starterId;
+
+                var socketSession = findSocketSessionByUserId(starterId);
+                if (socketSession) {
+                    socketSession.sendCommand('update_chart', chartPoints);
+                }
             }
         };
 
@@ -333,7 +344,7 @@ module.exports = function (io, dbProvider, developmentMode) {
 
         on('start_lecture', function (data) {
             var lectureId = data.lectureId;
-            var lecture = new Lecture(lectureId);
+            var lecture = new Lecture(lectureId, data.userId);
             lecture.runLecture(function (lecture) {
 
                 var session = getSession();
@@ -490,7 +501,7 @@ module.exports = function (io, dbProvider, developmentMode) {
                 sendBroadcast('on_message', {
                     userId: userId,
                     message: message
-                }, lectureId);
+                });
             }
         });
 
@@ -642,6 +653,14 @@ module.exports = function (io, dbProvider, developmentMode) {
                 userId: userId,
                 lectureId: lectureId
             });
+        });
+
+        on('update_chart', function (data) {
+            var lectureId = data.lectureId;
+            var lecture = findLectureById(lectureId);
+            if(lecture){
+                lecture.updateChart();
+            }
         });
     });
 };

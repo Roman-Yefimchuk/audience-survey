@@ -42,13 +42,11 @@
 
                 <div class="row clearfix">
 
-                    <tabset style="/*margin-top: 15px;margin-left: 15px;margin-right: 15px;">
+                    <tabset style="margin-top: 5px;margin-left: 5px;margin-right: 5px;">
                         <tab ng-repeat="tab in tabs" select="setActiveTab(tab)" active="tab.isActive"
-                             style="/*cursor: pointer;z-index: 1;">
+                             style="width: 60px;">
                             <tab-heading>
                                 <i class="fa {{ tab.icon }}"></i>
-                                &nbsp;
-                                {{ tab.title }}
                             </tab-heading>
                             <div ng-include="tab.templateUrl" class="col-md-12 col-xs-12"
                                  style="/*border: 1px solid #ddd;margin-top: -1px;padding: 15px;

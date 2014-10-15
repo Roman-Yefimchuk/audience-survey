@@ -40,6 +40,12 @@ angular.module('application', [
                 options: {
                     title: 'Управління лекціями'
                 }
+            }).when('/administration/active-lecture/:lectureId', {
+                templateUrl: '/client/views/controllers/administration/active-lecture/active-lecture-view.html',
+                controller: 'ActiveLectureController',
+                options: {
+                    title: 'Поточна лекція'
+                }
             }).when('/administration/questions/:lectureId', {
                 templateUrl: '/client/views/controllers/administration/questions-view.html',
                 controller: 'QuestionsController',

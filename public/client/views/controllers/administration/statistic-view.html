@@ -1,4 +1,4 @@
-<div class="row clearfix" style="margin-top: 80px">
+<div class="row clearfix" style="margin-top: 15px">
 
     <div class="col-sm-8 col-sm-offset-2 column">
 
@@ -23,9 +23,9 @@
                                         style="margin-bottom: 0">
                                         <li ng-repeat="statisticModel in statisticCollection" class="list-group-item">
 
-                                            <div lecture-statistic chart-points="statisticModel.chartPoints"
+                                            <div lecture-statistic model="statisticModel.chartPoints"
                                                  graph-id="{{ $index }}"
-                                                 style="height: 200px">
+                                                 style="height: 200px" class="text-center">
                                             </div>
 
                                         </li>

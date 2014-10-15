@@ -265,12 +265,15 @@
                 }
 
                 if (model) {
-                    model.statisticCharts = new StatisticChartModel({
+                    var statisticChartModel = new StatisticChartModel({
                         date: date,
                         chartPoints: getChartPoints(),
                         timeline: getTimeline(),
                         totalDuration: totalDuration
                     });
+
+                    var statisticCharts = model.statisticCharts;
+                    statisticCharts.push(statisticChartModel);
 
                     model.save(function (error, model) {
                         callback();
@@ -278,10 +281,6 @@
                 } else {
                     throw 'Lecture not found';
                 }
-            });
-
-            statisticChart.save(function (error, model) {
-                callback();
             });
         }
 

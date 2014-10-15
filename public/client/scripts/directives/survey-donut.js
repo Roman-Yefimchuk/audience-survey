@@ -26,6 +26,11 @@ angular.module('application')
                         });
                         pieChart.update();
                     }, true);
+
+/*                    setInterval(function () {
+                        pieChart.update();
+                        $scope.$apply();
+                    }, 100);*/
                 }]
             };
         }

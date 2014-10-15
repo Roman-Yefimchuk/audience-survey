@@ -20,7 +20,9 @@ angular.module('application')
 
             apiService.getLectureStatisticById(lectureId, {
                 success: function (response) {
-                    $scope.statisticCollection = response;
+                    $scope.statisticCollection = _.filter(response, function (lectureStatistic) {
+                        return lectureStatistic.chartPoints['length'] > 0;
+                    });
                     loaderService.hideLoader();
 
                     console.log(response);

@@ -168,17 +168,23 @@ angular.module('application')
                         }
 
                         $rootScope.$broadcast('suspendDialog:close');
-                        dialogsService.showAlert({
-                            title: 'Лекція закінчена',
-                            message: '' +
-                                'Лекція на тему "<b>' + lecture.name + '</b>" закінчена.' +
-                                '<br>' +
-                                'Дякуємо за увагу.',
-                            onClose: function (closeCallback) {
-                                $location.path('/lectures-list');
-                                closeCallback();
-                            }
-                        });
+
+                        //TODO: quick bug fix, not good
+                        if (!$scope.showDialog) {
+                            $scope.showDialog = true;
+
+                            dialogsService.showAlert({
+                                title: 'Лекція закінчена',
+                                message: '' +
+                                    'Лекція на тему "<b>' + lecture.name + '</b>" закінчена.' +
+                                    '<br>' +
+                                    'Дякуємо за увагу.',
+                                onClose: function (closeCallback) {
+                                    $location.path('/lectures-list');
+                                    closeCallback();
+                                }
+                            });
+                        }
                     }
                 });
 

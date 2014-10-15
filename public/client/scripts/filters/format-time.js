@@ -15,9 +15,11 @@ angular.module('application')
                 return '' + n;
             }
 
-            return function (delay) {
+            return function (delay, template) {
 
-                var hours   = Math.floor(delay / 3600);
+                pattern = template || pattern;
+
+                var hours = Math.floor(delay / 3600);
                 var minutes = Math.floor((delay - (hours * 3600)) / 60);
                 var seconds = delay - (hours * 3600) - (minutes * 60);
 
