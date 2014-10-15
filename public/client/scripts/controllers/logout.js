@@ -7,11 +7,13 @@ angular.module('application')
         '$scope',
         '$location',
         'socketsService',
+        'sessionManagerService',
 
-        function ($scope, $location, socketsService) {
-
-            socketsService.closeConnection();
-            $location.path('/');
+        function ($scope, $location, socketsService, sessionManagerService) {
+            sessionManagerService.logout(function () {
+                socketsService.closeConnection();
+                $location.path('/');
+            });
         }
     ]
 );

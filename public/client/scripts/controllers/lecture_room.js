@@ -307,7 +307,14 @@ angular.module('application')
             }
 
             function quit() {
-                $location.path('/lectures-list');
+                dialogsService.showConfirmation({
+                    title: "Вихід",
+                    message: "Ви дійсно хочете покинути лекцію?",
+                    onAccept: function (closeCallback) {
+                        closeCallback();
+                        $location.path('/lectures-list');
+                    }
+                });
             }
 
             $scope.$on('$destroy', function () {

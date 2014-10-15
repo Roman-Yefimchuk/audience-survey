@@ -94,6 +94,8 @@
 
                 if (lecture) {
                     lecture.name = data.name;
+                    lecture.author = data.author;
+                    lecture.description = data.description;
 
                     lecture.save(function (error, lecture) {
 
@@ -132,6 +134,18 @@
             });
         }
 
+        function wrapLecture(lecture, author) {
+            return {
+                id: extractPropertyId(lecture),
+                name: lecture.name,
+                authorId: lecture.authorId,
+                author: author,
+                description: lecture.description,
+                statisticCharts: lecture.statisticCharts,
+                status: lecture.status
+            };
+        }
+
         function getLecturesByAuthorId(authorId, callback) {
 
             LectureModel.find({
@@ -148,27 +162,26 @@
 
                     var authorId = lecture.authorId;
 
-                    UserModel.findById(authorId, function (error, user) {
+                    if (lecture.author) {
 
-                        if (error) {
-                            throw error;
-                        }
+                        result.push(wrapLecture(lecture, lecture.author));
+                        next();
+                    } else {
+                        UserModel.findById(authorId, function (error, user) {
 
-                        if (user) {
+                            if (error) {
+                                throw error;
+                            }
 
-                            result.push({
-                                id: extractPropertyId(lecture),
-                                name: lecture.name,
-                                author: user.name,
-                                statisticCharts: lecture.statisticCharts,
-                                status: lecture.status
-                            });
+                            if (user) {
 
-                            next();
-                        } else {
-                            throw 'Author not found';
-                        }
-                    });
+                                result.push(wrapLecture(lecture, user.name));
+                                next();
+                            } else {
+                                throw 'Author not found';
+                            }
+                        });
+                    }
                 }, function () {
                     callback(result);
                 });
@@ -186,21 +199,18 @@
                 if (lecture) {
 
                     var authorId = lecture.authorId;
+                    if (lecture.author) {
 
-                    try {
-                        getUserById(authorId, function (user) {
-                            callback({
-                                id: extractPropertyId(lecture),
-                                name: lecture.name,
-                                author: {
-                                    id: user.id,
-                                    name: user.name
-                                },
-                                status: lecture.status
+                        callback(wrapLecture(lecture, lecture.author));
+                    } else {
+
+                        try {
+                            getUserById(authorId, function (user) {
+                                callback(wrapLecture(lecture, user.name));
                             });
-                        });
-                    } catch (e) {
-                        throw 'Author not found';
+                        } catch (e) {
+                            throw 'Author not found';
+                        }
                     }
                 } else {
                     throw 'Lecture not found';

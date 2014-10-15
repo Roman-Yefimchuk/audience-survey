@@ -39,10 +39,10 @@ angular.module('application')
                         }
                     });
                 },
-                showFeedback: function (options) {
+                showLectureEditor: function (options) {
                     return open({
-                        templateUrl: '/client/views/controllers/dialogs/feedback-view.html',
-                        controller: 'FeedbackDialogController',
+                        templateUrl: '/client/views/controllers/dialogs/lecture-editor-dialog-view.html',
+                        controller: 'LectureEditorDialogController',
                         backdrop: 'static',
                         keyboard: false,
                         resolve: {

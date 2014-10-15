@@ -20,11 +20,18 @@ angular.module('application')
                         url: '/get-user-data'
                     }, handler);
                 },
-                logout: function (handler) {
+                logout: function (callback) {
                     httpClientService.sendRequest({
                         method: 'GET',
                         url: '/logout'
-                    }, handler);
+                    }, {
+                        success: function () {
+                            callback();
+                        },
+                        failure: function () {
+                            callback();
+                        }
+                    });
                 }
             };
         }

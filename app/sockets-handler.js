@@ -518,6 +518,12 @@ module.exports = function (io, dbProvider, developmentMode) {
                 var question = lecture.teacherQuestions[questionId];
 
                 if (question) {
+                    var answers = question.answers;
+                    answers.push({
+                        userId: userId,
+                        answer: answer
+                    });
+                } else {
                     question = {
                         answers: [
                             {
@@ -527,12 +533,6 @@ module.exports = function (io, dbProvider, developmentMode) {
                         ]
                     };
                     lecture.teacherQuestions[questionId] = question;
-                } else {
-                    var answers = question.answers;
-                    answers.push({
-                        userId: userId,
-                        answer: answer
-                    });
                 }
 
                 sendBroadcast('update_question_info', {
@@ -542,7 +542,7 @@ module.exports = function (io, dbProvider, developmentMode) {
                 }, lectureId);
 
                 dbProvider.getLectureById(lectureId, function (lecture) {
-                    var authorId = lecture.author['id'];
+                    var authorId = lecture.authorId;
 
                     var socketSession = findSocketSessionByUserId(authorId);
                     if (socketSession) {

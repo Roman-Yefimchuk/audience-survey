@@ -58,15 +58,21 @@ angular.module('application')
             }
 
             function editLecture(lecture) {
-                dialogsService.showItemEditor({
-                    dialogTitle: 'Редагувати назву лекції',
-                    itemTitle: lecture.name,
-                    onUpdate: function (name, closeCallback) {
+                dialogsService.showLectureEditor({
+                    name: lecture.name,
+                    author: lecture.author,
+                    description: lecture.description,
+                    onSave: function (model, closeCallback) {
                         apiService.updateLecture(lecture.id, {
-                            name: name
+                            name: model.name,
+                            author: model.author,
+                            description: model.description
                         }, {
                             success: function () {
-                                lecture.name = name;
+                                lecture.name = model.name;
+                                lecture.author = model.author;
+                                lecture.description = model.description;
+
                                 closeCallback();
                             }
                         });

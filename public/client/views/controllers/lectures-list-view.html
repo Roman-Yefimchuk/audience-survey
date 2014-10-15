@@ -2,6 +2,19 @@
 
     <div class="col-sm-8 col-sm-offset-2 column">
 
+        <div style="margin-bottom: 15px;">
+
+            <div class="text-right">
+                <i class="fa fa-user"></i>
+
+                    <span>
+                        <b>{{ user.name }}</b>,
+                    </span>
+
+                <a href="/#/logout">Вихід</a>
+            </div>
+        </div>
+
         <section class="panel tasks-widget" style="padding: 15px">
 
             <div class="panel-body" style="padding: 0;">
@@ -17,7 +30,7 @@
                                 <div class="row clearfix">
                                     <div class="col-md-12">
                                         <div>
-                                            Тема: <br/> "<b>{{ lecture.name }}</b>"<br/>Автор <br/> <b>{{ lecture.author['name'] || lecture.author }}</b>
+                                            Тема: <br/> "<b>{{ lecture.name }}</b>"<br/>Автор <br/> <b>{{ lecture.author }}</b>
                                         </div>
                                     </div>
 

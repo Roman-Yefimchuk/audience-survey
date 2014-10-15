@@ -2,6 +2,24 @@
 
     <div class="col-sm-8 col-sm-offset-2 column">
 
+        <div class="row clearfix" style="margin-bottom: 15px;">
+
+            <span class="col-md-6 text-left">
+                <i class="fa fa-reply"></i>
+                <a href="/#/administration">Назад</a>
+            </span>
+
+            <div class="col-md-6 text-right">
+                <i class="fa fa-user"></i>
+
+                    <span>
+                        <b>{{ user.name }}</b>,
+                    </span>
+
+                <a href="/#/logout">Вихід</a>
+            </div>
+        </div>
+
         <section class="panel tasks-widget" style="padding: 15px">
 
             <form ng-submit="addQuestion()">

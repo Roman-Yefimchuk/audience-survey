@@ -150,7 +150,10 @@ angular.module('application')
                 var socketConnection = $scope.socketConnection;
                 socketConnection.askQuestion(lectureId, question);
 
+                question.answers = [];
                 question.isAsked = true;
+
+                addActivityItem('Ви задали запитання: ' + question.title);
             }
 
             function showAnsweredListeners(question) {
@@ -271,23 +274,6 @@ angular.module('application')
                 });
 
                 $scope.$on('socketsService:updateQuestionInfo', function (event, data) {
-
-                    var isAsked = data['isAsked'];
-                    if (isAsked) {
-                        var questionId = data['questionId'];
-                        var answers = data['answers'];
-
-                        var question = findQuestionById(questionId);
-                        if (question) {
-                            $timeout(function () {
-                                question.isAsked = true;
-                                question.answers = answers;
-                            });
-                        }
-                    }
-                });
-
-                $scope.$on('socketsService:questionAsked', function (event, data) {
 
                     var isAsked = data['isAsked'];
                     if (isAsked) {
