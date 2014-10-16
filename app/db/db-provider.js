@@ -96,6 +96,7 @@
                     lecture.name = data.name;
                     lecture.author = data.author;
                     lecture.description = data.description;
+                    lecture.additionalLinks = data.additionalLinks;
 
                     lecture.save(function (error, lecture) {
 
@@ -142,7 +143,8 @@
                 author: author,
                 description: lecture.description,
                 statisticCharts: lecture.statisticCharts,
-                status: lecture.status
+                status: lecture.status,
+                additionalLinks: lecture.additionalLinks
             };
         }
 

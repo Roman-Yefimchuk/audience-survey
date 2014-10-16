@@ -2,9 +2,14 @@
 
     <div class="col-sm-12 column">
 
-        <div style="margin-bottom: 15px;">
+        <div class="row clearfix" style="margin-bottom: 15px;">
 
-            <div class="text-right">
+            <span class="col-md-6 pull-left">
+                <i class="fa fa-reply"></i>
+                <a href="/#/administration">Назад</a>
+            </span>
+
+            <div class="col-md-6 pull-right">
                 <i class="fa fa-user"></i>
 
                     <span>
@@ -13,7 +18,6 @@
 
                 <a href="/#/logout">Вихід</a>
             </div>
-
         </div>
 
         <div class="text-center col-md-12" style="margin-top: 15px;margin-bottom: 15px;">
@@ -42,28 +46,28 @@
 
                         <div style="margin-top: -2px;margin-left: -7px;padding-right: 7px;">
 
-                            <div class="btn btn-success btn-xs"
+                            <div class="btn btn-success"
                                  tooltip="Розпочати лекцію"
                                  ng-click="startLecture(lecture)"
                                  ng-show="lecture.status == 'stopped'">
                                 <i class="fa fa-play"></i>
                             </div>
 
-                            <div class="btn btn-primary btn-xs"
+                            <div class="btn btn-primary"
                                  tooltip="Продовжити лекцію"
                                  ng-click="resumeLecture(lecture)"
                                  ng-show="lecture.status == 'suspended'">
                                 <i class="fa fa-play"></i>
                             </div>
 
-                            <div class="btn btn-primary btn-xs"
+                            <div class="btn btn-primary"
                                  tooltip="Зробити паузу"
                                  ng-click="suspendLecture(lecture)"
                                  ng-show="lecture.status == 'started'">
                                 <i class="fa fa-pause"></i>
                             </div>
 
-                            <div class="btn btn-danger btn-xs"
+                            <div class="btn btn-danger"
                                  tooltip="Зупинити лекцію"
                                  ng-click="stopLecture(lecture)"
                                  ng-show="lecture.status == 'started' || lecture.status == 'suspended'">
@@ -83,11 +87,9 @@
 
                     <tabset style="margin-left: 15px;margin-right: 15px;">
                         <tab ng-repeat="tab in tabs" select="setActiveTab(tab)" active="tab.isActive"
-                             style="cursor: pointer" class="text-center">
+                             style="width: 60px;cursor: pointer" class="text-center">
                             <tab-heading>
                                 <i class="fa {{ tab.icon }}"></i>
-                                &nbsp;
-                                {{ tab.title }}
                             </tab-heading>
                             <div ng-include="tab.templateUrl" class="col-md-12 col-xs-12"
                                  style="border: 1px solid #ddd;margin-top: -1px;padding: 15px;

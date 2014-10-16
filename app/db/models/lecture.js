@@ -11,6 +11,7 @@
         author: {type: String},
         description: {type: String},
         statisticCharts: [StatisticChart['schema']],
+        additionalLinks: {type: String},
         status: {type: String, 'default': 'stopped'}
     });
 

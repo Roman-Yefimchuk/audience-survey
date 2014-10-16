@@ -62,16 +62,19 @@ angular.module('application')
                     name: lecture.name,
                     author: lecture.author,
                     description: lecture.description,
+                    additionalLinks: lecture.additionalLinks,
                     onSave: function (model, closeCallback) {
                         apiService.updateLecture(lecture.id, {
                             name: model.name,
                             author: model.author,
-                            description: model.description
+                            description: model.description,
+                            additionalLinks: model.additionalLinks
                         }, {
                             success: function () {
                                 lecture.name = model.name;
                                 lecture.author = model.author;
                                 lecture.description = model.description;
+                                lecture.additionalLinks = model.additionalLinks;
 
                                 closeCallback();
                             }
