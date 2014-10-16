@@ -24,6 +24,9 @@ angular.module('application')
             }
 
             function quickSingUp() {
+
+                return;
+
                 $scope.name = 'Роман Єфімчук';
                 $scope.password = 'qwerty';
 

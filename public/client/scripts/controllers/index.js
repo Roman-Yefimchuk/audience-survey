@@ -18,6 +18,9 @@ angular.module('application')
             $scope.showLoader = showLoader;
 
             $scope.quickUserLogin = function () {
+
+                return;
+
                 loaderService.showLoader();
 
                 apiService.login({
