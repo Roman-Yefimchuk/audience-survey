@@ -52,10 +52,10 @@ angular.module('application')
                         }
                     });
                 },
-                showItemEditor: function (options) {
+                showQuestionEditor: function (options) {
                     return open({
-                        templateUrl: '/client/views/controllers/dialogs/item-editor-view.html',
-                        controller: 'ItemEditorController',
+                        templateUrl: '/client/views/controllers/dialogs/question-editor/question-editor-view.html',
+                        controller: 'QuestionEditorController',
                         backdrop: 'static',
                         keyboard: false,
                         resolve: {

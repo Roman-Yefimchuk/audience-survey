@@ -26,9 +26,6 @@ angular.module('application')
             }
 
             function quickLogin() {
-
-                return;
-
                 if (DEBUG_MODE) {
                     $scope.name = 'Роман Єфімчук';
                     $scope.password = 'qwerty';

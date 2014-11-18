@@ -132,10 +132,10 @@ module.exports = function (app, dbProvider, serviceProvider) {
 
         checkAuthenticated(request);
 
-        var title = request.body['title'];
         var lectureId = request.body['lectureId'];
+        var questionModel = request.body['questionModel'];
 
-        dbProvider.createQuestion(title, lectureId, function (questionId) {
+        dbProvider.createQuestion(lectureId, questionModel, function (questionId) {
             resultCallback({
                 data: {
                     questionId: questionId
@@ -149,9 +149,9 @@ module.exports = function (app, dbProvider, serviceProvider) {
         checkAuthenticated(request);
 
         var questionId = request.params['questionId'];
-        var title = request.body['title'];
+        var questionModel = request.body['questionModel'];
 
-        dbProvider.updateQuestion(questionId, title, function () {
+        dbProvider.updateQuestion(questionId, questionModel, function () {
             resultCallback();
         });
     });

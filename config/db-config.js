@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = {
-    url: 'mongodb://localhost:27017/db/local',
+    url: 'mongodb://Yefimchuk.Roma:qwerty@ds055680.mongolab.com:55680/audience_survey',
     users: [
         {
             name: 'Роман Єфімчук',

@@ -31,11 +31,23 @@ angular.module('application')
 
                 var questionTitle = $scope['newQuestion'].trim();
                 if (questionTitle) {
-                    apiService.createQuestion(lectureId, questionTitle, {
+                    apiService.createQuestion(lectureId, {
+                        title: questionTitle,
+                        type: 'default',
+                        data: {
+                            yes: 'Так',
+                            no: 'Ні'
+                        }
+                    }, {
                         success: function (response) {
                             questions.push({
                                 id: response.questionId,
-                                title: questionTitle
+                                title: questionTitle,
+                                type: 'default',
+                                data: {
+                                    yes: 'Так',
+                                    no: 'Ні'
+                                }
                             });
                             $scope.newQuestion = '';
                         }
@@ -44,13 +56,23 @@ angular.module('application')
             }
 
             function editQuestion(question) {
-                dialogsService.showItemEditor({
-                    dialogTitle: 'Редагувати запитання',
-                    itemTitle: question.title,
-                    onUpdate: function (title, closeCallback) {
-                        apiService.updateQuestion(question.id, title, {
+                dialogsService.showQuestionEditor({
+                    editorTitle: 'Редагувати запитання',
+                    questionModel: {
+                        title: question.title,
+                        type: question.type,
+                        data: question.data
+                    },
+                    onSave: function (questionModel, closeCallback) {
+                        apiService.updateQuestion(question.id, {
+                            title: questionModel.title,
+                            type: questionModel.type,
+                            data: questionModel.data
+                        }, {
                             success: function () {
-                                question.title = title;
+                                question.title = questionModel.title;
+                                question.type = questionModel.type;
+                                question.data = questionModel.data;
                                 closeCallback();
                             }
                         });

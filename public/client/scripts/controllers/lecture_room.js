@@ -22,6 +22,17 @@ angular.module('application')
 
             var lectureId = $routeParams.lectureId;
 
+            var answerForms = {
+                'default': '/client/views/controllers/lecture-room/tabs/answer-forms/default/' +
+                    'substrate-view.html',
+                'single-choice': '/client/views/controllers/lecture-room/tabs/answer-forms/multi-choice/' +
+                    'substrate-view.html',
+                'multi-choice': '/client/views/controllers/lecture-room/tabs/answer-forms/single-choice/' +
+                    'substrate-view.html',
+                'range': '/client/views/controllers/lecture-room/tabs/answer-forms/range/' +
+                    'substrate-view.html'
+            };
+
             var pieModel = [
                 {
                     value: 0,
@@ -206,6 +217,8 @@ angular.module('application')
                         teacherQuestions.push({
                             id: question.id,
                             title: question.title,
+                            type: question.type,
+                            data: question.data,
                             answer: undefined
                         });
 
@@ -330,6 +343,7 @@ angular.module('application')
                 $rootScope.$broadcast('suspendDialog:close');
             });
 
+            $scope.answerForms = answerForms;
             $scope.activityCollection = activityCollection;
             $scope.message = message;
             $scope.teacherQuestions = teacherQuestions;

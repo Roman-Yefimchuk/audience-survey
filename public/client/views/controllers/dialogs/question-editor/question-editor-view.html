@@ -5,7 +5,7 @@
         <h4 style="margin-bottom: 0;margin-top: 0;">
             <i class="fa fa-pencil"></i>
             &nbsp;
-            {{ dialogTitle }}
+            {{ editorTitle }}
         </h4>
     </div>
 
@@ -14,6 +14,27 @@
         <form ng-submit="save()">
 
             <div class="row clearfix">
+
+                <div class="col-md-12 column text-right" style="margin-bottom: 15px;">
+
+                    Вибрати тип запитання:
+
+                    <div class="btn-group btn-group-sm" dropdown is-open="status.isopen">
+                        <button type="button" class="btn btn-primary dropdown-toggle">
+                            {{ editorForms[model.type].title }}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                            <li ng-repeat="(type, form) in editorForms">
+                                <a href ng-click="model.type = type">
+                                    {{ form.title }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
                 <div class="col-md-12 column">
 
                     <div class="form-group-sm" ng-class="{ 'has-feedback' : !!model.title }"
@@ -33,6 +54,8 @@
                 </div>
             </div>
 
+            <div ng-include="editorForms[model.type].substrateView" style="margin-top: 15px;">
+            </div>
 
         </form>
 
@@ -43,8 +66,7 @@
             &nbsp;
             Відміна
         </span>
-        <span class="btn btn-primary btn-sm" ng-click="save()"
-              ng-class="{ 'disabled' : !canSaveItem() }">
+        <span class="btn btn-primary btn-sm" ng-click="save()">
             <i class="fa fa-floppy-o"></i>
             &nbsp;
             Зберегти

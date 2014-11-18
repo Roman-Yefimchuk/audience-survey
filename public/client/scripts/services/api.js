@@ -92,21 +92,21 @@ angular.module('application')
                         url: '/api/lectures/' + lectureId + '/update-status'
                     }, handler);
                 },
-                createQuestion: function (lectureId, title, handler) {
+                createQuestion: function (lectureId, questionModel, handler) {
                     httpClientService.sendRequest({
                         method: 'POST',
                         data: {
                             lectureId: lectureId,
-                            title: title
+                            questionModel: questionModel
                         },
                         url: '/api/questions/create'
                     }, handler);
                 },
-                updateQuestion: function (questionId, title, handler) {
+                updateQuestion: function (questionId, questionModel, handler) {
                     httpClientService.sendRequest({
                         method: 'POST',
                         data: {
-                            title: title
+                            questionModel: questionModel
                         },
                         url: '/api/questions/' + questionId + '/update'
                     }, handler);

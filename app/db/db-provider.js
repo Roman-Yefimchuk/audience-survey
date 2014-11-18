@@ -362,10 +362,12 @@
             });
         }
 
-        function createQuestion(title, lectureId, callback) {
+        function createQuestion(lectureId, questionModel, callback) {
             var question = new QuestionModel({
-                title: title,
-                lectureId: lectureId
+                title: questionModel.title,
+                lectureId: lectureId,
+                type: questionModel.type,
+                data: JSON.stringify(questionModel.data)
             });
 
             question.save(function (error, model) {
@@ -378,7 +380,7 @@
             });
         }
 
-        function updateQuestion(questionId, title, callback) {
+        function updateQuestion(questionId, questionModel, callback) {
             QuestionModel.findById(questionId, function (error, model) {
 
                 if (error) {
@@ -387,7 +389,10 @@
 
                 if (model) {
 
-                    model.title = title;
+                    model.title = questionModel.title;
+                    model.type = questionModel.type;
+                    model.data = JSON.stringify(questionModel.data);
+
                     model.save(function (error) {
 
                         if (error) {
@@ -440,7 +445,9 @@
                         id: extractPropertyId(question),
                         title: question.title,
                         lectureId: question.lectureId,
-                        creationDate: question.creationDate
+                        creationDate: question.creationDate,
+                        type: question.type,
+                        data: JSON.parse(question.data)
                     });
                 });
 
@@ -460,7 +467,9 @@
                         id: questionId,
                         title: model.title,
                         lectureId: model.lectureId,
-                        creationDate: model.creationDate
+                        creationDate: model.creationDate,
+                        type: model.type,
+                        data: JSON.parse(model.data)
                     });
                 } else {
                     throw 'Question not found';
