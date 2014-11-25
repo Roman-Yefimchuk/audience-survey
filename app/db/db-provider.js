@@ -2,137 +2,174 @@
 
 (function (require) {
 
-    module.exports = function (developmentMode) {
+    module.exports = function (db) {
+
+        var RECORD_ID_PATTERN = /^\#\-?\d+\:\d+$/;
+        var SYSTEM_ID_PATTERN = /^\@.+/;
 
         var _ = require('underscore');
+
         var asyncEach = require('../utils/async-each');
+        var security = require('../utils/security');
 
-        var ObjectID = require('mongodb')['ObjectID'];
-
-        var ChartPointModel = require('./models/chart-point');
-        var TimeMarkerModel = require('./models/time-marker');
-        var LectureModel = require('./models/lecture');
-        var QuestionModel = require('./models/question');
-        var StatisticChartModel = require('./models/statistic-chart');
-        var UserModel = require('./models/user');
+        var encodeBase64 = security.encodeBase64;
+        var decodeBase64 = security.decodeBase64;
+        var forEach = _.forEach;
 
         function extractPropertyId(property) {
-            return property['_id'].toString();
-        }
-
-        function createUser(data, callback) {
-
-            var user = new UserModel({
-                name: data.name,
-                password: data.password,
-                role: data.role
-            });
-
-            user.save(function (error, user) {
-
-                if (error) {
-                    throw error;
-                }
-
-                callback({
-                    userId: extractPropertyId(user),
-                    name: user.name,
-                    password: user.password,
-                    role: user.role
-                });
-            });
-        }
-
-        function findUser(name, callback) {
-
-            UserModel.findOne({
-                name: name
-            }, function (error, user) {
-
-                if (error) {
-                    throw error;
-                }
-
-                if (user) {
-                    callback({
-                        userId: extractPropertyId(user),
-                        name: user.name,
-                        password: user.password,
-                        role: user.role
-                    });
-                } else {
-                    callback();
-                }
-            });
+            if (property) {
+                return (property['rid'] || property['@rid']).toString();
+            }
         }
 
         function createLecture(data, callback) {
 
-            var lecture = new LectureModel({
-                name: data.name,
-                authorId: data.authorId
-            });
+            var successCallback = callback.success;
+            var failureCallback = callback.failure;
 
-            lecture.save(function (error, lecture) {
-
-                if (error) {
-                    throw error;
-                }
-
-                var lectureId = extractPropertyId(lecture);
-                callback(lectureId);
+            getUserById(data.authorId, {
+                success: function (user) {
+                    db.query("" +
+                        "INSERT INTO Lecture (name, authorId, author, status)" +
+                        "VALUES (:name, :authorId, :author, 'stopped') ", {
+                        params: {
+                            name: data.name,
+                            authorId: data.authorId,
+                            author: user.displayName
+                        }
+                    }).then(function (results) {
+                        if (results.length > 0) {
+                            var lectureId = extractPropertyId(results[0]);
+                            successCallback(lectureId);
+                        } else {
+                            successCallback();
+                        }
+                    }).catch(function (error) {
+                        failureCallback(error);
+                    });
+                },
+                failure: failureCallback
             });
         }
 
         function updateLecture(lectureId, data, callback) {
-
-            LectureModel.findById(lectureId, function (error, lecture) {
-
-                if (error) {
-                    throw error;
+            db.query("" +
+                "UPDATE Lecture " +
+                "SET name = :name, author = :author, description = :description, additionalLinks = :additionalLinks " +
+                "WHERE @rid = :lectureId", {
+                params: {
+                    name: data.name,
+                    author: data.author,
+                    description: data.description,
+                    additionalLinks: data.additionalLinks,
+                    lectureId: lectureId
                 }
-
-                if (lecture) {
-                    lecture.name = data.name;
-                    lecture.author = data.author;
-                    lecture.description = data.description;
-                    lecture.additionalLinks = data.additionalLinks;
-
-                    lecture.save(function (error, lecture) {
-
-                        if (error) {
-                            throw error;
-                        }
-
-                        callback();
-                    });
-                } else {
-                    throw 'Lecture not found';
-                }
+            }).then(function (results) {
+                callback.success();
+            }).catch(function (error) {
+                callback.failure(error);
             });
         }
 
         function removeLecture(lectureId, callback) {
-
-            LectureModel.findById(lectureId, function (error, lecture) {
-
-                if (error) {
-                    throw error;
+            db.query("" +
+                "DELETE FROM Lecture " +
+                "WHERE @rid = :lectureId", {
+                params: {
+                    lectureId: lectureId
                 }
-
-                if (lecture) {
-                    lecture.remove(function (error) {
-
-                        if (error) {
-                            throw error;
-                        }
-
-                        callback();
-                    });
-                } else {
-                    throw 'Lecture not found';
-                }
+            }).then(function (total) {
+                callback.success();
+            }).catch(function (error) {
+                callback.failure(error);
             });
+        }
+
+        function loadStatisticForLecture(lectureId, callback) {
+
+            var successCallback = callback.success;
+            var failureCallback = callback.failure;
+
+            successCallback([]);
+
+            /*            LectureModel.findById(lectureId, function (error, model) {
+
+             if (error) {
+             throw error;
+             }
+
+             if (model) {
+             var statisticCharts = model.statisticCharts;
+             callback(statisticCharts);
+             } else {
+             throw 'Lecture not found';
+             }
+             });*/
+        }
+
+        function saveStatisticForLecture(lectureId, data, callback) {
+
+            var successCallback = callback.success;
+            var failureCallback = callback.failure;
+
+            successCallback();
+            /*
+             var date = data.date;
+             var chartPoints = data.chartPoints;
+             var timeline = data.timeline;
+             var totalDuration = data.totalDuration;
+
+             function getChartPoints() {
+             var result = [];
+
+             _.forEach(chartPoints, function (chartPoint) {
+             result.push(new ChartPointModel(chartPoint));
+             });
+
+             return result;
+             }
+
+             function getTimeline() {
+             var result = [];
+
+             _.forEach(timeline, function (timeMarker) {
+             result.push(new TimeMarkerModel(timeMarker));
+             });
+
+             return result;
+             }
+
+             var statisticChart = new StatisticChartModel({
+             date: date,
+             chartPoints: getChartPoints(),
+             timeline: getTimeline(),
+             totalDuration: totalDuration
+             });
+
+             LectureModel.findById(lectureId, function (error, model) {
+
+             if (error) {
+             throw error;
+             }
+
+             if (model) {
+             var statisticChartModel = new StatisticChartModel({
+             date: date,
+             chartPoints: getChartPoints(),
+             timeline: getTimeline(),
+             totalDuration: totalDuration
+             });
+
+             var statisticCharts = model.statisticCharts;
+             statisticCharts.push(statisticChartModel);
+
+             model.save(function (error, model) {
+             callback();
+             });
+             } else {
+             throw 'Lecture not found';
+             }
+             });*/
         }
 
         function wrapLecture(lecture, author) {
@@ -149,321 +186,229 @@
         }
 
         function getLecturesByAuthorId(authorId, callback) {
-
-            LectureModel.find({
-                authorId: authorId
-            }, function (error, lectures) {
-
-                if (error) {
-                    throw error;
+            db.query("" +
+                "SELECT * " +
+                "FROM Lecture " +
+                "WHERE authorId = :authorId", {
+                params: {
+                    authorId: authorId
                 }
+            }).then(function (results) {
 
                 var result = [];
 
-                asyncEach(lectures, function (lecture, index, next) {
-
-                    var authorId = lecture.authorId;
-
-                    if (lecture.author) {
-
-                        result.push(wrapLecture(lecture, lecture.author));
-                        next();
-                    } else {
-                        UserModel.findById(authorId, function (error, user) {
-
-                            if (error) {
-                                throw error;
-                            }
-
-                            if (user) {
-
-                                result.push(wrapLecture(lecture, user.name));
-                                next();
-                            } else {
-                                throw 'Author not found';
-                            }
-                        });
-                    }
+                asyncEach(results, function (activeLecture, index, next) {
+                    getUserById(authorId, {
+                        success: function (user) {
+                            result.push(wrapLecture(activeLecture, user.displayName));
+                            next();
+                        },
+                        failure: function (error) {
+                            result.push(wrapLecture(activeLecture, 'UNKNOWN USER'));
+                            next();
+                        }
+                    });
                 }, function () {
-                    callback(result);
+                    callback.success(result);
                 });
+            }).catch(function (error) {
+                callback.failure(error);
             });
         }
 
         function getLectureById(lectureId, callback) {
 
-            LectureModel.findById(lectureId, function (error, lecture) {
+            var successCallback = callback.success;
 
-                if (error) {
-                    throw error;
+            db.query("" +
+                "SELECT * " +
+                "FROM Lecture " +
+                "WHERE @rid = :lectureId", {
+                params: {
+                    lectureId: lectureId
                 }
+            }).then(function (results) {
+                var lecture = results[0];
+                var authorId = lecture.authorId;
 
-                if (lecture) {
-
-                    var authorId = lecture.authorId;
-                    if (lecture.author) {
-
-                        callback(wrapLecture(lecture, lecture.author));
-                    } else {
-
-                        try {
-                            getUserById(authorId, function (user) {
-                                callback(wrapLecture(lecture, user.name));
-                            });
-                        } catch (e) {
-                            throw 'Author not found';
-                        }
+                getUserById(authorId, {
+                    success: function (user) {
+                        successCallback(wrapLecture(lecture, user.displayName));
+                    },
+                    failure: function (error) {
+                        successCallback(wrapLecture(lecture, 'UNKNOWN USER'));
                     }
-                } else {
-                    throw 'Lecture not found';
-                }
-            });
-        }
-
-        function loadStatisticForLecture(lectureId, callback) {
-            LectureModel.findById(lectureId, function (error, model) {
-
-                if (error) {
-                    throw error;
-                }
-
-                if (model) {
-                    var statisticCharts = model.statisticCharts;
-                    callback(statisticCharts);
-                } else {
-                    throw 'Lecture not found';
-                }
-            });
-        }
-
-        function saveStatisticForLecture(lectureId, data, callback) {
-
-            var date = data.date;
-            var chartPoints = data.chartPoints;
-            var timeline = data.timeline;
-            var totalDuration = data.totalDuration;
-
-            function getChartPoints() {
-                var result = [];
-
-                _.forEach(chartPoints, function (chartPoint) {
-                    result.push(new ChartPointModel(chartPoint));
                 });
-
-                return result;
-            }
-
-            function getTimeline() {
-                var result = [];
-
-                _.forEach(timeline, function (timeMarker) {
-                    result.push(new TimeMarkerModel(timeMarker));
-                });
-
-                return result;
-            }
-
-            var statisticChart = new StatisticChartModel({
-                date: date,
-                chartPoints: getChartPoints(),
-                timeline: getTimeline(),
-                totalDuration: totalDuration
-            });
-
-            LectureModel.findById(lectureId, function (error, model) {
-
-                if (error) {
-                    throw error;
-                }
-
-                if (model) {
-                    var statisticChartModel = new StatisticChartModel({
-                        date: date,
-                        chartPoints: getChartPoints(),
-                        timeline: getTimeline(),
-                        totalDuration: totalDuration
-                    });
-
-                    var statisticCharts = model.statisticCharts;
-                    statisticCharts.push(statisticChartModel);
-
-                    model.save(function (error, model) {
-                        callback();
-                    });
-                } else {
-                    throw 'Lecture not found';
-                }
+            }).catch(function (error) {
+                callback.failure(error);
             });
         }
 
         function getActiveLectures(callback) {
+            db.query("" +
+                "SELECT * " +
+                "FROM Lecture " +
+                "WHERE status <> 'stopped'", {
+            }).then(function (results) {
 
-            var result = [];
+                var result = [];
 
-            LectureModel.find({
-                status: {
-                    $ne: 'stopped'
-                }
-            }, function (error, activeLecturesCollection) {
-
-                if (error) {
-                    throw error;
-                }
-
-                asyncEach(activeLecturesCollection, function (activeLecture, index, next) {
+                asyncEach(results, function (activeLecture, index, next) {
 
                     var authorId = activeLecture.authorId;
 
-                    UserModel.findById(authorId, function (error, user) {
-
-                        if (error) {
-                            throw error;
-                        }
-
-                        if (user) {
-                            result.push({
-                                id: extractPropertyId(activeLecture),
-                                name: activeLecture.name,
-                                author: user.name,
-                                status: activeLecture.status
-                            });
-
+                    getUserById(authorId, {
+                        success: function (user) {
+                            result.push(wrapLecture(activeLecture, user.displayName));
                             next();
-                        } else {
-                            throw 'Author not found';
+                        },
+                        failure: function (error) {
+                            result.push(wrapLecture(activeLecture, 'UNKNOWN USER'));
+                            next();
                         }
                     });
                 }, function () {
-                    callback(result);
+                    callback.success(result);
                 });
+            }).catch(function (error) {
+                callback.failure(error);
             });
         }
 
         function updateLectureStatus(lectureId, status, callback) {
 
-            LectureModel.findById(lectureId, function (error, lecture) {
+            var failureCallback = callback.failure;
 
-                if (error) {
-                    throw error;
+            db.query("" +
+                "SELECT COUNT(*) AS count " +
+                "FROM Lecture " +
+                "WHERE @rid = :lectureId", {
+                params: {
+                    lectureId: lectureId
                 }
+            }).then(function (results) {
+                if (results[0].count > 0) {
 
-                if (lecture) {
-                    if (lecture.status != status) {
-                        lecture.status = status;
-                        lecture.save(function (error, lecture) {
-                            callback();
-                        });
-                    } else {
-                        callback();
-                    }
+                    db.query("" +
+                        "UPDATE Lecture " +
+                        "SET status = :status " +
+                        "WHERE @rid = :lectureId", {
+                        params: {
+                            lectureId: lectureId,
+                            status: status
+                        }
+                    }).then(function (total) {
+                        callback.success();
+                    }).catch(function (error) {
+                        failureCallback(error);
+                    });
+
                 } else {
-                    throw 'Lecture not found';
+                    failureCallback('Lecture not found');
                 }
+            }).catch(function (error) {
+                failureCallback(error);
             });
         }
 
         function createQuestion(lectureId, questionModel, callback) {
-            var question = new QuestionModel({
-                title: questionModel.title,
-                lectureId: lectureId,
-                type: questionModel.type,
-                data: JSON.stringify(questionModel.data)
-            });
-
-            question.save(function (error, model) {
-                if (error) {
-                    throw error;
+            db.query("" +
+                "INSERT INTO Question (title, lectureId, creationDate, type, data) " +
+                "VALUES (:title, :lectureId, :creationDate, :type, :data)", {
+                params: {
+                    title: questionModel.title,
+                    lectureId: lectureId,
+                    creationDate: _.now(),
+                    type: questionModel.type,
+                    data: JSON.stringify(questionModel.data)
                 }
-
-                var questionId = extractPropertyId(model);
-                callback(questionId);
+            }).then(function (results) {
+                var questionId = extractPropertyId(results[0]);
+                callback.success(questionId);
+            }).catch(function (error) {
+                callback.failure(error);
             });
         }
 
         function updateQuestion(questionId, questionModel, callback) {
-            QuestionModel.findById(questionId, function (error, model) {
-
-                if (error) {
-                    throw error;
+            db.query("" +
+                "UPDATE Question " +
+                "SET title = :title, type = :type, data = :data " +
+                "WHERE @rid = :questionId", {
+                params: {
+                    title: questionModel.title,
+                    type: questionModel.type,
+                    data: JSON.stringify(questionModel.data),
+                    questionId: questionId
                 }
-
-                if (model) {
-
-                    model.title = questionModel.title;
-                    model.type = questionModel.type;
-                    model.data = JSON.stringify(questionModel.data);
-
-                    model.save(function (error) {
-
-                        if (error) {
-                            throw error;
-                        }
-
-                        callback();
-                    });
-                } else {
-                    throw 'Question not found';
-                }
+            }).then(function (total) {
+                callback.success();
+            }).catch(function (error) {
+                callback.failure(error);
             });
         }
 
         function removeQuestion(questionId, callback) {
-            QuestionModel.findById(questionId, function (error, model) {
-
-                if (error) {
-                    throw  error;
+            db.query("" +
+                "DELETE FROM Question " +
+                "WHERE @rid = :questionId", {
+                params: {
+                    questionId: questionId
                 }
-
-                if (model) {
-                    model.remove(function (error) {
-
-                        if (error) {
-                            throw error;
-                        }
-
-                        callback();
-                    });
-                } else {
-                    throw 'Question not found';
-                }
+            }).then(function (total) {
+                callback.success();
+            }).catch(function (error) {
+                callback.failure(error);
             });
         }
 
         function getQuestionsByLectureId(lectureId, callback) {
-            QuestionModel.find({
-                lectureId: lectureId
-            }, function (error, questions) {
-
-                if (error) {
-                    throw error;
+            db.query("" +
+                "SELECT * " +
+                "FROM Question " +
+                "WHERE lectureId = :lectureId", {
+                params: {
+                    lectureId: lectureId
                 }
+            }).then(function (results) {
 
                 var result = [];
 
-                _.forEach(questions, function (question) {
-                    result.push({
-                        id: extractPropertyId(question),
-                        title: question.title,
-                        lectureId: question.lectureId,
-                        creationDate: question.creationDate,
-                        type: question.type,
-                        data: JSON.parse(question.data)
+                if (results.length > 0) {
+                    _.forEach(results, function (question) {
+                        result.push({
+                            id: extractPropertyId(question),
+                            title: question.title,
+                            lectureId: question.lectureId,
+                            creationDate: question.creationDate,
+                            type: question.type,
+                            data: JSON.parse(question.data)
+                        });
                     });
-                });
+                }
 
-                callback(result);
+                callback.success(result);
+            }).catch(function (error) {
+                callback.failure(error);
             });
         }
 
         function getQuestionById(questionId, callback) {
-            QuestionModel.findById(questionId, function (error, model) {
 
-                if (error) {
-                    throw error;
+            var failureCallback = callback.failure;
+
+            db.query("" +
+                "SELECT * " +
+                "FROM Question " +
+                "WHERE @rid = :questionId", {
+                params: {
+                    questionId: questionId
                 }
+            }).then(function (results) {
+                if (results.length > 0) {
+                    var model = results[0];
 
-                if (model) {
-                    callback({
+                    callback.success({
                         id: questionId,
                         title: model.title,
                         lectureId: model.lectureId,
@@ -472,27 +417,38 @@
                         data: JSON.parse(model.data)
                     });
                 } else {
-                    throw 'Question not found';
+                    failureCallback('Question not found');
                 }
+            }).catch(function (error) {
+                failureCallback(error);
             });
         }
 
         function getUserById(userId, callback) {
-            UserModel.findById(userId, function (error, model) {
 
-                if (error) {
-                    throw error;
+            var failureCallback = callback.failure;
+
+            db.query("" +
+                "SELECT displayName, role " +
+                "FROM User " +
+                "WHERE @rid = :userId", {
+                params: {
+                    userId: userId
                 }
+            }).then(function (results) {
+                if (results.length > 0) {
+                    var user = results[0];
 
-                if (model) {
-                    callback({
-                        id: userId,
-                        name: model.name,
-                        role: model.role
+                    callback.success({
+                        id: extractPropertyId(user),
+                        name: user.displayName,
+                        role: user.role
                     });
                 } else {
-                    throw 'User not found';
+                    failureCallback('User not found');
                 }
+            }).catch(function (error) {
+                failureCallback(error);
             });
         }
 
@@ -501,37 +457,395 @@
 
             asyncEach(ids, function (userId, index, next) {
 
-                getUserById(userId, function (user) {
-                    result.push(user);
-                    next();
+                getUserById(userId, {
+                    success: function (user) {
+                        result.push(user);
+                        next();
+                    },
+                    failure: function (error) {
+                        next();
+                    }
                 });
             }, function () {
-                callback(result);
+                callback.success(result);
+            });
+        }
+
+
+        function isSystemId(id) {
+            if (id) {
+                return SYSTEM_ID_PATTERN.test(id);
+            }
+            return false;
+        }
+
+        function decodeId(id) {
+            if (isSystemId(id)) {
+                return id;
+            } else {
+                if (id) {
+                    return decodeBase64(id);
+                }
+            }
+        }
+
+        function encodeId(id) {
+            if (isSystemId(id)) {
+                return id;
+            } else {
+                if (id) {
+                    return encodeBase64(id);
+                }
+            }
+        }
+
+        function decodeObject(object, properties) {
+            if (object) {
+                forEach(properties, function (property) {
+                    object[property] = decodeId(object[property]);
+                });
+            }
+        }
+
+        function encodeObject(object, properties) {
+            if (object) {
+                forEach(properties, function (property) {
+                    object[property] = encodeId(object[property]);
+                });
+            }
+        }
+
+        function getAccountEncoder(callback) {
+            return {
+                success: function (user) {
+
+                    encodeObject(user, [
+                        'userId'
+                    ]);
+
+                    callback.success(user);
+                },
+                failure: function (error) {
+                    callback.failure(error);
+                }
+            };
+        }
+
+
+        function formatParams(data, options) {
+            var result = '';
+            var mode = options && options.mode;
+            var excludedKeys = options && options.excludedKeys;
+
+            forEach(data, function (value, key) {
+                if (!_.contains(excludedKeys, key)) {
+                    if (result.length > 0) {
+                        result += ', ';
+                    }
+                    switch (mode) {
+                        case 'keys':
+                        {
+                            result += key;
+                            break;
+                        }
+                        case 'values':
+                        {
+                            result += ':' + key;
+                            break;
+                        }
+                        default :
+                        {
+                            result += key + ' = :' + key;
+                            break;
+                        }
+                    }
+                }
+            });
+
+            return result;
+        }
+
+        function wrapUser(user) {
+            if (user) {
+                return {
+                    userId: extractPropertyId(user),
+                    role: user.role,
+                    genericId: user.genericId,
+                    displayName: user.displayName,
+                    password: user.password,
+                    email: user.email,
+                    token: user.token,
+                    authorizationProvider: user.authorizationProvider,
+                    registeredDate: user.registeredDate,
+                    isAuthenticated: function () {
+                        return !!user.token;
+                    },
+                    update: function (accountData, callback) {
+
+                        var successCallback = callback.success;
+                        var failureCallback = callback.failure;
+
+                        forEach([
+                            'genericId',
+                            'displayName',
+                            'password',
+                            'email',
+                            'token',
+                            'authorizationProvider'
+                        ], function (key) {
+                            if (key in accountData) {
+                                user[key] = accountData[key];
+                            }
+                        });
+
+                        db.query("" +
+                            "UPDATE User " +
+                            "SET " + formatParams(accountData) + " " +
+                            "WHERE @rid = " + extractPropertyId(user), {
+                            params: accountData
+                        }).then(function (results) {
+                            successCallback(wrapUser(user));
+                        }).catch(function (error) {
+                            failureCallback(error);
+                        });
+                    }
+                };
+            }
+        }
+
+        function createUser(data, callback) {
+
+            var failureCallback = callback.failure;
+
+            try {
+                forEach([
+                    'genericId',
+                    'displayName',
+                    'password',
+                    'token',
+                    'authorizationProvider',
+                    'registeredDate'
+                ], function (key) {
+                    if (!(key in data)) {
+                        throw "Missing property '" + key + "'";
+                    }
+                });
+            } catch (e) {
+                failureCallback(e);
+            }
+
+            db.query("" +
+                "INSERT INTO User (role, genericId, displayName, password, email, token, authorizationProvider, registeredDate) " +
+                "VALUES (:role, :genericId, :displayName, :password, :email, :token, :authorizationProvider, :registeredDate)", {
+                params: {
+                    role: data.role || 'user',
+                    genericId: data.genericId,
+                    displayName: data.displayName,
+                    password: data.password,
+                    email: data.email || '',
+                    token: data.token,
+                    authorizationProvider: data.authorizationProvider,
+                    registeredDate: data.registeredDate
+                }
+            }).then(function (results) {
+                var user = wrapUser(results[0]);
+                callback.success(user);
+            }).catch(function (error) {
+                failureCallback(error);
+            });
+        }
+
+        function findUser(genericId, callback) {
+
+            var successCallback = callback.success;
+
+            db.query("" +
+                "SELECT * " +
+                "FROM User " +
+                "WHERE genericId = :genericId", {
+                params: {
+                    genericId: genericId
+                }
+            }).then(function (results) {
+                if (results.length > 0) {
+                    var user = wrapUser(results[0]);
+                    successCallback(user);
+                } else {
+                    successCallback();
+                }
+            }).catch(function (error) {
+                callback.failure(error);
             });
         }
 
         return {
-            createUser: createUser,
-            findUser: findUser,
+            createUser: function (data, callback) {
+                createUser(data, getAccountEncoder(callback));
+            },
+            findUser: function (genericId, callback) {
+                findUser(genericId, getAccountEncoder(callback));
+            },
+            createLecture: function (data, callback) {
 
-            createLecture: createLecture,
-            updateLecture: updateLecture,
-            removeLecture: removeLecture,
-            getLecturesByAuthorId: getLecturesByAuthorId,
-            getLectureById: getLectureById,
+                decodeObject(data, [
+                    'authorId'
+                ]);
+
+                createLecture(data, {
+                    success: function (lectureId) {
+                        lectureId = encodeId(lectureId);
+                        callback.success(lectureId);
+                    },
+                    failure: callback.failure
+                });
+            },
+            updateLecture: function (lectureId, data, callback) {
+                lectureId = decodeId(lectureId);
+                updateLecture(lectureId, data, callback);
+            },
+            removeLecture: function (lectureId, callback) {
+                lectureId = decodeId(lectureId);
+                removeLecture(lectureId, callback);
+            },
             loadStatisticForLecture: loadStatisticForLecture,
             saveStatisticForLecture: saveStatisticForLecture,
-            getActiveLectures: getActiveLectures,
-            updateLectureStatus: updateLectureStatus,
+            getLecturesByAuthorId: function (authorId, callback) {
+                authorId = decodeId(authorId);
+                getLecturesByAuthorId(authorId, {
+                    success: function (lectures) {
 
-            createQuestion: createQuestion,
-            updateQuestion: updateQuestion,
-            removeQuestion: removeQuestion,
-            getQuestionsByLectureId: getQuestionsByLectureId,
-            getQuestionById: getQuestionById,
+                        forEach(lectures, function (lecture) {
+                            encodeObject(lecture, [
+                                'id',
+                                'authorId'
+                            ]);
+                        });
 
-            getUserById: getUserById,
-            getUsersById: getUsersById
+                        callback.success(lectures);
+                    },
+                    failure: callback.failure
+                })
+            },
+            getLectureById: function (lectureId, callback) {
+                lectureId = decodeId(lectureId);
+                getLectureById(lectureId, {
+                    success: function (lecture) {
+
+                        encodeObject(lecture, [
+                            'id',
+                            'authorId'
+                        ]);
+
+                        callback.success(lecture);
+                    },
+                    failure: callback.failure
+                });
+            },
+            getActiveLectures: function (callback) {
+                getActiveLectures({
+                    success: function (lectures) {
+
+                        forEach(lectures, function (lecture) {
+                            encodeObject(lecture, [
+                                'id',
+                                'authorId'
+                            ]);
+                        });
+
+                        callback.success(lectures);
+                    },
+                    failure: callback.failure
+                });
+            },
+            updateLectureStatus: function (lectureId, status, callback) {
+                lectureId = decodeId(lectureId);
+                updateLectureStatus(lectureId, status, callback);
+            },
+            createQuestion: function (lectureId, questionModel, callback) {
+                lectureId = decodeId(lectureId);
+                createQuestion(lectureId, questionModel, {
+                    success: function (questionId) {
+                        questionId = encodeId(questionId);
+                        callback.success(questionId);
+                    },
+                    failure: callback.failure
+                });
+            },
+            updateQuestion: function (questionId, questionModel, callback) {
+                questionId = decodeId(questionId);
+                updateQuestion(questionId, questionModel, callback);
+            },
+            removeQuestion: function (questionId, callback) {
+                questionId = decodeId(questionId);
+                removeQuestion(questionId, callback);
+            },
+            getQuestionsByLectureId: function (lectureId, callback) {
+
+                lectureId = decodeId(lectureId);
+
+                getQuestionsByLectureId(lectureId, {
+                    success: function (questions) {
+                        forEach(questions, function (question) {
+                            encodeObject(question, [
+                                'id',
+                                'lectureId'
+                            ]);
+                        });
+
+                        callback.success(questions);
+                    },
+                    failure: callback.failure
+                });
+            },
+            getQuestionById: function (questionId, callback) {
+
+                questionId = decodeId(questionId);
+
+                getQuestionById(questionId, {
+                    success: function (question) {
+
+                        encodeObject(question, [
+                            'id',
+                            'lectureId'
+                        ]);
+
+                        callback.success(question);
+                    },
+                    failure: callback.failure
+                });
+            },
+            getUserById: function (userId, callback) {
+                userId = decodeId(userId);
+
+                getUserById(userId, {
+                    success: function (user) {
+                        callback.success({
+                            id: encodeId(user.id),
+                            name: user.displayName,
+                            role: user.role
+                        });
+                    },
+                    failure: callback.failure
+                });
+            },
+            getUsersById: function (ids, callback) {
+
+                forEach(ids, function (id, index) {
+                    ids[index] = decodeId(id);
+                });
+
+                getUsersById(ids, {
+                    success: function (users) {
+                        forEach(users, function (user) {
+                            encodeObject(user, [
+                                'id'
+                            ]);
+                        });
+                        callback.success(users);
+                    },
+                    failure: callback.failure
+                });
+            }
         };
     };
 

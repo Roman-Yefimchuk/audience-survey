@@ -2,64 +2,60 @@
 
 (function (require) {
 
-    var mongoose = require('mongoose');
-    var dbConfig = require('../../config/db-config');
-
     module.exports = {
-        connect: function (callback, developmentMode) {
-            mongoose.connect(dbConfig['url']);
+        connect: function (callback) {
 
-            var db = mongoose['connection'];
+            var databaseConfig = require('../../config/database-config');
+            var Oriento = require('oriento');
 
-            db.on('error', function (error) {
-                console.log('connection error: ' + error.message);
+            var server = Oriento({
+                host: databaseConfig.host,
+                port: databaseConfig.port,
+                username: databaseConfig.server_username,
+                password: databaseConfig.server_password
             });
 
-            db.once('open', function () {
-                console.log("Connected to DB!");
+            var db = server.use({
+                name: databaseConfig.db_name,
+                username: databaseConfig.db_username,
+                password: databaseConfig.db_password
+            });
 
-                var dbProvider = require('./db-provider')(developmentMode);
+            var dbWrapper = (function () {
 
-                var users = dbConfig.users;
+                var _ = require('underscore');
 
-                if (users.length) {
+                function formatCommand(command, params) {
+                    var formattedCommand = command;
 
-                    var asyncEach = require('../utils/async-each');
-                    var security = require('../utils/security');
+                    _.forEach(params, function (value, key) {
 
-                    var UserModel = require('../db/models/user');
+                        if (value != undefined) {
+                            var pattern = new RegExp(':' + key, 'g');
 
-                    asyncEach(users, function (user, index, next) {
-
-                        UserModel.findOne({
-                            name: user.name
-                        }, function (error, model) {
-                            if (model) {
-                                next();
+                            if (typeof value == 'string') {
+                                formattedCommand = formattedCommand.replace(pattern, "'" + value + "'");
                             } else {
-
-                                var name = user.name;
-                                var password = user.password;
-                                var role = user.role;
-
-                                model = new UserModel({
-                                    name: name,
-                                    password: security.generateHash(password),
-                                    role: role
-                                });
-
-                                model.save(function (error, model) {
-                                    next()
-                                });
+                                formattedCommand = formattedCommand.replace(pattern, value);
                             }
-                        });
-                    }, function () {
-                        callback(dbProvider);
+                        }
                     });
-                } else {
-                    callback(dbProvider);
+
+                    return formattedCommand;
                 }
-            });
+
+                return {
+                    query: function (command, options) {
+                        options = options || {};
+                        command = formatCommand(command, options.params);
+                        options.params = null;
+                        return db.query(command, options);
+                    }
+                }
+            })();
+
+            var dbProvider = require('./db-provider')(dbWrapper);
+            callback(dbProvider);
         }
     };
 

@@ -10,8 +10,9 @@ angular.module('application')
         'apiService',
         'NAME_PATTERN',
         'PASSWORD_PATTERN',
+        'DEBUG_MODE',
 
-        function ($scope, $location, loaderService, apiService, NAME_PATTERN, PASSWORD_PATTERN) {
+        function ($scope, $location, loaderService, apiService, NAME_PATTERN, PASSWORD_PATTERN, DEBUG_MODE) {
 
             function isNameValid() {
                 var name = ($scope.name || '');
@@ -23,28 +24,38 @@ angular.module('application')
                 return PASSWORD_PATTERN.test(password) && $scope.password == $scope.retypedPassword;
             }
 
-            function quickSingUp() {
+            function quickUserSignUp() {
 
-                return;
-
-                $scope.name = 'Роман Єфімчук';
+                $scope.name = 'User';
                 $scope.password = 'qwerty';
 
-                $scope.$watch('name', function () {
-                    $scope.signUp();
-                });
+                signUp('user');
             }
 
-            function signUp() {
+            function quickAdminSignUp() {
+
+                $scope.name = 'Admin';
+                $scope.password = 'qwerty';
+
+                signUp('admin');
+            }
+
+            function signUp(role) {
 
                 loaderService.showLoader();
 
                 apiService.signUp({
                     name: $scope.name,
-                    password: $scope.password
+                    password: $scope.password,
+                    role: role || 'user'
                 }, {
                     success: function (response) {
-                        $location.path('/lectures-list');
+                        var user = response.user;
+                        if (user.role == 'admin') {
+                            $location.path('/administration');
+                        } else {
+                            $location.path('/lectures-list');
+                        }
                     },
                     failure: function (error) {
                         $scope.errorMessage = error.message;
@@ -57,11 +68,14 @@ angular.module('application')
             $scope.name = "";
             $scope.password = "";
             $scope.retypedPassword = "";
+            $scope.DEBUG_MODE = DEBUG_MODE;
 
             $scope.isNameValid = isNameValid;
             $scope.isPasswordValid = isPasswordValid;
-            $scope.quickSingUp = quickSingUp;
             $scope.signUp = signUp;
+
+            $scope.quickUserSignUp = quickUserSignUp;
+            $scope.quickAdminSignUp = quickAdminSignUp;
         }
     ]
 );

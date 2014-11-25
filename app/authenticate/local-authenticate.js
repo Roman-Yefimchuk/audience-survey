@@ -2,7 +2,7 @@
 
 (function (require) {
 
-    module.exports = function (app, passport, dbProvider, developmentMode) {
+    module.exports = function (app, passport) {
 
         var Exception = require('../exception');
         var JSON = require('json3');
@@ -46,7 +46,7 @@
 
                                     var getUser = function () {
                                         return {
-                                            name: user.name,
+                                            name: user.displayName,
                                             role: user.role
                                         }
                                     };

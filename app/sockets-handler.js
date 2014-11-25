@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function (io, dbProvider, developmentMode) {
+module.exports = function (io, dbProvider) {
 
     var _ = require('underscore');
     var socketsSession = {};
@@ -119,8 +119,13 @@ module.exports = function (io, dbProvider, developmentMode) {
 
                 startTimer(context);
 
-                dbProvider.updateLectureStatus(id, 'started', function () {
-                    onStartedCallback(context);
+                dbProvider.updateLectureStatus(id, 'started', {
+                    success: function () {
+                        onStartedCallback(context);
+                    },
+                    failure: function (error) {
+                        console.log(error);
+                    }
                 });
             },
             resumeLecture: function (onResumeCallback) {
@@ -141,8 +146,13 @@ module.exports = function (io, dbProvider, developmentMode) {
 
                 startTimer(context);
 
-                dbProvider.updateLectureStatus(id, 'started', function () {
-                    onResumeCallback(context);
+                dbProvider.updateLectureStatus(id, 'started', {
+                    success: function () {
+                        onResumeCallback(context);
+                    },
+                    failure: function (error) {
+                        console.log(error);
+                    }
                 });
             },
             suspendLecture: function (onSuspendedCallback) {
@@ -163,8 +173,13 @@ module.exports = function (io, dbProvider, developmentMode) {
 
                 stopTimer(context);
 
-                dbProvider.updateLectureStatus(id, 'suspended', function () {
-                    onSuspendedCallback(context);
+                dbProvider.updateLectureStatus(id, 'suspended', {
+                    success: function () {
+                        onSuspendedCallback(context);
+                    },
+                    failure: function (error) {
+                        console.log(error);
+                    }
                 });
             },
             stopLecture: function (onStoppedCallback) {
@@ -186,20 +201,30 @@ module.exports = function (io, dbProvider, developmentMode) {
 
                 stopTimer(context);
 
-                dbProvider.updateLectureStatus(id, 'stopped', function () {
+                dbProvider.updateLectureStatus(id, 'stopped', {
+                    success: function () {
 
-                    var lectureId = context.id;
-                    var chartPoints = context.chartPoints;
-                    var timeline = context.timeline;
+                        var lectureId = context.id;
+                        var chartPoints = context.chartPoints;
+                        var timeline = context.timeline;
 
-                    dbProvider.saveStatisticForLecture(lectureId, {
-                        date: context.getDate(),
-                        chartPoints: chartPoints,
-                        timeline: timeline,
-                        totalDuration: context.getTotalDuration()
-                    }, function () {
-                        onStoppedCallback(context);
-                    });
+                        dbProvider.saveStatisticForLecture(lectureId, {
+                            date: context.getDate(),
+                            chartPoints: chartPoints,
+                            timeline: timeline,
+                            totalDuration: context.getTotalDuration()
+                        }, {
+                            success: function () {
+                                onStoppedCallback(context);
+                            },
+                            failure: function (error) {
+                                console.log(error);
+                            }
+                        });
+                    },
+                    failure: function (error) {
+                        console.log(error);
+                    }
                 });
             },
             getDuration: function () {
@@ -541,16 +566,21 @@ module.exports = function (io, dbProvider, developmentMode) {
                     answers: question.answers
                 }, lectureId);
 
-                dbProvider.getLectureById(lectureId, function (lecture) {
-                    var authorId = lecture.authorId;
+                dbProvider.getLectureById(lectureId, {
+                    success: function (lecture) {
+                        var authorId = lecture.authorId;
 
-                    var socketSession = findSocketSessionByUserId(authorId);
-                    if (socketSession) {
-                        socketSession.sendCommand('update_question_info', {
-                            isAsked: true,
-                            questionId: questionId,
-                            answers: question.answers
-                        });
+                        var socketSession = findSocketSessionByUserId(authorId);
+                        if (socketSession) {
+                            socketSession.sendCommand('update_question_info', {
+                                isAsked: true,
+                                questionId: questionId,
+                                answers: question.answers
+                            });
+                        }
+                    },
+                    failure: function (error) {
+                        console.log(error);
                     }
                 });
             }
@@ -658,7 +688,7 @@ module.exports = function (io, dbProvider, developmentMode) {
         on('update_chart', function (data) {
             var lectureId = data.lectureId;
             var lecture = findLectureById(lectureId);
-            if(lecture){
+            if (lecture) {
                 lecture.updateChart();
             }
         });

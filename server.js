@@ -90,10 +90,15 @@
             }
         });
 
-        require('./app/authenticate/local-authenticate')(app, passport, dbProvider, developmentMode);
-        require('./app/sockets-handler')(io, dbProvider, developmentMode);
+        require('./app/authenticate/local-authenticate')(app, passport);
+        require('./app/authenticate/external-authenticate')(app, passport, {
+            successRedirect: '/#/lectures-list',
+            failureRedirect: '/'
+        });
 
-        var serviceProvider = require('./app/providers/services-provider')(app, developmentMode);
+        require('./app/sockets-handler')(io, dbProvider);
+
+        var serviceProvider = require('./app/providers/services-provider')(app);
         require('./app/services')(app, dbProvider, serviceProvider);
         require('./app/session-manager')(app, dbProvider, serviceProvider);
 

@@ -25,14 +25,21 @@ angular.module('application')
                 return PASSWORD_PATTERN.test(password);
             }
 
-            function quickLogin() {
+            function quickUserLogin() {
                 if (DEBUG_MODE) {
-                    $scope.name = 'Роман Єфімчук';
+                    $scope.name = 'User';
                     $scope.password = 'qwerty';
 
-                    $scope.$watch('email', function () {
-                        login();
-                    });
+                    login();
+                }
+            }
+
+            function quickAdminLogin() {
+                if (DEBUG_MODE) {
+                    $scope.name = 'Admin';
+                    $scope.password = 'qwerty';
+
+                    login();
                 }
             }
 
@@ -62,11 +69,14 @@ angular.module('application')
             $scope.errorMessage = null;
             $scope.name = "";
             $scope.password = "";
+            $scope.DEBUG_MODE = DEBUG_MODE;
 
             $scope.isNameValid = isNameValid;
             $scope.isPasswordValid = isPasswordValid;
-            $scope.quickLogin = quickLogin;
             $scope.login = login;
+
+            $scope.quickUserLogin = quickUserLogin;
+            $scope.quickAdminLogin = quickAdminLogin;
         }
     ]
 );

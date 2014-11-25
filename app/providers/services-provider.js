@@ -2,7 +2,7 @@
 
 (function (require) {
 
-    module.exports = function (app, developmentMode) {
+    module.exports = function (app) {
 
         var Exception = require('../exception');
         var JSON = require('json3');

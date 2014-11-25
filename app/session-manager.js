@@ -30,7 +30,7 @@ module.exports = function (app, dbProvider, serviceProvider) {
             resultCallback({
                 data: {
                     userId: user.userId,
-                    name: user.name,
+                    name: user.displayName,
                     role: user.role
                 }
             });

@@ -1,7 +1,7 @@
 <div class="panel col-sm-4 col-sm-offset-4" style="margin-top: 15px">
 
     <h1>
-        <span class="fa fa-sign-in" ng-click="quickLogin()">
+        <span class="fa fa-sign-in">
         </span>
         Увійти
     </h1>
@@ -60,6 +60,12 @@
 
     <p>
         Або перейти <a href="#/">додому</a>
+    </p>
+
+    <p ng-show="DEBUG_MODE">
+        <a href ng-click="quickUserLogin()">Quick User Login</a>
+        <br>
+        <a href ng-click="quickAdminLogin()">Quick Admin Login</a>
     </p>
 
 </div>
