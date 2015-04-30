@@ -9,14 +9,20 @@ angular.module('application')
         'loaderService',
         'apiService',
         'NAME_PATTERN',
+        'EMAIL_PATTERN',
         'PASSWORD_PATTERN',
         'DEBUG_MODE',
 
-        function ($scope, $location, loaderService, apiService, NAME_PATTERN, PASSWORD_PATTERN, DEBUG_MODE) {
+        function ($scope, $location, loaderService, apiService, NAME_PATTERN, EMAIL_PATTERN, PASSWORD_PATTERN, DEBUG_MODE) {
 
             function isNameValid() {
                 var name = ($scope.name || '');
                 return NAME_PATTERN.test(name);
+            }
+
+            function isEmailValid() {
+                var email = ($scope.email || '');
+                return EMAIL_PATTERN.test(email);
             }
 
             function isPasswordValid() {
@@ -27,6 +33,7 @@ angular.module('application')
             function quickUserSignUp() {
 
                 $scope.name = 'User';
+                $scope.email = 'user@test.com';
                 $scope.password = 'qwerty';
 
                 signUp('user');
@@ -35,6 +42,7 @@ angular.module('application')
             function quickAdminSignUp() {
 
                 $scope.name = 'Admin';
+                $scope.email = 'admin@test.com';
                 $scope.password = 'qwerty';
 
                 signUp('admin');
@@ -46,6 +54,7 @@ angular.module('application')
 
                 apiService.signUp({
                     name: $scope.name,
+                    email: $scope.email,
                     password: $scope.password,
                     role: role || 'user'
                 }, {
@@ -71,6 +80,7 @@ angular.module('application')
             $scope.DEBUG_MODE = DEBUG_MODE;
 
             $scope.isNameValid = isNameValid;
+            $scope.isEmailValid = isEmailValid;
             $scope.isPasswordValid = isPasswordValid;
             $scope.signUp = signUp;
 

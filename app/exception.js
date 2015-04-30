@@ -18,7 +18,7 @@ module.exports = (function () {
     Exception.INVALID_PASSWORD = 'INVALID_PASSWORD';
     Exception.IO_EXCEPTION = 'IO_EXCEPTION';
     Exception.USER_NOT_FOUND = 'USER_NOT_FOUND';
-    Exception.NAME_ALREADY_EXIST = 'NAME_ALREADY_EXIST';
+    Exception.EMAIL_ALREADY_EXIST = 'EMAIL_ALREADY_EXIST';
 
     return Exception;
 })();

@@ -306,4 +306,39 @@ module.exports = function (app, dbProvider, serviceProvider) {
             }
         });
     });
+
+    serviceProvider.get('/api/users/:userId/profile', function (request, response, resultCallback) {
+
+        checkAuthenticated(request);
+
+        var userId = request.params['userId'];
+
+        dbProvider.getUserProfile(userId, {
+            success: function (userProfile) {
+                resultCallback({
+                    data: userProfile
+                });
+            },
+            failure: function (error) {
+                throw error;
+            }
+        });
+    });
+
+    serviceProvider.post('/api/users/:userId/profile/update', function (request, response, resultCallback) {
+
+        checkAuthenticated(request);
+
+        var userId = request.params['userId'];
+        var data = request.body['data'];
+
+        dbProvider.updateUserProfile(userId, data, {
+            success: function () {
+                resultCallback();
+            },
+            failure: function (error) {
+                throw error;
+            }
+        });
+    });
 };

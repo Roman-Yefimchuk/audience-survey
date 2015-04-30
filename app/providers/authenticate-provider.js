@@ -35,14 +35,14 @@
         // =========================================================================
 
         passport.use('local-login', new LocalStrategy({
-            usernameField: 'name',
+            usernameField: 'email',
             passwordField: 'password',
             passReqToCallback: true
-        }, function (request, name, password, done) {
+        }, function (request, email, password, done) {
 
             process.nextTick(function () {
 
-                dbProvider.findUser(name, {
+                dbProvider.findUser(email, {
                     success: function (user) {
                         if (user) {
                             if (security.validPassword(user, password)) {
@@ -69,10 +69,10 @@
         // =========================================================================
 
         passport.use('local-sign-up', new LocalStrategy({
-            usernameField: 'name',
+            usernameField: 'email',
             passwordField: 'password',
             passReqToCallback: true
-        }, function (request, name, password, done) {
+        }, function (request, email, password, done) {
 
             process.nextTick(function () {
 
@@ -80,20 +80,21 @@
                     return security.randomString();
                 }
 
-                dbProvider.findUser(name, {
+                dbProvider.findUser(email, {
                     success: function (user) {
 
                         if (user) {
-                            var error = new Exception(Exception.NAME_ALREADY_EXIST, 'That name is already taken.');
+                            var error = new Exception(Exception.EMAIL_ALREADY_EXIST, 'That email is already taken.');
                             return done(null, null, error);
                         }
 
                         if (request.user) {
                             user = request.user;
                             user.update({
-                                displayName: name,
+                                displayName: request.body['name'],
                                 password: security.generateHash(password),
-                                token: generateToken()
+                                token: generateToken(),
+                                email: email
                             }, {
                                 success: function (user) {
                                     done(null, user);
@@ -106,8 +107,9 @@
                         } else {
                             dbProvider.createUser({
                                 role: request.body['role'] || 'user',
-                                genericId: name,
-                                displayName: name,
+                                genericId: email,
+                                displayName: request.body['name'],
+                                email: email,
                                 password: security.generateHash(password),
                                 token: generateToken(),
                                 authorizationProvider: 'local',

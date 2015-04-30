@@ -143,6 +143,21 @@ angular.module('application')
                         },
                         url: '/api/users/get-by-id'
                     }, handler);
+                },
+                getUserProfile: function (userId, handler) {
+                    httpClientService.sendRequest({
+                        method: 'GET',
+                        url: '/api/users/' + userId + '/profile'
+                    }, handler);
+                },
+                updateUserProfile: function (userId, data, handler) {
+                    httpClientService.sendRequest({
+                        method: 'POST',
+                        data: {
+                            data: data
+                        },
+                        url: '/api/users/' + userId + '/profile/update'
+                    }, handler);
                 }
             };
         }

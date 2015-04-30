@@ -103,6 +103,19 @@ angular.module('application')
                             }
                         }
                     });
+                },
+                showProfileEditor: function (options) {
+                    return open({
+                        templateUrl: '/client/views/controllers/dialogs/profile-editor-dialog-view.html',
+                        controller: 'ProfileEditorDialogController',
+                        backdrop: 'static',
+                        keyboard: false,
+                        resolve: {
+                            options: function () {
+                                return options;
+                            }
+                        }
+                    });
                 }
             };
         }

@@ -9,15 +9,15 @@ angular.module('application')
         '$location',
         'apiService',
         'loaderService',
-        'NAME_PATTERN',
+        'EMAIL_PATTERN',
         'PASSWORD_PATTERN',
         'DEBUG_MODE',
 
-        function ($scope, $rootScope, $location, apiService, loaderService, NAME_PATTERN, PASSWORD_PATTERN, DEBUG_MODE) {
+        function ($scope, $rootScope, $location, apiService, loaderService, EMAIL_PATTERN, PASSWORD_PATTERN, DEBUG_MODE) {
 
-            function isNameValid() {
-                var name = ($scope['name'] || '').toLowerCase();
-                return NAME_PATTERN.test(name);
+            function isEmailValid() {
+                var email = ($scope['email'] || '').toLowerCase();
+                return EMAIL_PATTERN.test(email);
             }
 
             function isPasswordValid() {
@@ -27,7 +27,7 @@ angular.module('application')
 
             function quickUserLogin() {
                 if (DEBUG_MODE) {
-                    $scope.name = 'User';
+                    $scope.email = 'user@test.com';
                     $scope.password = 'qwerty';
 
                     login();
@@ -36,7 +36,7 @@ angular.module('application')
 
             function quickAdminLogin() {
                 if (DEBUG_MODE) {
-                    $scope.name = 'Admin';
+                    $scope.email = 'admin@test.com';
                     $scope.password = 'qwerty';
 
                     login();
@@ -48,7 +48,7 @@ angular.module('application')
                 loaderService.showLoader();
 
                 apiService.login({
-                    name: $scope.name,
+                    email: $scope.email,
                     password: $scope.password
                 }, {
                     success: function (response) {
@@ -67,11 +67,11 @@ angular.module('application')
             }
 
             $scope.errorMessage = null;
-            $scope.name = "";
+            $scope.email = "";
             $scope.password = "";
             $scope.DEBUG_MODE = DEBUG_MODE;
 
-            $scope.isNameValid = isNameValid;
+            $scope.isEmailValid = isEmailValid;
             $scope.isPasswordValid = isPasswordValid;
             $scope.login = login;
 

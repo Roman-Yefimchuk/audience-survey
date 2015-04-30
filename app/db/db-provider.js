@@ -471,6 +471,49 @@
             });
         }
 
+        function getUserProfile(userId, callback) {
+            db.query("" +
+                "SELECT displayName AS name, email, sex, birthday " +
+                "FROM User " +
+                "WHERE @rid = :userId", {
+                params: {
+                    userId: userId
+                }
+            }).then(function (results) {
+                if (results.length > 0) {
+                    var userProfile = results[0];
+                    callback.success({
+                        userId: userId,
+                        name: userProfile.name,
+                        email: userProfile.email,
+                        sex: userProfile.sex || 'not_defined',
+                        birthday: userProfile.birthday || 'not_defined'
+                    });
+                } else {
+                    callback.failure("User not found");
+                }
+            }).catch(function (error) {
+                callback.failure(error);
+            });
+        }
+
+        function updateUserProfile(userId, data, callback) {
+            db.query("" +
+                "UPDATE User " +
+                "SET displayName = :name, sex = :sex, birthday = :birthday " +
+                "WHERE @rid = :userId", {
+                params: {
+                    userId: userId,
+                    name: data.name,
+                    sex: data.sex,
+                    birthday: data.birthday == 'not_defined' ? 0 : data.birthday
+                }
+            }).then(function (results) {
+                callback.success();
+            }).catch(function (error) {
+                callback.failure(error);
+            });
+        }
 
         function isSystemId(id) {
             if (id) {
@@ -845,6 +888,24 @@
                     },
                     failure: callback.failure
                 });
+            },
+            getUserProfile: function (userId, callback) {
+                userId = decodeId(userId);
+                getUserProfile(userId, {
+                    success: function (userProfile) {
+
+                        encodeObject(userProfile, [
+                            'userId'
+                        ]);
+
+                        callback.success(userProfile);
+                    },
+                    failure: callback.failure
+                });
+            },
+            updateUserProfile: function (userId, data, callback) {
+                userId = decodeId(userId);
+                updateUserProfile(userId, data, callback);
             }
         };
     };

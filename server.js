@@ -62,12 +62,12 @@
 
                     var url = decodeURIComponent(request.url);
 
-                    if (request.accepts('html')) {
+                    if (request.accepts('text/html')) {
                         response.render('page-not-found.ejs', {
                             requestUrl: url
                         });
                     } else {
-                        if (request.accepts('json')) {
+                        if (request.accepts('application/json')) {
                             response.send({
                                 status: false,
                                 error: {

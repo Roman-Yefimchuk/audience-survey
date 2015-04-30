@@ -21,7 +21,7 @@ angular.module('application')
 
             function ok() {
                 onClose(function () {
-                    $modalInstance.close()
+                    $modalInstance.close();
                 });
             }
 

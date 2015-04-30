@@ -154,23 +154,18 @@ angular.module('application')
 
                             'user_connected': 'userConnected',
                             'user_disconnected': 'userDisconnected',
-
                             'lecture_started': 'lectureStarted',
                             'lecture_resumed': 'lectureResumed',
                             'lecture_suspended': 'lectureSuspended',
                             'lecture_stopped': 'lectureStopped',
                             'update_lecture_duration': 'updateLectureDuration',
                             'update_total_lecture_duration': 'updateTotalLectureDuration',
-
                             'question_asked': 'questionAsked',
                             'update_question_info': 'updateQuestionInfo',
-
                             'update_present_listeners': 'updatePresentListeners',
                             'listener_joined': 'listenerJoined',
                             'listener_has_left': 'listenerHasLeft',
-
                             'on_message': 'onMessage',
-
                             'update_statistic': 'updateStatistic',
                             'update_chart': 'updateChart'
 

@@ -19,15 +19,15 @@
 
         <div class="form-group">
             <label>
-                Ім'я
+                Електронна адреса
             </label>
 
-            <div class="input-group" ng-class="{ 'has-error' : !isNameValid() }">
+            <div class="input-group" ng-class="{ 'has-error' : !isEmailValid() }">
                 <div class="input-group-addon">
-                    <span class="fa fa-user"></span>
+                    <span class="fa fa-at"></span>
                 </div>
-                <input class="form-control" type="text" ng-model="name"
-                       placeholder="Введіть ім'я" autocomplete="off">
+                <input class="form-control" type="text" ng-model="email"
+                       placeholder="Введіть електронну адресу" autocomplete="off">
             </div>
         </div>
 
@@ -46,7 +46,7 @@
         </div>
 
         <span ng-click="login()" class="btn btn-warning"
-              ng-disabled="!(isNameValid() && isPasswordValid())">
+              ng-disabled="!(isEmailValid() && isPasswordValid())">
             Увійти
         </span>
 

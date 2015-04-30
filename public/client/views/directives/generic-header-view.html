@@ -1,0 +1,22 @@
+<div class="row clearfix" style="margin-bottom: 15px;">
+
+    <span ng-show="!!backLink" class="col-md-6 text-left">
+        <i class="fa fa-reply"></i>
+        <a ng-href="{{ backLink }}">Назад</a>
+    </span>
+
+    <div class="text-right"
+         ng-class="{ 'col-md-6' : backLink, 'col-md-12' : !backLink }">
+        <i class="fa fa-user" style="cursor: pointer"
+           tooltip="Редагувати профіль" tooltip-placement="left"
+           ng-click="editProfile()"></i>
+
+            <span>
+                <b>{{ user.name }}</b>,
+            </span>
+
+        <a href="/#/logout">Вихід</a>
+
+    </div>
+
+</div>
