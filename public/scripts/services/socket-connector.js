@@ -7,14 +7,82 @@ angular.module('application')
         '$q',
         '$rootScope',
         '$cookies',
-        'socketEventsListenerService',
 
-        function ($q, $rootScope, $cookies, socketEventsListenerService) {
+        function ($q, $rootScope, $cookies) {
+
+            var SocketEventsListener = (function () {
+
+                function SocketEventsListener() {
+                    _.extend(this, {
+                        $$listeners: []
+                    });
+                }
+
+                SocketEventsListener.prototype = {
+                    constructor: SocketEventsListener,
+                    on: function (obj, listener) {
+
+                        var on = _.bind(function (command) {
+
+                            var namedListeners = this.$$listeners[command];
+
+                            if (!namedListeners) {
+                                this.$$listeners[command] = namedListeners = [];
+                            }
+
+                            var namedListener = function (data) {
+                                listener(data);
+                            };
+
+                            namedListeners.push(namedListener);
+
+                            return _.bind(function () {
+                                this.$$listeners[command] = _.without(namedListeners, namedListener);
+                            }, this);
+                        }, this);
+
+                        if (obj instanceof Array) {
+
+                            return (function (commands) {
+
+                                var removeCallbacks = [];
+
+                                _.forEach(commands, function (command) {
+                                    var removeCallback = on(command);
+                                    removeCallbacks.push(removeCallback);
+                                });
+
+                                return function () {
+                                    _.forEach(removeCallbacks, function (removeCallback) {
+                                        removeCallback();
+                                    });
+                                };
+                            })(obj);
+                        }
+
+                        return (function (command) {
+
+                            return on(command);
+                        })(obj);
+                    },
+                    trigger: function (command, data) {
+
+                        var namedListeners = this.$$listeners[command] || [];
+
+                        _.forEach(namedListeners, function (namedListener) {
+                            namedListener(data);
+                        });
+                    }
+                };
+
+                return SocketEventsListener;
+            })();
 
             var openConnection = function (userId, url) {
 
                 return $q(function (resolve) {
 
+                    var socketEventsListener = new SocketEventsListener();
                     var socket = io(url, {
                         'force new connection': true,
                         'query': "token=" + $cookies.token + '&userId=' + userId
@@ -33,33 +101,33 @@ angular.module('application')
                             'on_listener_joined',
                             'on_listener_went',
                             'on_message_received',
-                            'on_chart_value_changed',
-                            'on_average_understanding_value_changed'
+                            'on_statistic_updated'
                         ], function (command) {
-
                             socket.on(command, function (data) {
-                                socketEventsListenerService.trigger(command, data);
+                                socketEventsListener.trigger(command, data);
                             });
                         });
 
-                        function socketEventsListener() {
-                            socket.close();
-                        }
-
-                        socketEventsListener.on = socketEventsListenerService.on;
-                        socketEventsListener.trigger = socketEventsListenerService.trigger;
-
-                        resolve(socketEventsListener);
+                        resolve({
+                            on: function (command, listener) {
+                                return socketEventsListener.on(command, listener);
+                            },
+                            emit: function (comamnd, data) {
+                                socket.emit(comamnd, data);
+                            },
+                            close: function () {
+                                socket.close();
+                            }
+                        });
                     });
 
                     socket.on('disconnect', function (data) {
-
                         socket.close();
-                        socketEventsListenerService.trigger('disconnect', data);
+                        socketEventsListener.trigger('disconnect', data);
                     });
 
                     socket.on('error', function (error) {
-                        socketEventsListenerService.trigger('error', error);
+                        socketEventsListener.trigger('error', error);
                     });
                 });
             };

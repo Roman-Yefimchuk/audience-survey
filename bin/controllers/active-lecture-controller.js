@@ -154,29 +154,6 @@
                                 });
                         });
                     }
-                },
-                {
-                    route: ':lectureId/sendMessage',
-                    method: 'post',
-                    params: ['userId', 'lectureId', model()],
-                    filters: [
-                        RequestFilter.checkAuthorization(),
-                        RequestFilter.checkOwnerAccess('userId')
-                    ],
-                    handler: function (userId, lectureId, model) {
-
-                        return Promise(function (resolve, reject) {
-
-                            SocketProvider.sendMessage(userId, lectureId, model)
-                                .then(function (status) {
-                                    resolve({
-                                        status: status
-                                    });
-                                }, function (e) {
-                                    reject(e);
-                                });
-                        });
-                    }
                 }
             ]
         });

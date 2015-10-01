@@ -33,18 +33,13 @@ angular.module('application')
                 return httpClientService.get('users/' + userId + '/activeLectures/' + lectureId + '/stop');
             }
 
-            function sendMessage(userId, lectureId, data) {
-                return httpClientService.post('users/' + userId + '/activeLectures/' + lectureId + '/sendMessage', data);
-            }
-
             return {
                 getActiveLectures: getActiveLectures,
                 getActiveLecture: getActiveLecture,
                 startLecture: startLecture,
                 suspendLecture: suspendLecture,
                 resumeLecture: resumeLecture,
-                stopLecture: stopLecture,
-                sendMessage: sendMessage
+                stopLecture: stopLecture
             };
         }
     ]

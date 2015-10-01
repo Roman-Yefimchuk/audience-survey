@@ -121,18 +121,6 @@ angular.module('application')
                     });
             }
 
-            function resumeLecture(lecture) {
-                activeLecturesService.resumeLecture(userId, lecture.id)
-                    .then(function () {
-                        $timeout(function () {
-                            var activeLecture = getActiveLecture(lecture.id);
-                            if (activeLecture) {
-                                activeLecture.status = 'started';
-                            }
-                        });
-                    });
-            }
-
             function suspendLecture(lecture) {
                 activeLecturesService.suspendLecture(userId, lecture.id)
                     .then(function () {
@@ -140,6 +128,18 @@ angular.module('application')
                             var activeLecture = getActiveLecture(lecture.id);
                             if (activeLecture) {
                                 activeLecture.status = 'suspended';
+                            }
+                        });
+                    });
+            }
+
+            function resumeLecture(lecture) {
+                activeLecturesService.resumeLecture(userId, lecture.id)
+                    .then(function () {
+                        $timeout(function () {
+                            var activeLecture = getActiveLecture(lecture.id);
+                            if (activeLecture) {
+                                activeLecture.status = 'started';
                             }
                         });
                     });
@@ -179,8 +179,8 @@ angular.module('application')
             $scope.removeLecture = removeLecture;
 
             $scope.startLecture = startLecture;
-            $scope.resumeLecture = resumeLecture;
             $scope.suspendLecture = suspendLecture;
+            $scope.resumeLecture = resumeLecture;
             $scope.stopLecture = stopLecture;
 
             $scope.clearInput = clearInput;
@@ -207,7 +207,7 @@ angular.module('application')
             ]);
 
             $scope.$on('$destroy', function () {
-                socketEventsListener();
+                socketEventsListener.close();
             });
         }
     ]
