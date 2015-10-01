@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+
+    <link rel="shortcut icon" href="/public/favicon.ico" type="image/vnd.microsoft.icon">
+    <link rel="icon" href="/public/favicon.ico" type="image/vnd.microsoft.icon">
+
+    <link rel="stylesheet" href="/public/libs/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/public/libs/font-awesome/css/font-awesome.css">
+
+    <!--<link rel="stylesheet" href="/public/styles/custom-theme.css">-->
+    <link rel="stylesheet" href="/public/styles/styles.css">
+    <link rel="stylesheet" href="/public/styles/ajax-loader.css">
+
+</head>
+
+<body ng-app="application" ng-cloak>
+
+<div class="container">
+    <div ng-view>
+    </div>
+</div>
+
+<div id="ajax_loader" class="ajax-loader"></div>
+
+<script type="text/javascript" src="/public/libs/json3/lib/json3.js"></script>
+<script type="text/javascript" src="/public/libs/jquery/dist/jquery.js"></script>
+<script type="text/javascript" src="/public/libs/angular/angular.js"></script>
+<script type="text/javascript" src="/public/libs/angular-route/angular-route.js"></script>
+<script type="text/javascript" src="/public/libs/angular-sanitize/angular-sanitize.js"></script>
+<script type="text/javascript" src="/public/libs/angular-cookies/angular-cookies.js"></script>
+<script type="text/javascript" src="/public/libs/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script type="text/javascript" src="/public/libs/notifyjs/dist/notify-combined.js"></script>
+<script type="text/javascript" src="/public/libs/underscore/underscore.js"></script>
+<script type="text/javascript" src="/public/libs/Chart.js/Chart.js"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+<!--begin_application-->
+<script type="text/javascript" src="/public/scripts/application.js"></script>
+<!--end_application-->
+
+<!--begin_config-->
+<script type="text/javascript" src="/public/scripts/config.js"></script>
+<!--end_config-->
+
+<!--begin_controllers-->
+<script type="text/javascript" src="/public/scripts/controllers/index.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/listener/lecture-room.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/listener/listener.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/sign-in.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/not-found.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/sign-up.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/lecturer/lectures-manager.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/lecturer/questions-manager.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/lecturer/statistic.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/lecturer/active-lecture.js"></script>
+
+<script type="text/javascript" src="/public/scripts/controllers/dialogs/confirmation-dialog.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/dialogs/alert-dialog.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/dialogs/suspend-dialog.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/dialogs/present-listeners.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/dialogs/answered-listeners.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/dialogs/lecture-editor-dialog.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/dialogs/question-editor/question-editor.js"></script>
+<script type="text/javascript"
+        src="/public/scripts/controllers/dialogs/question-editor/editor-forms/default.js"></script>
+<script type="text/javascript"
+        src="/public/scripts/controllers/dialogs/question-editor/editor-forms/choice.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/dialogs/question-editor/editor-forms/range.js"></script>
+<script type="text/javascript" src="/public/scripts/controllers/dialogs/profile-editor.js"></script>
+<!--end_controllers-->
+
+<!--begin_directives-->
+<script type="text/javascript" src="/public/scripts/directives/static-include.js"></script>
+<script type="text/javascript" src="/public/scripts/directives/survey-donut.js"></script>
+<script type="text/javascript" src="/public/scripts/directives/lecture-statistic.js"></script>
+<script type="text/javascript" src="/public/scripts/directives/active-lecture-chart.js"></script>
+<script type="text/javascript" src="/public/scripts/directives/fragment.js"></script>
+<script type="text/javascript" src="/public/scripts/directives/answer-forms/default.js"></script>
+<script type="text/javascript" src="/public/scripts/directives/answer-forms/multi-choice.js"></script>
+<script type="text/javascript" src="/public/scripts/directives/answer-forms/range.js"></script>
+<script type="text/javascript" src="/public/scripts/directives/answer-forms/single-choice.js"></script>
+<script type="text/javascript" src="/public/scripts/directives/generic-header.js"></script>
+<!--end_directives-->
+
+<!--begin_filters-->
+<script type="text/javascript" src="/public/scripts/filters/format-date.js"></script>
+<script type="text/javascript" src="/public/scripts/filters/format-time.js"></script>
+<!--end_filters-->
+
+<!--begin_services-->
+<script type="text/javascript" src="/public/scripts/services/http-client.js"></script>
+<script type="text/javascript" src="/public/scripts/services/api/auth.js"></script>
+<script type="text/javascript" src="/public/scripts/services/api/lectures.js"></script>
+<script type="text/javascript" src="/public/scripts/services/api/users.js"></script>
+<script type="text/javascript" src="/public/scripts/services/api/profiles.js"></script>
+<script type="text/javascript" src="/public/scripts/services/api/questions.js"></script>
+<script type="text/javascript" src="/public/scripts/services/api/active-lectures.js"></script>
+<script type="text/javascript" src="/public/scripts/services/notifications.js"></script>
+<script type="text/javascript" src="/public/scripts/services/socket-connector.js"></script>
+<script type="text/javascript" src="/public/scripts/services/socket-events-listener.js"></script>
+<script type="text/javascript" src="/public/scripts/services/socket-events-manager.js"></script>
+<script type="text/javascript" src="/public/scripts/services/loader.js"></script>
+<script type="text/javascript" src="/public/scripts/services/dialogs.js"></script>
+<script type="text/javascript" src="/public/scripts/services/security-interceptor.js"></script>
+<!--end_services-->
+
+<!--begin_common-->
+<script type="text/javascript" src="/public/scripts/utils/common.js"></script>
+<!--end_common-->
+
+</body>
+</html>

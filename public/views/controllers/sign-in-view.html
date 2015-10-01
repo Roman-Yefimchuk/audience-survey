@@ -1,0 +1,71 @@
+<div class="panel col-sm-4 col-sm-offset-4" style="margin-top: 15px">
+
+    <h1>
+        <span class="fa fa-sign-in">
+        </span>
+        Увійти
+    </h1>
+
+    <div ng-show="errorMessage != null">
+        <alert type="danger" close="errorMessage = null" class="text-center">
+            <span class="pull-left">
+                <i class="fa fa-exclamation-triangle" style="font-size: 1.5em;"></i>
+            </span>
+            {{ errorMessage }}
+        </alert>
+    </div>
+
+    <form ng-submit="login()" autocomplete="off">
+
+        <div class="form-group">
+            <label>
+                Електронна адреса
+            </label>
+
+            <div class="input-group" ng-class="{ 'has-error' : !isEmailValid() }">
+                <div class="input-group-addon">
+                    <span class="fa fa-at"></span>
+                </div>
+                <input class="form-control" type="text" ng-model="email"
+                       placeholder="Введіть електронну адресу" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                Пароль
+            </label>
+
+            <div class="input-group" ng-class="{ 'has-error' : !isPasswordValid() }">
+                <div class="input-group-addon">
+                    <i class="fa fa-key"></i>
+                </div>
+                <input class="form-control" type="password" ng-model="password"
+                       placeholder="Введіть пароль" autocomplete="off">
+            </div>
+        </div>
+
+        <span ng-click="signIn()" class="btn btn-warning"
+              ng-disabled="!(isEmailValid() && isPasswordValid())">
+            Увійти
+        </span>
+
+    </form>
+
+    <hr>
+
+    <p>
+        Треба акуант? <a href="#/sign-up">Реєстрація</a>
+    </p>
+
+    <p>
+        Або перейти <a href="#/">додому</a>
+    </p>
+
+    <p ng-show="true">
+        <a href ng-click="quickSignInAsListener()">quickSignInAsListener</a>
+        <br>
+        <a href ng-click="quickSignInAsLecturer()">quickSignInAsLecturer</a>
+    </p>
+
+</div>

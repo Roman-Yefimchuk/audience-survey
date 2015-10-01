@@ -1,0 +1,192 @@
+<div class="row clearfix" style="margin-top: 15px">
+
+    <div class="col-sm-8 col-sm-offset-2 column">
+
+        <div generic-header user="user">
+        </div>
+
+        <section class="panel tasks-widget" style="padding: 15px">
+
+            <form ng-submit="addLecture()">
+
+                <div class="input-group task-add">
+
+                    <div class="form-group-sm" ng-class="{ 'has-feedback' : !!newLectureName }">
+
+                        <label class="control-label" ng-show="false"></label>
+
+                        <input type="text" class="form-control" id="main-input"
+                               placeholder="Введіть назву лекції"
+                               autofocus autocomplete="off" ng-model="newLectureName"
+                               style="border-bottom-left-radius: 3px;border-top-left-radius: 3px;">
+
+                        <span class="form-control-feedback" style="top: 0"
+                              ng-show="!!newLectureName">
+                            <i class="fa fa-times" style="cursor: pointer"
+                               tooltip="Очистити"
+                               ng-click="clearInput()"></i>
+                        </span>
+                    </div>
+
+                 <span class="input-group-btn">
+
+                     <span class="btn btn-success"
+                           ng-click="addLecture()">
+                         <i class="fa fa-plus"></i>
+                     </span>
+
+                 </span>
+
+                </div>
+
+            </form>
+
+            <div class="panel-body" style="padding: 15px 0 0;">
+
+                <div ng-switch="lectures.length > 0">
+
+                    <div ng-switch-when="true">
+
+                        <ul class="list-group"
+                            style="margin-bottom: 0">
+
+                            <li class="list-group-item"
+                                ng-repeat="lecture in lectures"
+                                ng-class="{ 'disabled' : getActiveLecture(lecture.id) && getActiveLecture(lecture.id).status == 'suspended' }">
+
+                                <div class="row clearfix">
+
+                                    <span class="col-sm-12 column" style="margin-bottom: 10px;">
+
+                                        <b>{{ lecture.name }}</b>
+
+                                    </span>
+
+                                    <div class="col-sm-12 column">
+
+                                        <div class="pull-left">
+
+                                            <div ng-if="!getActiveLecture(lecture.id)">
+
+                                                <div class="btn btn-success"
+                                                     tooltip="Розпочати лекцію"
+                                                     ng-click="startLecture(lecture)">
+                                                    <i class="fa fa-play" style="margin-left: 1px;"></i>
+                                                </div>
+
+                                                <a class="btn btn-primary"
+                                                   tooltip="Запитання"
+                                                   ng-href="/#/lecturers/{{ user.id }}/lectures/{{ lecture.id }}/questions">
+                                                    <i class="fa fa-question-circle"></i>
+                                                </a>
+
+                                            </div>
+
+                                            <div ng-if="getActiveLecture(lecture.id)">
+
+                                                <div class="btn btn-primary"
+                                                     tooltip="Зробити паузу"
+                                                     ng-click="suspendLecture(lecture)"
+                                                     ng-show="getActiveLecture(lecture.id).status == 'started'">
+                                                    <i class="fa fa-pause"></i>
+                                                </div>
+
+                                                <div class="btn btn-primary"
+                                                     tooltip="Продовжити лекцію"
+                                                     ng-click="resumeLecture(lecture)"
+                                                     ng-show="getActiveLecture(lecture.id).status == 'suspended'">
+                                                    <i class="fa fa-play"></i>
+                                                </div>
+
+                                                <div class="btn btn-danger"
+                                                     tooltip="Зупинити лекцію"
+                                                     ng-click="stopLecture(lecture)">
+                                                    <i class="fa fa-stop"></i>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="pull-right">
+
+                                            <div ng-if="!getActiveLecture(lecture.id)">
+
+                                                <a class="btn btn-default"
+                                                   tooltip="Показати статистику"
+                                                   ng-href="/#/lecturers/{{ user.id }}/lectures/{{ lecture.id }}/statistic">
+                                                    <i class="fa fa-area-chart"
+                                                       style="margin-left: -2px;margin-right: -2px;"></i>
+                                                </a>
+
+                                                <div class="btn btn-primary"
+                                                     tooltip="Редагувати лекцію"
+                                                     ng-click="editLecture(lecture)">
+                                                    <i class="fa fa-pencil"></i>
+                                                </div>
+
+                                                <div class="btn btn-danger"
+                                                     tooltip="Видалити лекцію"
+                                                     ng-click="removeLecture(lecture)">
+                                                    <i class="fa fa-trash-o" style="margin-right: 1px;"></i>
+                                                </div>
+
+                                            </div>
+
+                                            <div ng-if="getActiveLecture(lecture.id)">
+
+                                                <span style="cursor: pointer;"
+                                                      ng-click="showPresentListeners(getActiveLecture(lecture.id))">
+                                                    <i class="fa fa-users"
+                                                       tooltip="Присутні слухачі"></i>&nbsp;<b>{{
+                                                    (getActiveLecture(lecture.id).presentListeners || []).length }}</b>
+                                                </span>
+
+                                                <span style="vertical-align: middle;">
+                                                    <i class="fa fa-clock-o"
+                                                       tooltip="Продовження леції"></i>&nbsp;<b>{{
+                                                    getActiveLecture(lecture.id).duration | formatTime }}</b>
+                                                </span>
+
+                                                <span>
+                                                    <a class="btn btn-primary"
+                                                       tooltip="Увійти"
+                                                       ng-href="/#/lecturers/{{ user.id }}/lectures/{{ lecture.id }}">
+                                                        <i class="fa fa-sign-in"></i>
+                                                    </a>
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                    <div ng-switch-when="false">
+
+                        <div class="text-center">
+                            <div class="row clearfix">
+                                <div class="col-md-12 column">
+                                    Немає лекцій
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>

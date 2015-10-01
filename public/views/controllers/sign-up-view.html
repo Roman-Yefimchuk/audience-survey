@@ -1,0 +1,129 @@
+<div class="panel col-sm-4 col-sm-offset-4" style="margin-top: 15px">
+
+    <h1>
+        <span class="fa fa-sign-in" ng-click="quickSingUp()"></span>
+        Реєстрація
+    </h1>
+
+    <div ng-show="errorMessage != null">
+        <alert type="danger" close="errorMessage = null" class="text-center">
+            <span class="pull-left">
+                <i class="fa fa-exclamation-triangle" style="font-size: 1.5em;"></i>
+            </span>
+            {{ errorMessage }}
+        </alert>
+    </div>
+
+    <form ng-submit="signUp()" autocomplete="off">
+
+        <div class="form-group">
+            <label>
+                Ім'я
+            </label>
+
+            <div class="input-group" ng-class="{ 'has-error' : !isNameValid() }">
+                <div class="input-group-addon">
+                    <i class="fa fa-user"></i>
+                </div>
+                <input class="form-control" type="text" ng-model="name"
+                       placeholder="Введіть ім'я" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                Електронна адреса
+            </label>
+
+            <div class="input-group" ng-class="{ 'has-error' : !isEmailValid() }">
+                <div class="input-group-addon">
+                    <i class="fa fa-at"></i>
+                </div>
+                <input class="form-control" type="text" ng-model="email"
+                       placeholder="Введіть електронну адресу" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                Пароль
+            </label>
+
+            <div class="input-group" ng-class="{ 'has-error' : !isPasswordValid() }">
+                <div class="input-group-addon"><i class="fa fa-key"></i></i></i></div>
+                <input class="form-control" type="password" ng-model="password"
+                       placeholder="Введіть пароль" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                Повторіть пароль
+            </label>
+
+            <div class="input-group" ng-class="{ 'has-error' : !isPasswordValid() }">
+                <div class="input-group-addon"><i class="fa fa-key"></i></i></i></div>
+                <input class="form-control" type="password" ng-model="retypedPassword"
+                       placeholder="Введіть повторений пароль"
+                       autocomplete="off">
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Зареєструватися як...
+            </label>
+
+            <div class="input-group" style="display: flex">
+
+                <div class="btn-group col-md-12" dropdown
+                     style="padding: 0;display: flex;">
+                            <span class="btn btn-primary" style="width: 100%;">
+                                <span class="pull-left">
+                                    {{ role.name }}
+                                </span>
+                            </span>
+                            <span class="btn btn-primary dropdown-toggle">
+                                <span class="caret"></span>
+                            </span>
+                    <ul class="dropdown-menu pull-right" role="menu">
+                        <li>
+                            <a href ng-repeat="_role in roles"
+                               ng-click="setRole(_role)">
+                                <i class="fa"
+                                   ng-class="{'fa-circle-o' : _role != role,
+                                                'fa-dot-circle-o' : _role == role}">
+                                </i>
+                                &nbsp;
+                                {{ _role.name }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <span ng-click="signUp()" class="btn btn-warning"
+              ng-disabled="!(isNameValid() && isEmailValid() && isPasswordValid())">
+            Реєстрація
+        </span>
+    </form>
+
+    <hr>
+
+    <p>
+        Вже маєте акуант? <a href="#/sign-in">Увійти</a>
+    </p>
+
+    <p>
+        Або перейти <a href="#/">додому</a>
+    </p>
+
+    <p ng-show="true">
+        <a href ng-click="quickSignUpAsLecturer()">quickSignUpAsLecturer</a>
+        <br>
+        <a href ng-click="quickSignUpAsListener()">quickSignUpAsListener</a>
+    </p>
+</div>

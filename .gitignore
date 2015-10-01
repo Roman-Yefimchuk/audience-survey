@@ -1,5 +1,3 @@
 .idea/
-local_db/
 node_modules/
-bower_components/
-public/bower_components
+public/libs/

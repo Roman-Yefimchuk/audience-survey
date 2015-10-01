@@ -5,7 +5,6 @@ module.exports = function (io, dbProvider) {
     var _ = require('underscore');
     var socketsSession = {};
     var activeLectures = {};
-    var forEach = _.forEach;
 
     var SocketSession = (function () {
 
@@ -47,7 +46,7 @@ module.exports = function (io, dbProvider) {
                 var lectureId = context.id;
                 var count = 0;
 
-                forEach(socketsSession, function (socketSession) {
+                _.forEach(socketsSession, function (socketSession) {
                     if (socketSession && socketSession.lectureId == lectureId) {
                         count++;
                     }
@@ -231,7 +230,7 @@ module.exports = function (io, dbProvider) {
 
                 var duration = 0;
                 var timeline = this.timeline;
-                forEach(timeline, function (timeMarker) {
+                _.forEach(timeline, function (timeMarker) {
 
                     if (timeMarker.status == 'started') {
 
@@ -269,7 +268,7 @@ module.exports = function (io, dbProvider) {
                 var value = 0;
                 var count = 0;
 
-                forEach(socketsSession, function (socketSession) {
+                _.forEach(socketsSession, function (socketSession) {
                     if (socketSession && socketSession.lectureId == lectureId) {
                         if (socketSession.requestCount > 0) {
                             count++;
@@ -281,6 +280,7 @@ module.exports = function (io, dbProvider) {
                 if (count > 0) {
                     return ((value / count) * 100).toFixed(1);
                 }
+
                 return (0).toFixed(1);
             },
             updateChart: function () {
@@ -321,7 +321,7 @@ module.exports = function (io, dbProvider) {
         }
 
         function sendBroadcast(command, data, lectureId) {
-            forEach(socketsSession, function (socketSession, sessionId) {
+            _.forEach(socketsSession, function (socketSession, sessionId) {
                 if (socketSession && sessionId != socket.id) {
                     if (lectureId) {
                         if (socketSession.lectureId == lectureId) {
@@ -616,7 +616,7 @@ module.exports = function (io, dbProvider) {
 
             var presentListeners = [];
 
-            forEach(socketsSession, function (socketSession) {
+            _.forEach(socketsSession, function (socketSession) {
                 if (socketSession && socketSession.lectureId == lectureId) {
                     var userId = socketSession.userId;
                     presentListeners.push(userId);

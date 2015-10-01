@@ -1,0 +1,108 @@
+<div class="row clearfix" style="margin-top: 15px">
+
+    <div class="col-sm-8 col-sm-offset-2 column">
+
+        <div generic-header user="user" back-link="/#/lecturers/{{ user.id }}/lectures">
+        </div>
+
+        <section class="panel tasks-widget" style="padding: 15px">
+
+            <form ng-submit="addQuestion()">
+
+                <div class="input-group task-add">
+
+                    <div class="form-group" ng-class="{ 'has-feedback' : !!newQuestion }">
+
+                        <label class="control-label" ng-show="false"></label>
+
+                        <input type="text" class="form-control" id="main-input"
+                               placeholder="Введіть запитання"
+                               autofocus autocomplete="off" ng-model="newQuestion"
+                               style="border-bottom-left-radius: 3px;border-top-left-radius: 3px;">
+
+                        <span class="form-control-feedback" style="top: 0"
+                              ng-show="!!newQuestion">
+                            <i class="fa fa-times" style="cursor: pointer"
+                               tooltip="Очистити"
+                               ng-click="clearInput()"></i>
+                        </span>
+                    </div>
+
+                 <span class="input-group-btn">
+
+                     <span class="btn btn-success"
+                           ng-click="addQuestion()">
+                         <i class="fa fa-plus"></i>
+                     </span>
+
+                 </span>
+
+                </div>
+
+            </form>
+
+            <div class="panel-body" style="padding: 15px 0 0;">
+
+                <div ng-switch="questions.length > 0">
+                    <div ng-switch-when="true">
+
+                        <ul class="list-group"
+                            style="margin-bottom: 0">
+
+                            <li ng-repeat="question in questions" class="list-group-item">
+
+                                <div class="row clearfix">
+
+                                    <div class="col-sm-12 column" style="margin-bottom: 10px;">
+
+                                        <b>{{ question.title }}</b>
+
+                                    </div>
+
+                                    <div class="col-sm-12 column">
+
+                                        <div class="pull-right">
+
+                                            <span class="btn btn-primary"
+                                                  tooltip="Редагувати запитання"
+                                                  ng-click="editQuestion(question)">
+                                                <i class="fa fa-pencil"></i>
+                                            </span>
+
+                                            <span class="btn btn-danger"
+                                                  tooltip="Видалити запитання"
+                                                  ng-click="removeQuestion(question)">
+                                                <i class="fa fa-trash-o"></i>
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div ng-switch-when="false">
+
+                        <div class="text-center">
+                            <div class="row clearfix">
+                                <div class="col-md-12 column">
+                                    Немає запитань
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
