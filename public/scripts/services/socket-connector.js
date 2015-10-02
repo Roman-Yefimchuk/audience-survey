@@ -84,8 +84,16 @@ angular.module('application')
 
                     var socketEventsListener = new SocketEventsListener();
                     var socket = io(url, {
-                        'force new connection': true,
-                        'query': "token=" + $cookies.token + '&userId=' + userId
+                        'forceNew': true,
+                        'query': "token=" + $cookies.token + '&userId=' + userId + '&url=' + url
+                    });
+
+                    socket.on('disconnect', function (data) {
+                        socketEventsListener.trigger('disconnect', data);
+                    });
+
+                    socket.on('error', function (error) {
+                        socketEventsListener.trigger('error', error);
                     });
 
                     socket.on('connect', function () {
@@ -100,6 +108,8 @@ angular.module('application')
                             'on_answer_received',
                             'on_listener_joined',
                             'on_listener_went',
+                            'on_lecturer_joined',
+                            'on_lecturer_went',
                             'on_message_received',
                             'on_statistic_updated'
                         ], function (command) {
@@ -116,18 +126,9 @@ angular.module('application')
                                 socket.emit(comamnd, data);
                             },
                             close: function () {
-                                socket.close();
+                                socket.disconnect();
                             }
                         });
-                    });
-
-                    socket.on('disconnect', function (data) {
-                        socket.close();
-                        socketEventsListener.trigger('disconnect', data);
-                    });
-
-                    socket.on('error', function (error) {
-                        socketEventsListener.trigger('error', error);
                     });
                 });
             };

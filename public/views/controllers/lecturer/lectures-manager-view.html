@@ -2,7 +2,7 @@
 
     <div class="col-sm-8 col-sm-offset-2 column">
 
-        <div generic-header user="user">
+        <div generic-header="user">
         </div>
 
         <section class="panel tasks-widget" style="padding: 15px">
@@ -139,7 +139,7 @@
                                                       ng-click="showPresentListeners(getActiveLecture(lecture.id))">
                                                     <i class="fa fa-users"
                                                        tooltip="Присутні слухачі"></i>&nbsp;<b>{{
-                                                    (getActiveLecture(lecture.id).presentListeners || []).length }}</b>
+                                                    getActiveLecture(lecture.id).listeners['length'] }}</b>
                                                 </span>
 
                                                 <span style="vertical-align: middle;">
@@ -151,7 +151,7 @@
                                                 <span>
                                                     <a class="btn btn-primary"
                                                        tooltip="Увійти"
-                                                       ng-href="/#/lecturers/{{ user.id }}/lectures/{{ lecture.id }}">
+                                                       ng-href="/#/lecturers/{{ user.id }}/activeLectures/{{ lecture.id }}">
                                                         <i class="fa fa-sign-in"></i>
                                                     </a>
                                                 </span>

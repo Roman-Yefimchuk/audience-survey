@@ -39,6 +39,27 @@
                     }
                 },
                 {
+                    route: 'own',
+                    method: 'get',
+                    params: ['userId'],
+                    filters: [
+                        RequestFilter.checkAuthorization(),
+                        RequestFilter.checkOwnerAccess('userId')
+                    ],
+                    handler: function (userId) {
+
+                        return Promise(function (resolve, reject) {
+
+                            SocketProvider.getActiveLectures()
+                                .then(function (activeLectures) {
+                                    resolve(activeLectures);
+                                }, function (e) {
+                                    reject(e);
+                                });
+                        });
+                    }
+                },
+                {
                     route: ':lectureId',
                     method: 'get',
                     params: ['userId', 'lectureId'],

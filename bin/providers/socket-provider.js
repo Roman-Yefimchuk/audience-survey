@@ -105,15 +105,14 @@
 
     var ActiveLecture = (function () {
 
-        var activeLectures = [];
-
         function ActiveLecture(lecture) {
 
             var io = socketManager.io;
-            var connection = io.of('/' + lecture.id);
+            var connection = io.of('/lectures/' + lecture.id);
 
             var activeLecture = _.extend(this, {
                 id: lecture.id,
+                name: lecture.name,
                 lecturer: (function (lecturer) {
                     return {
                         id: lecturer.id,
@@ -141,8 +140,16 @@
                             duration: duration
                         });
                     });
+
+                    var lecturerSocketSession = activeLecture.lecturerSocketSession;
+                    if (lecturerSocketSession) {
+                        lecturerSocketSession.emit('on_lecture_duration_changed', {
+                            duration: duration
+                        });
+                    }
                 }, 1000),
-                connection: connection
+                connection: connection,
+                lecturerSocketSession: null
             });
 
             connection.on('connection', function (socket) {
@@ -152,29 +159,76 @@
 
                 var socketSession = new SocketSession(socket, userId);
 
-                _.forEach(activeLecture.listeners, function (listener) {
-                    var socketSession = listener.socketSession;
-                    socketSession.emit('on_listener_joined', {
-                        userId: userId
+                if (userId == lecture.lecturer['id']) {
+
+                    _.forEach(activeLecture.listeners, function (listener) {
+                        var socketSession = listener.socketSession;
+                        socketSession.emit('on_lecturer_joined');
                     });
-                });
 
-                _.forEach(observers, function (observer) {
-                    observer.emit('on_listener_joined', {
-                        lectureId: activeLecture.id,
-                        userId: userId
+                    _.forEach(observers, function (observer) {
+                        observer.emit('on_lecturer_joined', {
+                            lectureId: activeLecture.id
+                        });
                     });
-                });
 
-                var listener = {
-                    userId: userId,
-                    requestCount: 0,
-                    understandingValue: 0,
-                    socketSession: socketSession
-                };
+                    activeLecture.lecturerSocketSession = socketSession;
 
-                var listeners = activeLecture.listeners;
-                listeners.push(listener);
+                } else {
+
+                    _.forEach(activeLecture.listeners, function (listener) {
+                        var socketSession = listener.socketSession;
+                        socketSession.emit('on_listener_joined', {
+                            userId: userId
+                        });
+                    });
+
+                    _.forEach(observers, function (observer) {
+                        observer.emit('on_listener_joined', {
+                            lectureId: activeLecture.id,
+                            userId: userId
+                        });
+                    });
+
+                    var lecturerSocketSession = activeLecture.lecturerSocketSession;
+                    if (lecturerSocketSession) {
+                        lecturerSocketSession.emit('on_listener_joined', {
+                            userId: userId
+                        });
+                    }
+
+                    var listener = {
+                        userId: userId,
+                        requestCount: 0,
+                        understandingValue: 0,
+                        socketSession: socketSession
+                    };
+
+                    var listeners = activeLecture.listeners;
+                    listeners.push(listener);
+
+                    socket.on('update_statistic', function (data) {
+
+                        listener.requestCount++;
+                        listener.understandingValue += data.value;
+
+                        var understandingValue = activeLecture.getAverageUnderstandingValue();
+
+                        _.forEach(activeLecture.listeners, function (listener) {
+                            var socketSession = listener.socketSession;
+                            socketSession.emit('on_statistic_updated', {
+                                understandingValue: understandingValue
+                            });
+                        });
+
+                        var lecturerSocketSession = activeLecture.lecturerSocketSession;
+                        if (lecturerSocketSession) {
+                            lecturerSocketSession.emit('on_statistic_updated', {
+                                understandingValue: understandingValue
+                            });
+                        }
+                    });
+                }
 
                 socket.on('send_message', function (data) {
 
@@ -182,41 +236,56 @@
                         var socketSession = listener.socketSession;
                         socketSession.emit('on_message_received', data);
                     });
-                });
 
-                socket.on('update_statistic', function (data) {
-
-                    listener.requestCount++;
-                    listener.understandingValue += data.value;
-
-                    var understandingValue = activeLecture.getAverageUnderstandingValue();
-
-                    _.forEach(activeLecture.listeners, function (listener) {
-                        var socketSession = listener.socketSession;
-                        socketSession.emit('on_statistic_updated', {
-                            understandingValue: understandingValue
-                        });
-                    });
+                    var lecturerSocketSession = activeLecture.lecturerSocketSession;
+                    if (lecturerSocketSession) {
+                        lecturerSocketSession.emit('on_message_received', data);
+                    }
                 });
 
                 socket.on('disconnect', function () {
 
                     socketSession.close();
-                    activeLecture.listeners = _.without(activeLecture.listeners, listener);
 
-                    _.forEach(activeLecture.listeners, function (listener) {
-                        var socketSession = listener.socketSession;
-                        socketSession.emit('on_listener_went', {
-                            userId: userId
-                        });
-                    });
+                    if (userId == lecture.lecturer['id']) {
 
-                    _.forEach(observers, function (observer) {
-                        observer.emit('on_listener_went', {
-                            lectureId: activeLecture.id,
-                            userId: userId
+                        activeLecture.lecturerSocketSession = null;
+
+                        _.forEach(activeLecture.listeners, function (listener) {
+                            var socketSession = listener.socketSession;
+                            socketSession.emit('on_lecturer_went');
                         });
-                    });
+
+                        _.forEach(observers, function (observer) {
+                            observer.emit('on_lecturer_went', {
+                                lectureId: activeLecture.id
+                            });
+                        });
+                    } else {
+
+                        activeLecture.listeners = _.without(activeLecture.listeners, listener);
+
+                        _.forEach(activeLecture.listeners, function (listener) {
+                            var socketSession = listener.socketSession;
+                            socketSession.emit('on_listener_went', {
+                                userId: userId
+                            });
+                        });
+
+                        _.forEach(observers, function (observer) {
+                            observer.emit('on_listener_went', {
+                                lectureId: activeLecture.id,
+                                userId: userId
+                            });
+                        });
+
+                        var lecturerSocketSession = activeLecture.lecturerSocketSession;
+                        if (lecturerSocketSession) {
+                            lecturerSocketSession.emit('on_listener_went', {
+                                userId: userId
+                            });
+                        }
+                    }
                 });
             });
         }
@@ -236,11 +305,10 @@
                 var statisticChart = this.statisticChart;
                 statisticChart.startRecord();
 
-                activeLectures.push(this);
-
                 _.forEach(observers, _.bind(function (observer) {
                     observer.emit('on_lecture_started', {
                         lectureId: this.id,
+                        name: this.name,
                         lecturer: this.lecturer
                     });
                 }, this));
@@ -324,8 +392,6 @@
                 var statisticChart = this.statisticChart;
                 statisticChart.stopRecord();
 
-                activeLectures = _.without(activeLectures, this);
-
                 _.forEach(this.listeners, function (listener) {
                     var socketSession = listener.socketSession;
                     socketSession.emit('on_lecture_stopped');
@@ -385,6 +451,7 @@
             toJSON: function () {
                 return {
                     id: this.id,
+                    name: this.name,
                     lecturer: this.lecturer,
                     duration: this.getDuration(),
                     status: this.status,
@@ -399,26 +466,16 @@
             }
         };
 
-        ActiveLecture.getById = function (lectureId) {
-            return _.find(activeLectures, function (activeLecture) {
-                return activeLecture.id == lectureId;
-            });
-        };
-
-        ActiveLecture.getAll = function () {
-            return activeLectures;
-        };
-
-        ActiveLecture.each = function (callback) {
-            _.forEach(activeLectures, callback);
-        };
-
         return ActiveLecture;
     })();
 
+    var activeLectures = [];
     var observers = [];
     var socketManager = {
-        io: null
+        io: null,
+        removeNamespace: function (name) {
+            delete (this.io || {nsps: {}}).nsps[name];
+        }
     };
 
     function use(io) {
@@ -474,10 +531,13 @@
         var connection = io.of('/');
         connection.on('connection', function (socket) {
 
-            socket.emit('ok');
-
             var query = socket.handshake['query'];
             var userId = query.userId;
+            var url = query.url;
+
+            if (url != '/') {
+                return;
+            }
 
             var socketSession = new SocketSession(socket, userId);
 
@@ -498,7 +558,11 @@
 
                     if (lecture) {
 
-                        new ActiveLecture(lecture).start();
+                        var activeLecture = new ActiveLecture(lecture);
+
+                        activeLectures.push(activeLecture);
+
+                        activeLecture.start();
 
                         resolve('success');
                     } else {
@@ -516,7 +580,10 @@
 
         return Promise(function (resolve) {
 
-            var activeLecture = ActiveLecture.getById(lectureId);
+            var activeLecture = _.find(activeLectures, function (activeLecture) {
+                return activeLecture.id == lectureId;
+            });
+
             if (activeLecture) {
 
                 if (activeLecture.status == 'suspended') {
@@ -535,7 +602,10 @@
 
         return Promise(function (resolve) {
 
-            var activeLecture = ActiveLecture.getById(lectureId);
+            var activeLecture = _.find(activeLectures, function (activeLecture) {
+                return activeLecture.id == lectureId;
+            });
+
             if (activeLecture) {
 
                 if (activeLecture.status == 'suspended') {
@@ -554,10 +624,16 @@
 
         return Promise(function (resolve) {
 
-            var activeLecture = ActiveLecture.getById(lectureId);
+            var activeLecture = _.find(activeLectures, function (activeLecture) {
+                return activeLecture.id == lectureId;
+            });
+
             if (activeLecture) {
 
+                activeLectures = _.without(activeLectures, activeLecture);
+
                 activeLecture.stop();
+
                 resolve('success');
             } else {
                 resolve('not_found');
@@ -565,19 +641,33 @@
         });
     }
 
-    function getActiveLectures() {
+    function getOwnActiveLectures(userId) {
 
         return Promise(function (resolve) {
 
-            var activeLectures = ActiveLecture.getAll();
+            var ownActiveLectures = _.filter(activeLectures, function (activeLecture) {
+                return activeLecture.lecturer['id'] == userId;
+            });
 
+            resolve(ownActiveLectures);
+        });
+    }
+
+    function getActiveLectures() {
+
+        return Promise(function (resolve) {
             resolve(activeLectures);
         });
     }
 
     function getActiveLecture(lectureId) {
         return Promise(function (resolve) {
-            resolve();
+
+            var activeLecture = _.find(activeLectures, function (activeLecture) {
+                return activeLecture.id == lectureId;
+            });
+
+            resolve(activeLecture);
         });
     }
 
@@ -587,6 +677,7 @@
         suspendLecture: suspendLecture,
         resumeLecture: resumeLecture,
         stopLecture: stopLecture,
+        getOwnActiveLectures: getOwnActiveLectures,
         getActiveLectures: getActiveLectures,
         getActiveLecture: getActiveLecture
     };

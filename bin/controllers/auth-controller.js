@@ -170,8 +170,8 @@
                                 AuthSessionProvider.removeAuthSessionByToken(token)
                                     .then(function () {
                                         resolve();
-                                    }, function () {
-                                        reject();
+                                    }, function (e) {
+                                        reject(e);
                                     });
                             });
                         } else {

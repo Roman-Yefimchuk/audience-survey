@@ -170,11 +170,36 @@
         });
     }
 
+    function getUserName(userId) {
+
+        return Promise(function (resolve, reject) {
+
+            DbProvider.executeQuery('get-user-name-by-id.sql', {
+                userId: DbHelper.parseRecordId(userId)
+            }).then(function (result) {
+
+                if (result.length > 0) {
+
+                    var user = result[0];
+
+                    resolve(user.name);
+                } else {
+
+                    resolve();
+                }
+            }).catch(function (e) {
+
+                reject(e);
+            });
+        });
+    }
+
     module.exports = {
         createUser: createUser,
         findUser: findUser,
         findUserByGenericId: findUserByGenericId,
-        getUser: getUser
+        getUser: getUser,
+        getUserName: getUserName
     }
 
 })(require);

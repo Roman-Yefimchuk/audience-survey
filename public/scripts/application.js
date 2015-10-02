@@ -78,10 +78,10 @@ angular.module('application', [
 
                             var userId = getRouteParam($route, 'lecturerId');
 
-                            return activeLecturesService.getActiveLectures(userId);
+                            return activeLecturesService.getOwnActiveLectures(userId);
                         }
                     ],
-                    socketEventsListener: [
+                    socketConnection: [
 
                         '$route',
                         'socketConnectorService',
@@ -97,9 +97,62 @@ angular.module('application', [
                 options: {
                     title: 'Управління лекціями'
                 }
-            }).when('/lecturers/:lecturerId/lectures/active', {
-                templateUrl: '/public/views/controllers/lecturer/active-lecture/active-lecture-view.html',
-                controller: 'ActiveLectureController',
+            }).when('/lecturers/:lecturerId/activeLectures/:lectureId', {
+                templateUrl: '/public/views/controllers/lecturer/lecturer-active-lecture/lecturer-active-lecture-view.html',
+                controller: 'LecturerActiveLectureController',
+                resolve: {
+                    user: [
+
+                        '$route',
+                        'usersService',
+
+                        function ($route, usersService) {
+
+                            var userId = getRouteParam($route, 'lecturerId');
+
+                            return usersService.getUser(userId);
+                        }
+                    ],
+                    lecture: [
+
+                        '$route',
+                        'lecturesService',
+
+                        function ($route, lecturesService) {
+
+                            var userId = getRouteParam($route, 'lecturerId');
+                            var lectureId = getRouteParam($route, 'lectureId');
+
+                            return lecturesService.getLecture(userId, lectureId);
+                        }
+                    ],
+                    activeLecture: [
+
+                        '$route',
+                        'activeLecturesService',
+
+                        function ($route, activeLecturesService) {
+
+                            var userId = getRouteParam($route, 'lecturerId');
+                            var lectureId = getRouteParam($route, 'lectureId');
+
+                            return activeLecturesService.getActiveLecture(userId, lectureId);
+                        }
+                    ],
+                    socketConnection: [
+
+                        '$route',
+                        'socketConnectorService',
+
+                        function ($route, socketConnectorService) {
+
+                            var userId = getRouteParam($route, 'lecturerId');
+                            var lectureId = getRouteParam($route, 'lectureId');
+
+                            return socketConnectorService.openConnection(userId, '/lectures/' + lectureId);
+                        }
+                    ]
+                },
                 options: {
                     title: 'Поточна лекція'
                 }
@@ -142,15 +195,106 @@ angular.module('application', [
                 options: {
                     title: 'Ститистика'
                 }
-            }).when('/listeners/:listenerId/lectures', {
-                templateUrl: '/public/views/controllers/listener/listener-view.html',
-                controller: 'ListenerController',
+            }).when('/listeners/:listenerId/activeLectures', {
+                templateUrl: '/public/views/controllers/listener/active-lectures-view.html',
+                controller: 'ActiveLecturesController',
+                resolve: {
+                    user: [
+
+                        '$route',
+                        'usersService',
+
+                        function ($route, usersService) {
+
+                            var userId = getRouteParam($route, 'listenerId');
+
+                            return usersService.getUser(userId);
+                        }
+                    ],
+                    activeLectures: [
+
+                        '$route',
+                        'activeLecturesService',
+
+                        function ($route, activeLecturesService) {
+
+                            var userId = getRouteParam($route, 'listenerId');
+
+                            return activeLecturesService.getActiveLectures(userId);
+                        }
+                    ],
+                    socketConnection: [
+
+                        '$route',
+                        'socketConnectorService',
+
+                        function ($route, socketConnectorService) {
+
+                            var userId = getRouteParam($route, 'listenerId');
+
+                            return socketConnectorService.openConnection(userId, '/');
+                        }
+                    ]
+                },
                 options: {
                     title: 'Список лекцій'
                 }
-            }).when('/listeners/:listenerId/lectures/:lectureId', {
-                templateUrl: '/public/views/controllers/listener/listener-view.html',
-                controller: 'LectureRoomController',
+            }).when('/listeners/:listenerId/activeLectures/:lectureId', {
+                templateUrl: '/public/views/controllers/listener/listener-active-lecture/listener-active-lecture-view.html',
+                controller: 'ListenerActiveLectureController',
+                resolve: {
+                    user: [
+
+                        '$route',
+                        'usersService',
+
+                        function ($route, usersService) {
+
+                            var userId = getRouteParam($route, 'listenerId');
+
+                            return usersService.getUser(userId);
+                        }
+                    ],
+                    lecture: [
+
+                        '$route',
+                        'lecturesService',
+
+                        function ($route, lecturesService) {
+
+                            var userId = getRouteParam($route, 'listenerId');
+                            var lectureId = getRouteParam($route, 'lectureId');
+
+                            return lecturesService.getLecture(userId, lectureId);
+                        }
+                    ],
+                    activeLecture: [
+
+                        '$route',
+                        'activeLecturesService',
+
+                        function ($route, activeLecturesService) {
+
+                            var userId = getRouteParam($route, 'listenerId');
+                            var lectureId = getRouteParam($route, 'lectureId');
+
+                            return activeLecturesService.getActiveLecture(userId, lectureId);
+                        }
+                    ],
+                    socketConnection: [
+
+                        '$route',
+                        'socketConnectorService',
+
+                        function ($route, socketConnectorService) {
+
+                            var userId = getRouteParam($route, 'listenerId');
+                            var lectureId = getRouteParam($route, 'lectureId');
+
+                            return socketConnectorService.openConnection(userId, '/lectures/' + lectureId);
+                        }
+                    ]
+                },
                 options: {
                     title: 'Лекційна зала'
                 }

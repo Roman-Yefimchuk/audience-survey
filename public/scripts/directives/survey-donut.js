@@ -7,7 +7,7 @@ angular.module('application')
         function () {
             return {
                 scope: {
-                    model: '='
+                    model: '=surveyDonut'
                 },
                 templateUrl: '/public/views/directives/survey-donut-view.html',
                 controller: ['$scope', function ($scope) {

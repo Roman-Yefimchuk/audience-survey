@@ -14,16 +14,18 @@ angular.module('application')
         'user',
         'lectures',
         'activeLectures',
-        'socketEventsListener',
+        'socketConnection',
 
-        function ($scope, $timeout, $location, dialogsService, socketEventsManagerService, lecturesService, activeLecturesService, user, lectures, activeLectures, socketEventsListener) {
+        function ($scope, $timeout, $location, dialogsService, socketEventsManagerService, lecturesService, activeLecturesService, user, lectures, activeLectures, socketConnection) {
 
             var userId = user.id;
 
             function showPresentListeners(lecture) {
-                dialogsService.showPresentListeners({
-                    lecture: lecture
-                });
+
+                var activeLecture = getActiveLecture(lecture.id);
+                if (activeLecture) {
+                    dialogsService.showPresentListeners(activeLecture.listeners, socketConnection);
+                }
             }
 
             function addLecture() {
@@ -188,11 +190,38 @@ angular.module('application')
             $scope.getActiveLecture = getActiveLecture;
 
             socketEventsManagerService.subscribe($scope, [
-                socketEventsListener.on('on_listener_joined', function (data) {
+                socketConnection.on('on_listener_joined', function (data) {
+
+                    var lectureId = data.lectureId;
+                    var userId = data.userId;
+
+                    $timeout(function () {
+
+                        var activeLecture = getActiveLecture(lectureId);
+                        if (activeLecture) {
+
+                            var listeners = activeLecture.listeners;
+
+                            if (_.indexOf(listeners, userId) == -1) {
+                                listeners.push(userId);
+                            }
+                        }
+                    });
                 }),
-                socketEventsListener.on('on_listener_went', function (data) {
+                socketConnection.on('on_listener_went', function (data) {
+
+                    var lectureId = data.lectureId;
+                    var userId = data.userId;
+
+                    $timeout(function () {
+
+                        var activeLecture = getActiveLecture(lectureId);
+                        if (activeLecture) {
+                            activeLecture.listeners = _.without(activeLecture.listeners, userId);
+                        }
+                    });
                 }),
-                socketEventsListener.on('on_lecture_duration_changed', function (data) {
+                socketConnection.on('on_lecture_duration_changed', function (data) {
 
                     var lectureId = data.lectureId;
                     var duration = data.duration;
@@ -207,7 +236,7 @@ angular.module('application')
             ]);
 
             $scope.$on('$destroy', function () {
-                socketEventsListener.close();
+                socketConnection.close();
             });
         }
     ]

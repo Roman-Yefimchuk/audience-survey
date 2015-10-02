@@ -78,15 +78,18 @@ angular.module('application')
                         }
                     });
                 },
-                showPresentListeners: function (options) {
+                showPresentListeners: function (listeners, socketConnection) {
                     return open({
                         templateUrl: '/public/views/controllers/dialogs/present-listeners-view.html',
                         controller: 'PresentListenersController',
                         backdrop: 'static',
                         keyboard: false,
                         resolve: {
-                            options: function () {
-                                return options;
+                            listeners: function () {
+                                return angular.copy(listeners);
+                            },
+                            socketConnection: function () {
+                                return socketConnection;
                             }
                         }
                     });

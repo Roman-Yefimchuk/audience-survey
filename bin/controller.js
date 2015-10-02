@@ -54,7 +54,7 @@
         process.nextTick(function () {
 
             response.status(200);
-            response.json(data || {});
+            response.json(data);
         });
     }
 

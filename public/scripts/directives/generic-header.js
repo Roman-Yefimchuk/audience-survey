@@ -6,14 +6,13 @@ angular.module('application')
 
         '$location',
         'profilesService',
-        'socketConnectorService',
         'dialogsService',
         'authService',
 
-        function ($location, profilesService, socketConnectorService, dialogsService, authService) {
+        function ($location, profilesService, dialogsService, authService) {
             return {
                 scope: {
-                    user: '=',
+                    user: '=genericHeader',
                     backLink: '@'
                 },
                 templateUrl: '/public/views/directives/generic-header-view.html',
@@ -48,7 +47,6 @@ angular.module('application')
 
                         authService.logout()
                             .then(function () {
-                                socketConnectorService.closeConnection();
                                 $location.path('/');
                             });
                     }

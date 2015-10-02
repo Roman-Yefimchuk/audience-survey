@@ -4,39 +4,60 @@ angular.module('application')
 
     .controller('PresentListenersController', [
 
+        '$q',
         '$scope',
+        '$timeout',
         '$modalInstance',
-        '$log',
-        'apiService',
-        'options',
+        'usersService',
+        'socketEventsManagerService',
+        'listeners',
+        'socketConnection',
 
-        function ($scope, $modalInstance, $log, apiService, options) {
+        function ($q, $scope, $timeout, $modalInstance, usersService, socketEventsManagerService, listeners, socketConnection) {
 
-            var lecture = options.lecture;
-            var presentListeners = angular.copy(lecture['presentListeners']);
             var visibleUsers = [];
 
             var pagination = {
                 itemsPerPage: 5,
                 maxPaginationSize: 5,
-                totalItems: presentListeners.length,
+                totalItems: listeners.length,
                 pageNumber: 1
             };
 
             function updateDialogTitle() {
-                $scope.dialogTitle = 'На лекції присутні ' + presentListeners.length + ' користувач(ів)';
+                $scope.dialogTitle = 'На лекції присутні ' + listeners.length + ' користувач(ів)';
             }
 
             function updatePage() {
-                pagination.totalItems = presentListeners.length;
-                if (presentListeners.length > 0) {
+
+                pagination.totalItems = listeners.length;
+
+                if (listeners.length > 0) {
+
                     var users = getUsersForPage();
+
                     if (!angular.equals(users, visibleUsers)) {
+
                         visibleUsers = angular.copy(users);
-                        apiService.getUsersById(visibleUsers, {
-                            success: function (response) {
-                                $scope.presentListeners = response.users;
-                            }
+
+                        $q.all((function () {
+                            var requests = [];
+                            _.forEach(visibleUsers, function (userId) {
+                                requests.push($q(function (resolve, reject) {
+                                    usersService.getUserName(userId)
+                                        .then(function (user) {
+                                            resolve({
+                                                id: userId,
+                                                name: user.name
+                                            });
+                                        }, function (e) {
+                                            reject(e);
+                                        });
+                                }));
+                            });
+                            return requests;
+                        })()).then(function (users) {
+                            $scope.presentListeners = users;
                         });
                     }
                 } else {
@@ -46,33 +67,37 @@ angular.module('application')
             }
 
             function getUsersForPage() {
+
                 var users = [];
 
                 if (pagination.totalItems > pagination.itemsPerPage) {
 
                     var fromIndex = (pagination.pageNumber - 1) * pagination.itemsPerPage;
-                    for (var index = 0; (index + fromIndex < presentListeners.length) && (index < pagination.itemsPerPage); index++) {
-                        users.push(presentListeners[index + fromIndex]);
+                    for (var index = 0; (index + fromIndex < listeners.length) && (index < pagination.itemsPerPage); index++) {
+                        users.push(listeners[index + fromIndex]);
                     }
                 } else {
-                    users = presentListeners;
+                    users = listeners;
                 }
 
                 return users;
             }
 
-            function addUser(userId) {
-                if (_.indexOf(presentListeners, userId) == -1) {
-                    presentListeners.push(userId);
+            function listenerJoined(userId) {
+
+                if (_.indexOf(listeners, userId) == -1) {
+
+                    listeners.push(userId);
                     updatePage();
                     updateDialogTitle();
                 }
             }
 
-            function removeUser(userId) {
-                presentListeners = _.without(presentListeners, userId);
+            function listenerWent(userId) {
 
-                var pagesCount = Math.ceil(presentListeners.length / pagination.itemsPerPage);
+                listeners = _.without(listeners, userId);
+
+                var pagesCount = Math.ceil(listeners.length / pagination.itemsPerPage);
                 if (pagination.pageNumber > pagesCount) {
                     pagination.pageNumber--;
                 } else {
@@ -93,38 +118,34 @@ angular.module('application')
                 updatePage();
             });
 
-            $scope.$on('socketsService:userDisconnected', function (event, data) {
-                var userId = data['userId'];
-                removeUser(userId);
-            });
-
-            $scope.$on('socketsService:listenerJoined', function (event, data) {
-                if (data['lectureId'] == lecture.id) {
-                    addUser(data['userId']);
-                }
-            });
-
-            $scope.$on('socketsService:listenerHasLeft', function (event, data) {
-                if (data['lectureId'] == lecture.id) {
-                    removeUser(data['userId']);
-                }
-            });
-
-            $scope.$on('socketsService:lectureSuspended', function (event, data) {
-                if (data['lectureId'] == lecture.id) {
-                    cancel();
-                }
-            });
-
-            $scope.$on('socketsService:lectureStopped', function (event, data) {
-                if (data['lectureId'] == lecture.id) {
-                    cancel();
-                }
-            });
-
             $scope.cancel = cancel;
 
             updateDialogTitle();
+
+            socketEventsManagerService.subscribe($scope, [
+                socketConnection.on('on_listener_joined', function (data) {
+
+                    var userId = data.userId;
+
+                    $timeout(function () {
+                        listenerJoined(userId);
+                    });
+                }),
+                socketConnection.on('on_listener_went', function (data) {
+
+                    var userId = data.userId;
+
+                    $timeout(function () {
+                        listenerWent(userId);
+                    });
+                }),
+                socketConnection.on('on_lecture_suspended', function () {
+                    cancel();
+                }),
+                socketConnection.on('on_lecture_stopped', function () {
+                    cancel();
+                })
+            ]);
         }
     ]
 );

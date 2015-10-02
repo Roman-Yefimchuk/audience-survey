@@ -2,7 +2,7 @@
 
     <div class="col-sm-8 col-sm-offset-2 column">
 
-        <div generic-header user="user">
+        <div generic-header="user">
         </div>
 
         <section class="panel tasks-widget" style="padding: 15px">
@@ -14,13 +14,14 @@
 
                         <ul class="list-group"
                             style="margin-bottom: 0">
-                            <li ng-repeat="lecture in activeLectures" class="list-group-item clearfix"
-                                ng-class="{ 'disabled' : lecture.status == 'suspended' }">
+                            <li ng-repeat="activeLecture in activeLectures" class="list-group-item clearfix"
+                                ng-class="{ 'disabled' : activeLecture.status == 'suspended' }">
 
                                 <div class="row clearfix">
                                     <div class="col-md-12">
                                         <div>
-                                            Тема: <br/> "<b>{{ lecture.name }}</b>"<br/>Автор <br/> <b>{{ lecture.author }}</b>
+                                            Тема: <br/> "<b>{{ activeLecture.name }}</b>"<br/>Автор <br/> <b>{{
+                                            activeLecture.lecturer['name'] }}</b>
                                         </div>
                                     </div>
 
@@ -28,21 +29,20 @@
                                         <div style="margin-right: -5px">
 
                                             <div class="pull-left" style="padding-right: 6px;padding-top: 4px;"
-                                                 ng-click="showPresentListeners(lecture)">
-                                                <i class="fa fa-users"
-                                                   tooltip="Присутні слухачі"></i>&nbsp;<b>{{ (lecture.presentListeners ||
-                                                []).length }}</b>
+                                                 ng-click="showPresentListeners(activeLecture)">
+                                                <i class="fa fa-users" style="cursor: pointer"
+                                                   tooltip="Присутні слухачі"></i>&nbsp;<b>{{
+                                                activeLecture.listeners['length'] }}</b>
                                             </div>
 
                                             <div class="pull-left" style="padding-right: 3px;padding-top: 4px;">
                                                 <i class="fa fa-clock-o"
-                                                   tooltip="Продовження леції"></i>&nbsp; <b>{{ lecture.duration || 0 |
-                                                formatTime
-                                                }}</b>
+                                                   tooltip="Продовження леції"></i>&nbsp; <b>{{ activeLecture.duration |
+                                                formatTime }}</b>
                                             </div>
 
                                             <a class="btn btn-success btn-xs pull-right"
-                                               ng-href="/#/lecture-room/{{ lecture.id }}">
+                                               ng-href="/#/listeners/{{ user.id }}/activeLectures/{{ activeLecture.id }}">
                                                 <i class="fa fa-sign-in"></i>&nbsp;Приєднатися
                                             </a>
 
@@ -53,7 +53,6 @@
 
                             </li>
                         </ul>
-
 
 
                     </div>

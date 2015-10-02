@@ -13,8 +13,12 @@ angular.module('application')
                 return httpClientService.get('users/' + userId + '/activeLectures');
             }
 
+            function getOwnActiveLectures(userId) {
+                return httpClientService.get('users/' + userId + '/activeLectures/own');
+            }
+
             function getActiveLecture(userId, lectureId) {
-                return httpClientService.post('users/' + userId + '/activeLectures/' + lectureId);
+                return httpClientService.get('users/' + userId + '/activeLectures/' + lectureId);
             }
 
             function startLecture(userId, lectureId) {
@@ -35,6 +39,7 @@ angular.module('application')
 
             return {
                 getActiveLectures: getActiveLectures,
+                getOwnActiveLectures: getOwnActiveLectures,
                 getActiveLecture: getActiveLecture,
                 startLecture: startLecture,
                 suspendLecture: suspendLecture,

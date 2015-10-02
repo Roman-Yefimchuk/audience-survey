@@ -1,0 +1,30 @@
+<div ng-controller="LecturerActivityTabController">
+    <div class="row clearfix">
+        <div class="col-md-12 col-xs-12 column text-center">
+
+            <div ng-switch="activityCollection.length > 0">
+                <div ng-switch-when="true">
+
+                    <ul class="list-group" style="margin: 0;">
+                        <li ng-repeat="activityItem in activityCollection"
+                            class="list-group-item text-left">
+
+                            <div>
+                                <b>{{ activityItem.timestamp | formatDate : 'ISO_TIME' }}</b>
+                            </div>
+                            <div>
+                                {{ activityItem.title }}
+                            </div>
+
+                        </li>
+                    </ul>
+
+                </div>
+                <div ng-switch-when="false">
+                    Немає активності
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

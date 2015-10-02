@@ -32,6 +32,28 @@
                                 });
                         });
                     }
+                },
+                {
+                    route: ':userId/name',
+                    method: 'get',
+                    params: ['userId'],
+                    filters: [
+                        RequestFilter.checkAuthorization()
+                    ],
+                    handler: function (userId) {
+
+                        return Promise(function (resolve, reject) {
+
+                            UserRepository.getUserName(userId)
+                                .then(function (name) {
+                                    resolve({
+                                        name: name
+                                    });
+                                }, function (e) {
+                                    reject(e);
+                                });
+                        });
+                    }
                 }
             ]
         });

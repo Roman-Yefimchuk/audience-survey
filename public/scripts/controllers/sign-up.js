@@ -54,7 +54,7 @@ angular.module('application')
                     if (response.userRole == 'lecturer') {
                         $location.path('/lecturers/' + response.userId + '/lectures');
                     } else {
-                        $location.path('/listeners/' + response.userId + '/lectures');
+                        $location.path('/listeners/' + response.userId + '/activeLectures');
                     }
                 }, function (error) {
                     $scope.errorMessage = error.message;

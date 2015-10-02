@@ -13,8 +13,13 @@ angular.module('application')
                 return httpClientService.get('users/' + userId);
             }
 
+            function getUserName(userId) {
+                return httpClientService.get('users/' + userId + '/name');
+            }
+
             return {
-                getUser: getUser
+                getUser: getUser,
+                getUserName: getUserName
             };
         }
     ]
