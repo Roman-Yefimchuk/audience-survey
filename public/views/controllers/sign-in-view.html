@@ -54,6 +54,38 @@
 
     <hr>
 
+    <div class="row clearfix">
+
+        <div class="col-md-4 column" style="padding-right: 7.5px;">
+            <div class="btn btn-primary col-md-12" style="width: 100%;"
+                 ng-click="externalSignIn('facebook')">
+                <span class="fa fa-facebook"></span>
+                &nbsp;
+                Facebook
+            </div>
+        </div>
+
+        <div class="col-md-4 column" style="padding-right: 7.5px;padding-left: 7.5px;">
+            <div class="btn btn-info col-md-12" style="width: 100%;"
+                 ng-click="externalSignIn('twitter')">
+                <span class="fa fa-twitter"></span>
+                &nbsp;
+                Twitter
+            </div>
+        </div>
+
+        <div class="col-md-4 column" style="padding-left: 7.5px;">
+            <div class="btn btn-danger col-md-12" style="width: 100%;"
+                 ng-click="externalSignIn('google')">
+                <span class="fa fa-google-plus"></span>
+                &nbsp;
+                Google+
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
     <p>
         Треба акуант? <a href="#/sign-up">Реєстрація</a>
     </p>
@@ -62,7 +94,7 @@
         Або перейти <a href="#/">додому</a>
     </p>
 
-    <p ng-show="true">
+    <p ng-show="false">
         <a href ng-click="quickSignInAsListener()">quickSignInAsListener</a>
         <br>
         <a href ng-click="quickSignInAsLecturer()">quickSignInAsLecturer</a>

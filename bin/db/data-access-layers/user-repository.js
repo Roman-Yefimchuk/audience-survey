@@ -33,7 +33,8 @@
                                 email: model.email,
                                 isEmailVerified: model.isEmailVerified
                             },
-                            role: model.role
+                            role: model.role,
+                            authorizationProvider: model.authorizationProvider
                         }).then(function (results) {
 
                             var user = results[0];
@@ -73,7 +74,9 @@
 
                     try {
 
-                        verifyPasswordHash(model.password, profile.passwordHash);
+                        if (verifyPasswordHash) {
+                            verifyPasswordHash(model.password, profile.passwordHash);
+                        }
 
                         resolve({
                             id: DbHelper.getRecordId(user),

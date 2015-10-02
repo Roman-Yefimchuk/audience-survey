@@ -9,7 +9,7 @@ angular.module('application')
         function ($modal, $window, $timeout) {
 
             function open(modalOptions) {
-                return $modal.open(modalOptions);
+                return $modal.open(modalOptions)['result'];
             }
 
             return {
@@ -113,6 +113,17 @@ angular.module('application')
                         controller: 'ProfileEditorDialogController',
                         backdrop: 'static',
                         keyboard: false,
+                        resolve: {
+                            options: function () {
+                                return options;
+                            }
+                        }
+                    });
+                },
+                showProfileBuilderDialog: function (options) {
+                    return open({
+                        templateUrl: '/public/views/controllers/dialogs/profile-builder-dialog-view.html',
+                        controller: 'ProfileBuilderDialogController',
                         resolve: {
                             options: function () {
                                 return options;

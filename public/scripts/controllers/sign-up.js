@@ -7,11 +7,13 @@ angular.module('application')
         '$scope',
         '$location',
         'authService',
+        'oauthService',
+        'profileExtractorService',
         'NAME_PATTERN',
         'EMAIL_PATTERN',
         'PASSWORD_PATTERN',
 
-        function ($scope, $location, authService, NAME_PATTERN, EMAIL_PATTERN, PASSWORD_PATTERN) {
+        function ($scope, $location, authService, oauthService, profileExtractorService, NAME_PATTERN, EMAIL_PATTERN, PASSWORD_PATTERN) {
 
             var roles = [
                 {
@@ -51,14 +53,49 @@ angular.module('application')
                     password: $scope.password,
                     role: $scope.role['id']
                 }).then(function (response) {
+
                     if (response.userRole == 'lecturer') {
                         $location.path('/lecturers/' + response.userId + '/lectures');
                     } else {
                         $location.path('/listeners/' + response.userId + '/activeLectures');
                     }
                 }, function (error) {
-                    $scope.errorMessage = error.message;
+                    $scope.errorMessage = error.message || error;
                 });
+            }
+
+            function externalSignUp(providerId) {
+
+                oauthService.authorize(providerId)
+                    .then(function (account) {
+
+                        profileExtractorService.extractProfile(account)
+                            .then(function (data) {
+
+                                authService.externalSignUp({
+                                    genericId: data.genericId,
+                                    name: data.name,
+                                    email: data.email,
+                                    role: $scope.role['id'],
+                                    isEmailVerified: data.isEmailVerified,
+                                    authorizationProvider: providerId
+                                }).then(function (response) {
+
+                                    if (response.userRole == 'lecturer') {
+                                        $location.path('/lecturers/' + response.userId + '/lectures');
+                                    } else {
+                                        $location.path('/listeners/' + response.userId + '/activeLectures');
+                                    }
+                                }, function (error) {
+                                    $scope.errorMessage = error.message || error;
+                                });
+                            }, function (error) {
+
+                                if (error) {
+                                    $scope.errorMessage = error.message || error;
+                                }
+                            });
+                    });
             }
 
             $scope.errorMessage = null;
@@ -75,30 +112,7 @@ angular.module('application')
             $scope.isPasswordValid = isPasswordValid;
             $scope.setRole = setRole;
             $scope.signUp = signUp;
-
-            $scope.quickSignUpAsLecturer = function () {
-
-                $scope.name = 'Lecturer';
-                $scope.email = 'lecturer@mail.com';
-                $scope.password = 'qwerty';
-                $scope.role = _.findWhere(roles, {
-                    id: 'lecturer'
-                });
-
-                signUp();
-            };
-
-            $scope.quickSignUpAsListener = function () {
-
-                $scope.name = 'Listener';
-                $scope.email = 'listener@mail.com';
-                $scope.password = 'qwerty';
-                $scope.role = _.findWhere(roles, {
-                    id: 'listener'
-                });
-
-                signUp();
-            };
+            $scope.externalSignUp = externalSignUp;
         }
     ]
 );

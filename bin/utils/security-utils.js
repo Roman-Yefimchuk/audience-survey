@@ -42,8 +42,8 @@
         return Guid.raw();
     }
 
-    function generateToken() {
-        var buffer = Crypto.randomBytes(64);
+    function generateToken(length) {
+        var buffer = Crypto.randomBytes(length || 64);
         return buffer.toString('hex');
     }
 

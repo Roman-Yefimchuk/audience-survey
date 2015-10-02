@@ -131,7 +131,78 @@
                                 password: model.password,
                                 email: model.email,
                                 isEmailVerified: false,
-                                role: model.role
+                                role: model.role,
+                                authorizationProvider: 'local'
+                            }, function (password) {
+                                return SecurityUtils.generateHash(password);
+                            }, function () {
+                                throw RequestError.badRequest({
+                                    code: 'AUTHORIZATION.USER_ALREADY_EXISTS'
+                                });
+                            }).then(function (user) {
+
+                                login(user)
+                                    .then(function (authSession) {
+                                        resolve(authSession);
+                                    })
+                                    .catch(function (e) {
+                                        reject(e);
+                                    });
+
+                            }).catch(function (e) {
+                                reject(e);
+                            });
+                        });
+                    }
+                },
+                {
+                    route: 'externalSignIn',
+                    method: 'post',
+                    params: [model()],
+                    handler: function (model) {
+
+                        return Promise(function (resolve, reject) {
+
+                            UserRepository.findUser({
+                                genericId: model.profileId
+                            }).then(function (user) {
+
+                                if (user) {
+                                    login(user)
+                                        .then(function (authSession) {
+                                            resolve(authSession);
+                                        })
+                                        .catch(function (e) {
+                                            reject(e);
+                                        });
+                                } else {
+                                    reject(RequestError.badRequest({
+                                        code: 'COMMON.USER_NOT_FOUND'
+                                    }));
+                                }
+
+                            }).catch(function (e) {
+                                reject(e);
+                            });
+                        });
+                    }
+                },
+                {
+                    route: 'externalSignUp',
+                    method: 'post',
+                    params: [model()],
+                    handler: function (model) {
+
+                        return Promise(function (resolve, reject) {
+
+                            UserRepository.createUser({
+                                genericId: model.genericId,
+                                name: model.name,
+                                password: SecurityUtils.generateToken(8),
+                                email: model.email,
+                                isEmailVerified: model.isEmailVerified,
+                                role: model.role,
+                                authorizationProvider: model.authorizationProvider
                             }, function (password) {
                                 return SecurityUtils.generateHash(password);
                             }, function () {

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script type="text/javascript" src="/public/libs/jquery/dist/jquery.js"></script>
+<script type="text/javascript" src="/public/scripts/authorize-status.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var mainWindow = window.opener;
+        if (mainWindow) {
+            var authorizeStatus = new AuthorizeStatus(AuthorizeStatus.AUTHORIZE_REJECTED);
+            mainWindow.postMessage(authorizeStatus, window.location['origin']);
+        }
+    });
+</script>
+</body>
+</html>

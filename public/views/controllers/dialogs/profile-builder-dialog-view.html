@@ -1,0 +1,67 @@
+<div>
+    <div class="modal-header">
+        <span class="close" ng-click="reject()">×</span>
+
+        <h4 style="margin-bottom: 0;margin-top: 0;">
+            <i class="fa fa-pencil"></i>
+            &nbsp;
+            Заповніть дані
+        </h4>
+
+    </div>
+
+    <div class="modal-body" style="margin-bottom: -15px;">
+
+        <div class="row clearfix">
+
+            <div class="form-group col-md-12 column">
+
+                <label>
+                    Ім'я
+                </label>
+
+                <div class="input-group" ng-class="{ 'has-error' : !isNameValid() }">
+                    <div class="input-group-addon">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <input class="form-control" type="text"
+                           ng-model="profile.name"
+                           ng-disabled="originalProfile.name">
+                </div>
+            </div>
+
+            <div class="form-group col-md-12 column">
+
+                <label>
+                    Електронна адреса
+                </label>
+
+                <div class="input-group" ng-class="{ 'has-error' : !isEmailValid() }">
+                    <div class="input-group-addon">
+                        <i class="fa fa-at"></i>
+                    </div>
+                    <input class="form-control" type="text"
+                           ng-model="profile.email"
+                           ng-disabled="originalProfile.email">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer ng-scope" style="margin-top: 0">
+        <span class="btn btn-warning" ng-click="reject()">
+            <i class="fa fa-reply"></i>
+            &nbsp;
+            Відміна
+        </span>
+        <span class="btn btn-primary" ng-click="resolve()"
+              ng-disabled="isDisabled()">
+            <i class="fa fa-sign-in"></i>
+            &nbsp;
+            Реєстарція
+        </span>
+    </div>
+
+</div>

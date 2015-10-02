@@ -11,4 +11,5 @@ profile = (
     email = :profile.email,
     isEmailVerified = :profile.isEmailVerified
 ),
-role = :role
+role = :role,
+authorizationProvider = :authorizationProvider

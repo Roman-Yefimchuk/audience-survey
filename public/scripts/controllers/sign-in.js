@@ -8,10 +8,11 @@ angular.module('application')
         '$rootScope',
         '$location',
         'authService',
+        'oauthService',
         'EMAIL_PATTERN',
         'PASSWORD_PATTERN',
 
-        function ($scope, $rootScope, $location, authService, EMAIL_PATTERN, PASSWORD_PATTERN) {
+        function ($scope, $rootScope, $location, authService, oauthService, EMAIL_PATTERN, PASSWORD_PATTERN) {
 
             function isEmailValid() {
                 var email = ($scope['email'] || '').toLowerCase();
@@ -35,8 +36,25 @@ angular.module('application')
                         $location.path('/listeners/' + response.userId + '/activeLectures');
                     }
                 }, function (error) {
-                    $scope.errorMessage = error.message;
+                    $scope.errorMessage = error.message || error;
                 });
+            }
+
+            function externalSignIn(providerId) {
+                oauthService.authorize(providerId)
+                    .then(function (account) {
+                        var profileId = account.profile['id'];
+                        authService.externalSignIn(profileId)
+                            .then(function (response) {
+                                if (response.userRole == 'lecturer') {
+                                    $location.path('/lecturers/' + response.userId + '/lectures');
+                                } else {
+                                    $location.path('/listeners/' + response.userId + '/activeLectures');
+                                }
+                            }, function (error) {
+                                $scope.errorMessage = error.message || error;
+                            });
+                    });
             }
 
             $scope.errorMessage = null;
@@ -46,18 +64,7 @@ angular.module('application')
             $scope.isEmailValid = isEmailValid;
             $scope.isPasswordValid = isPasswordValid;
             $scope.signIn = signIn;
-
-            $scope.quickSignInAsLecturer = function () {
-                $scope.email = 'lecturer@mail.com';
-                $scope.password = 'qwerty';
-                signIn();
-            };
-
-            $scope.quickSignInAsListener = function () {
-                $scope.email = 'listener@mail.com';
-                $scope.password = 'qwerty';
-                signIn();
-            };
+            $scope.externalSignIn = externalSignIn;
         }
     ]
 );

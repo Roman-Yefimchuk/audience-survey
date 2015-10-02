@@ -50,6 +50,47 @@ angular.module('application')
                 });
             }
 
+            function externalSignIn(profileId) {
+
+                return $q(function (resolve, reject) {
+                    httpClientService.post('/auth/externalSignIn', {
+                        profileId: profileId
+                    }).then(function (authSession) {
+
+                        $cookies.userId = authSession.userId;
+                        $cookies.userRole = authSession.userRole;
+                        $cookies.token = authSession.token;
+
+                        resolve({
+                            userId: authSession.userId,
+                            userRole: authSession.userRole
+                        });
+                    }, function (e) {
+                        reject(e);
+                    });
+                });
+            }
+
+            function externalSignUp(data) {
+
+                return $q(function (resolve, reject) {
+                    httpClientService.post('/auth/externalSignUp', data)
+                        .then(function (authSession) {
+
+                            $cookies.userId = authSession.userId;
+                            $cookies.userRole = authSession.userRole;
+                            $cookies.token = authSession.token;
+
+                            resolve({
+                                userId: authSession.userId,
+                                userRole: authSession.userRole
+                            });
+                        }, function (e) {
+                            reject(e);
+                        });
+                });
+            }
+
             function logout() {
                 return $q(function (resolve, reject) {
                     httpClientService.get('/auth/logout')
@@ -69,6 +110,8 @@ angular.module('application')
             return {
                 signIn: signIn,
                 signUp: signUp,
+                externalSignIn: externalSignIn,
+                externalSignUp: externalSignUp,
                 logout: logout
             };
         }

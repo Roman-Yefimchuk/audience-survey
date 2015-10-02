@@ -1,16 +1,20 @@
 (function (require, module) {
 
+    var passport = require('passport');
     var path = require('path');
     var domain = require('domain');
     var debug = require('debug')('FellowTraveler:server');
     var logger = require('morgan');
     var cookieParser = require('cookie-parser');
     var bodyParser = require('body-parser');
+    var session = require('express-session');
     var _ = require('underscore');
     var fileSystem = require('fs');
 
     var publicDirectory = path.resolve('./public');
     var rootDirectory = path.resolve('./');
+
+    var SecurityUtils = require('./utils/security-utils');
 
     function acceptTypeDetector(request, handler) {
 
@@ -92,6 +96,11 @@
             app.use(logger('dev'));
         }
 
+        app.use(session({
+            secret: SecurityUtils.generateToken(),
+            resave: false,
+            saveUninitialized: true
+        }));
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({
             extended: false
@@ -107,6 +116,14 @@
 
             app.get('/', function (request, response) {
                 response.sendFile(publicDirectory + '/index.html');
+            });
+
+            _.forEach([
+                require('./social-networks/facebook'),
+                require('./social-networks/google'),
+                require('./social-networks/twitter')
+            ], function (socialNetworkAuthProvider) {
+                socialNetworkAuthProvider(app, passport);
             });
 
         })(app);

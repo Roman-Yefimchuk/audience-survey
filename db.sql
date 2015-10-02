@@ -5,7 +5,6 @@ CREATE PROPERTY Profile.name STRING
 CREATE PROPERTY Profile.passwordHash STRING
 CREATE PROPERTY Profile.email STRING
 CREATE PROPERTY Profile.isEmailVerified BOOLEAN
-CREATE PROPERTY Profile.authorizationProvider STRING
 
 CREATE CLASS User
 CREATE PROPERTY User.genericId STRING
@@ -13,6 +12,7 @@ CREATE PROPERTY User.rating FLOAT
 CREATE PROPERTY User.registeredDate LONG
 CREATE PROPERTY User.profile LINK Profile
 CREATE PROPERTY User.role STRING
+CREATE PROPERTY User.authorizationProvider STRING
 
 CREATE CLASS Question
 CREATE PROPERTY Question.title STRING
