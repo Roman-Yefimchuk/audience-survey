@@ -9,7 +9,7 @@
 
     var _ = require('underscore');
     var security = require('../utils/security');
-    var authorizationConfig = require('./../../config/authorization-config');
+    var authorizationConfig = require('./../authorization-config');
 
     module.exports = function (passport, dbProvider) {
 

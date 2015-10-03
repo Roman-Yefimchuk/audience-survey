@@ -16,12 +16,12 @@
     })();
 
     var express = require('express');
-    var config = require('./../config.json');
+    var bootstrapConfig = require('./../config/bootstrap-config');
     var app = express();
     var server = require('http').Server(app);
     var io = require('socket.io')(server);
 
-    require('./app')(express, app, io, config[mode])
+    require('./app')(express, app, io, bootstrapConfig[mode]);
 
     var getErrorHandler = function (port) {
 
@@ -63,7 +63,7 @@
         };
     };
 
-    var port = config[mode].port;
+    var port = bootstrapConfig[mode].port;
 
     server.listen(port);
     server.on('error', getErrorHandler(port));

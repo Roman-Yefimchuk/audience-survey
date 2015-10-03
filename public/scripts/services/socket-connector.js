@@ -83,7 +83,7 @@ angular.module('application')
                 return $q(function (resolve) {
 
                     var socketEventsListener = new SocketEventsListener();
-                    var socket = io(url, {
+                    var socket = io(location.origin + url, {
                         'forceNew': true,
                         'query': "token=" + $cookies.token + '&userId=' + userId + '&url=' + url
                     });

@@ -1,4 +1,6 @@
-{
+"use strict";
+
+module.exports = {
     "development": {
         "port": 8081,
         "debug": true
@@ -7,4 +9,4 @@
         "port": 80,
         "debug": false
     }
-}
+};
