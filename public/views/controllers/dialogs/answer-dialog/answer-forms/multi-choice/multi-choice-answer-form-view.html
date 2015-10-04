@@ -1,0 +1,10 @@
+<div ng-repeat="item in items">
+    <span>
+        <input id="{{ $index }}" type="checkbox"
+               ng-model="item.isChosen"
+               style="cursor: pointer;"/>
+        <label for="{{ $index }}" style="vertical-align: middle;cursor: pointer;">
+            {{ item.text }}
+        </label>
+    </span>
+</div>

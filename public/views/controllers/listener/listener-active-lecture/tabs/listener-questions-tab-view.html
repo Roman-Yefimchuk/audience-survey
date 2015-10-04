@@ -1,37 +1,43 @@
-<div class="row clearfix">
+<div class="row clearfix" style="margin-top: -15px;">
     <div class="col-md-12 column">
 
-        <div ng-switch="teacherQuestions.length > 0">
+        <div ng-switch="askedQuestions.length > 0">
             <div ng-switch-when="true">
 
                 <ul class="list-group" style="margin-top: 15px;margin-bottom: 0;">
-                    <li ng-repeat="question in (teacherQuestions || [])" class="list-group-item text-left">
+                    <li ng-repeat="askedQuestion in askedQuestions"
+                        class="list-group-item text-left"
+                        style="padding-left: 10px;padding-right: 10px;">
 
-                        <span>
-                            {{ question.title }}
-                        </span>
+                        <div class="row clearfix">
 
-                        <br>
-
-                        <span style="margin-top: 15px;">
-                            <div ng-switch="!!question.answer">
-                                <div ng-include="answerForms[question.type]">
-                                </div>
-                                <div ng-switch-when="true">
-                                    Ваша відповідь: <b>{{ {'YES':'Так','NO':'Ні'}[question.answer] }}</b>
-                                </div>
-                                <div ng-switch-when="false" style="margin-top: 15px;">
-                                    <span class="btn btn-success btn-xs"
-                                          ng-click="replyForTeacherQuestion(question, 'YES')">
-                                        <i class="fa fa-thumbs-o-up"></i>&nbsp;Так
-                                    </span>
-                                    <span class="btn btn-danger btn-xs"
-                                          ng-click="replyForTeacherQuestion(question, 'NO')">
-                                        <i class="fa fa-thumbs-o-down"></i>&nbsp;Ні
-                                    </span>
+                            <div class="col-md-12" style="margin-bottom: 15px;">
+                                <div>
+                                    {{ askedQuestion.text }}
                                 </div>
                             </div>
-                        </span>
+                            <div class="col-md-12">
+
+                                <div class="pull-right">
+
+                                    <div class="btn btn-primary"
+                                         tooltip="Відповісти на запитання"
+                                         ng-click="sendAnswer(askedQuestion)"
+                                         ng-if="!askedQuestion.answerData">
+                                        <i class="fa fa-comment" style="margin-left: -1px;margin-right: -1px;"></i>
+                                    </div>
+
+                                    <div class="btn btn-primary"
+                                         tooltip="Подивитися свою відповідь"
+                                         ng-click="showListenerAnswer(askedQuestion.answerData)"
+                                         ng-if="askedQuestion.answerData">
+                                        <i class="fa fa-eye" style="margin-left: -1px;margin-right: -1px;"></i>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
 
                     </li>
                 </ul>
@@ -39,7 +45,7 @@
             </div>
             <div ng-switch-when="false">
                 <div class="text-center col-md-12" style="margin-top: 15px;">
-                    Немає запитань, поки що
+                    Немає запитань
                 </div>
             </div>
         </div>

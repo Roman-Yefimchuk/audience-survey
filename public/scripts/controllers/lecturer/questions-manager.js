@@ -21,11 +21,11 @@ angular.module('application')
 
                 var questions = $scope.questions;
 
-                var questionTitle = $scope['newQuestion'].trim();
-                if (questionTitle) {
+                var questionText = $scope['newQuestion'].trim();
+                if (questionText) {
 
                     questionsService.createQuestion(userId, lectureId, {
-                        title: questionTitle,
+                        text: questionText,
                         type: 'default',
                         data: {
                             yes: 'Так',
@@ -35,7 +35,7 @@ angular.module('application')
 
                         questions.push({
                             id: response.questionId,
-                            title: questionTitle,
+                            text: questionText,
                             type: 'default',
                             data: {
                                 yes: 'Так',
@@ -53,19 +53,19 @@ angular.module('application')
                 dialogsService.showQuestionEditor({
                     editorTitle: 'Редагувати запитання',
                     questionModel: {
-                        title: question.title,
+                        text: question.text,
                         type: question.type,
                         data: question.data
                     },
                     onSave: function (questionModel, closeCallback) {
 
                         questionsService.updateQuestion(userId, lectureId, question.id, {
-                            title: questionModel.title,
+                            text: questionModel.text,
                             type: questionModel.type,
                             data: questionModel.data
                         }).then(function () {
 
-                            question.title = questionModel.title;
+                            question.text = questionModel.text;
                             question.type = questionModel.type;
                             question.data = questionModel.data;
                             closeCallback();
@@ -94,6 +94,16 @@ angular.module('application')
                 $scope.newQuestion = '';
             }
 
+            function showAnswerDialog(question) {
+                dialogsService.showAnswerDialog({
+                    question: question,
+                    onSendAnswer: function (answerData, closeCallback) {
+                        alert(JSON.stringify(answerData));
+                        closeCallback();
+                    }
+                });
+            }
+
             $scope.newQuestion = '';
             $scope.user = user;
             $scope.questions = questions;
@@ -102,6 +112,8 @@ angular.module('application')
             $scope.editQuestion = editQuestion;
             $scope.removeQuestion = removeQuestion;
             $scope.clearInput = clearInput;
+
+            $scope.showAnswerDialog = showAnswerDialog;
         }
     ]
 );

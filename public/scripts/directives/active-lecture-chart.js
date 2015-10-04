@@ -10,7 +10,7 @@ angular.module('application')
         function ($rootScope, $filter) {
             return {
                 scope: {
-                    model: '='
+                    model: '=activeLectureChart'
                 },
                 templateUrl: '/public/views/directives/active-lecture-chart-view.html',
                 controller: ['$scope', function ($scope) {
@@ -83,7 +83,7 @@ angular.module('application')
                             var context = canvas.getContext('2d');
 
                             var getChart = function () {
-                                return  new Chart(context).Line($scope.model, {
+                                return new Chart(context).Line($scope.model, {
                                     segmentShowStroke: false,
                                     animation: false,
                                     bezierCurve: false

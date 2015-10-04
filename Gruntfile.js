@@ -1,10 +1,13 @@
+'use strict';
+
 module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
             options: {
-                jshintrc: '.jshintrc'
+                'jshintrc': '.jshintrc',
+                '-W015': true
             },
             all: [
                 'Gruntfile.js',
@@ -78,7 +81,7 @@ module.exports = function (grunt) {
                         dest: 'production/build/public/views/'
                     },
                     {
-                        "production/build/public/index.html": "public/index.html"
+                        'production/build/public/index.html': 'public/index.html'
                     }
                 ]
             }

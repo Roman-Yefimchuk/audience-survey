@@ -2,33 +2,69 @@
 
 angular.module('application')
 
-    .controller('AnsweredListenersController', [
+    .controller('AnsweredListenersDialogController', [
 
+        '$q',
         '$scope',
         '$modalInstance',
-        '$log',
-        'apiService',
+        'usersService',
         'options',
 
-        function ($scope, $modalInstance, $log, apiService, options) {
+        function ($q, $scope, $modalInstance, usersService, options) {
 
-            var answers = angular.copy(options.answers);
+            var question = options.question;
+            var listenerAnswers = options.listenerAnswers;
             var visibleUsers = [];
 
             var pagination = {
                 itemsPerPage: 5,
                 maxPaginationSize: 5,
-                totalItems: answers.length,
+                totalItems: listenerAnswers.length,
                 pageNumber: 1
             };
 
             function updateDialogTitle() {
-                $scope.dialogTitle = 'На запитання відповіли ' + answers.length + ' користувач(ів)';
+                $scope.dialogTitle = 'На запитання відповіли ' + listenerAnswers.length + ' користувач(ів)';
             }
 
             function updatePage() {
-                pagination.totalItems = answers.length;
-                if (answers.length > 0) {
+
+                pagination.totalItems = listenerAnswers.length;
+
+                if (listenerAnswers.length > 0) {
+
+                    var users = getUsersForPage();
+
+                    if (!angular.equals(users, visibleUsers)) {
+
+                        visibleUsers = angular.copy(users);
+
+                        $q.all((function () {
+                            var requests = [];
+                            _.forEach(visibleUsers, function (userId) {
+                                requests.push($q(function (resolve, reject) {
+                                    usersService.getUserName(userId)
+                                        .then(function (user) {
+                                            resolve({
+                                                id: userId,
+                                                name: user.name
+                                            });
+                                        }, function (e) {
+                                            reject(e);
+                                        });
+                                }));
+                            });
+                            return requests;
+                        })()).then(function (users) {
+                            $scope.answeredListeners = users;
+                        });
+                    }
+                } else {
+                    $scope.answeredListeners = [];
+                    visibleUsers = [];
+                }
+
+/*                if (listenerAnswers.length > 0) {
                     var users = getUsersForPage();
                     if (!angular.equals(users, visibleUsers)) {
                         visibleUsers = angular.copy(users);
@@ -41,20 +77,21 @@ angular.module('application')
                 } else {
                     $scope.answeredListeners = [];
                     visibleUsers = [];
-                }
+                }*/
             }
 
             function getUsersForPage() {
+
                 var users = [];
 
                 if (pagination.totalItems > pagination.itemsPerPage) {
 
                     var fromIndex = (pagination.pageNumber - 1) * pagination.itemsPerPage;
-                    for (var index = 0; (index + fromIndex < answers.length) && (index < pagination.itemsPerPage); index++) {
-                        users.push(answers[index + fromIndex].userId);
+                    for (var index = 0; (index + fromIndex < listenerAnswers.length) && (index < pagination.itemsPerPage); index++) {
+                        users.push(listenerAnswers[index + fromIndex].userId);
                     }
                 } else {
-                    _.forEach(answers, function (item) {
+                    _.forEach(listenerAnswers, function (item) {
                         users.push(item.userId);
                     });
                 }
@@ -63,7 +100,7 @@ angular.module('application')
             }
 
             function getListenerAnswer(userId) {
-                return _.findWhere(answers, {
+                return _.findWhere(listenerAnswers, {
                     userId: userId
                 }).answer;
             }

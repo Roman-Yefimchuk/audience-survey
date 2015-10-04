@@ -9,38 +9,43 @@ angular.module('application')
 
         function ($q, httpClientService) {
 
-            function getActiveLectures(userId) {
-                return httpClientService.get('users/' + userId + '/activeLectures');
+            function getLecturerActiveLectures(userId) {
+                return httpClientService.get('users/' + userId + '/lecturerActiveLectures');
             }
 
-            function getOwnActiveLectures(userId) {
-                return httpClientService.get('users/' + userId + '/activeLectures/own');
+            function getLecturerActiveLecture(userId, lectureId) {
+                return httpClientService.get('users/' + userId + '/lecturerActiveLectures/' + lectureId);
             }
 
-            function getActiveLecture(userId, lectureId) {
-                return httpClientService.get('users/' + userId + '/activeLectures/' + lectureId);
+            function getListenerActiveLectures(userId) {
+                return httpClientService.get('users/' + userId + '/listenerActiveLectures');
+            }
+
+            function getListenerActiveLecture(userId, lectureId) {
+                return httpClientService.get('users/' + userId + '/listenerActiveLectures/' + lectureId);
             }
 
             function startLecture(userId, lectureId) {
-                return httpClientService.get('users/' + userId + '/activeLectures/' + lectureId + '/start');
+                return httpClientService.get('users/' + userId + '/lecturerActiveLectures/' + lectureId + '/start');
             }
 
             function suspendLecture(userId, lectureId) {
-                return httpClientService.get('users/' + userId + '/activeLectures/' + lectureId + '/suspend');
+                return httpClientService.get('users/' + userId + '/lecturerActiveLectures/' + lectureId + '/suspend');
             }
 
             function resumeLecture(userId, lectureId) {
-                return httpClientService.get('users/' + userId + '/activeLectures/' + lectureId + '/resume');
+                return httpClientService.get('users/' + userId + '/lecturerActiveLectures/' + lectureId + '/resume');
             }
 
             function stopLecture(userId, lectureId) {
-                return httpClientService.get('users/' + userId + '/activeLectures/' + lectureId + '/stop');
+                return httpClientService.get('users/' + userId + '/lecturerActiveLectures/' + lectureId + '/stop');
             }
 
             return {
-                getActiveLectures: getActiveLectures,
-                getOwnActiveLectures: getOwnActiveLectures,
-                getActiveLecture: getActiveLecture,
+                getLecturerActiveLectures: getLecturerActiveLectures,
+                getLecturerActiveLecture: getLecturerActiveLecture,
+                getListenerActiveLectures: getListenerActiveLectures,
+                getListenerActiveLecture: getListenerActiveLecture,
                 startLecture: startLecture,
                 suspendLecture: suspendLecture,
                 resumeLecture: resumeLecture,

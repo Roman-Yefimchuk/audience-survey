@@ -6,7 +6,7 @@ angular.module('application')
 
         '$modal',
 
-        function ($modal, $window, $timeout) {
+        function ($modal) {
 
             function open(modalOptions) {
                 return $modal.open(modalOptions)['result'];
@@ -54,8 +54,8 @@ angular.module('application')
                 },
                 showQuestionEditor: function (options) {
                     return open({
-                        templateUrl: '/public/views/controllers/dialogs/question-editor/question-editor-view.html',
-                        controller: 'QuestionEditorController',
+                        templateUrl: '/public/views/controllers/dialogs/question-editor/question-editor-dialog-view.html',
+                        controller: 'QuestionEditorDialogController',
                         backdrop: 'static',
                         keyboard: false,
                         resolve: {
@@ -80,7 +80,7 @@ angular.module('application')
                 },
                 showPresentListeners: function (listeners, socketConnection) {
                     return open({
-                        templateUrl: '/public/views/controllers/dialogs/present-listeners-view.html',
+                        templateUrl: '/public/views/controllers/dialogs/present-listeners-dialog-view.html',
                         controller: 'PresentListenersController',
                         backdrop: 'static',
                         keyboard: false,
@@ -96,8 +96,8 @@ angular.module('application')
                 },
                 showAnsweredListeners: function (options) {
                     return open({
-                        templateUrl: '/public/views/controllers/dialogs/answered-listeners-view.html',
-                        controller: 'AnsweredListenersController',
+                        templateUrl: '/public/views/controllers/dialogs/answered-listeners-dialog-view.html',
+                        controller: 'AnsweredListenersDialogController',
                         backdrop: 'static',
                         keyboard: false,
                         resolve: {
@@ -124,6 +124,17 @@ angular.module('application')
                     return open({
                         templateUrl: '/public/views/controllers/dialogs/profile-builder-dialog-view.html',
                         controller: 'ProfileBuilderDialogController',
+                        resolve: {
+                            options: function () {
+                                return options;
+                            }
+                        }
+                    });
+                },
+                showAnswerDialog: function (options) {
+                    return open({
+                        templateUrl: '/public/views/controllers/dialogs/answer-dialog/answer-dialog-view.html',
+                        controller: 'AnswerDialogController',
                         resolve: {
                             options: function () {
                                 return options;

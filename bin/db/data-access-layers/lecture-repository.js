@@ -47,6 +47,7 @@
                         name: lecture.name,
                         creationDate: lecture.creationDate,
                         description: lecture.description,
+                        links: JSON.parse(lecture.links),
                         lecturer: (function (user) {
                             return {
                                 id: DbHelper.getRecordId(user),
@@ -88,6 +89,7 @@
                             name: lecture.name,
                             creationDate: lecture.creationDate,
                             description: lecture.description,
+                            links: JSON.parse(lecture.links),
                             lecturer: (function (user) {
                                 return {
                                     id: DbHelper.getRecordId(user),
@@ -133,7 +135,8 @@
             DbProvider.executeQuery('update-lecture.sql', {
                 lectureId: DbHelper.parseRecordId(lectureId),
                 name: model.name,
-                description: model.description
+                description: model.description,
+                links: JSON.stringify(model.links)
             }).then(function () {
                 resolve();
             }).catch(function (e) {

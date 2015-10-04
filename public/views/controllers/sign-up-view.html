@@ -1,7 +1,7 @@
 <div class="panel col-sm-4 col-sm-offset-4" style="margin-top: 15px">
 
     <h1>
-        <span class="fa fa-sign-in" ng-click="quickSingUp()"></span>
+        <span class="fa fa-sign-in"></span>
         Реєстрація
     </h1>
 
@@ -79,14 +79,17 @@
 
                 <div class="btn-group col-md-12" dropdown
                      style="padding: 0;display: flex;">
-                            <span class="btn btn-primary" style="width: 100%;">
-                                <span class="pull-left">
-                                    {{ role.name }}
-                                </span>
-                            </span>
-                            <span class="btn btn-primary dropdown-toggle">
-                                <span class="caret"></span>
-                            </span>
+
+                    <span class="btn btn-primary" style="width: 100%;">
+                        <span class="pull-left">
+                            {{ role.name }}
+                        </span>
+                    </span>
+
+                    <span class="btn btn-primary dropdown-toggle">
+                        <span class="caret"></span>
+                    </span>
+
                     <ul class="dropdown-menu pull-right" role="menu">
                         <li>
                             <a href ng-repeat="_role in roles"

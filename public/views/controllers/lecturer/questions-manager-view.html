@@ -55,13 +55,20 @@
 
                                     <div class="col-sm-12 column" style="margin-bottom: 10px;">
 
-                                        <b>{{ question.title }}</b>
+                                        <b>{{ question.text }}</b>
 
                                     </div>
 
                                     <div class="col-sm-12 column">
 
                                         <div class="pull-right">
+
+                                          <span class="btn btn-success"
+                                                ng-click="showAnswerDialog(question)">
+                                                <i class="fa fa-bullhorn"
+                                                   style="margin-right: -1px;margin-left: -1px;">
+                                                </i>
+                                            </span>
 
                                             <span class="btn btn-primary"
                                                   tooltip="Редагувати запитання"
@@ -72,7 +79,7 @@
                                             <span class="btn btn-danger"
                                                   tooltip="Видалити запитання"
                                                   ng-click="removeQuestion(question)">
-                                                <i class="fa fa-trash-o"></i>
+                                                <i class="fa fa-trash-o" style="margin-right: 1px;"></i>
                                             </span>
 
                                         </div>

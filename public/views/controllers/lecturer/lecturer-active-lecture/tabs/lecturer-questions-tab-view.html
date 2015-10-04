@@ -2,13 +2,13 @@
 
     <form ng-submit="addQuestion()">
 
-        <div class="input-group task-add">
+        <div class="input-group">
 
             <div class="form-group-sm" ng-class="{ 'has-feedback' : !!newQuestion.text }">
 
                 <label class="control-label" ng-show="false"></label>
 
-                <input type="text" class="form-control" id="main-input"
+                <input type="text" class="form-control"
                        placeholder="Введіть запитання"
                        autofocus autocomplete="off" ng-model="newQuestion.text"
                        style="border-bottom-left-radius: 3px;border-top-left-radius: 3px;">
@@ -17,7 +17,7 @@
                      ng-show="!!newQuestion.text">
                     <i class="fa fa-times" style="cursor: pointer"
                        tooltip="Очистити"
-                       ng-click="clearInput()"></i>
+                       ng-click="newQuestion.text = ''"></i>
                 </div>
             </div>
 
@@ -36,94 +36,78 @@
 
     <div style="padding: 15px 0 0;">
 
-        <div>
+        <div ng-switch="questions.length > 0">
+            <div ng-switch-when="true">
 
-            <div ng-switch="loading">
+                <ul class="list-group"
+                    style="margin-bottom: 0">
+                    <li ng-repeat="question in questions" class="list-group-item"
+                        style="padding-left: 10px;padding-right: 10px;">
 
-                <div ng-switch-when="true">
-                    <div static-include="/client/views/common/loader-view.html"></div>
-                </div>
-
-                <div ng-switch-when="false">
-
-                    <div ng-switch="questions.length > 0">
-                        <div ng-switch-when="true">
-
-                            <ul class="list-group"
-                                style="margin-bottom: 0">
-                                <li ng-repeat="question in questions" class="list-group-item">
-
-                                    <div class="row clearfix">
-                                        <div class="col-md-12" style="margin-bottom: 15px;">
-                                            <div>
-                                                {{ question.title }}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-
-                                            <div class="pull-left" ng-show="!question.isAsked">
-
-                                                <div class="btn btn-success"
-                                                     ng-disabled="lecture.status != 'started'"
-                                                     tooltip="Задати запитання"
-                                                     ng-click="askQuestion(question)">
-                                                    <i class="fa fa-bullhorn"></i>
-                                                </div>
-
-                                            </div>
-
-
-                                            <div class="pull-right">
-
-                                                <div ng-show="question.isAsked" class="pull-left"
-                                                     style="cursor: pointer;padding-right: 6px;margin-top: 2px;"
-                                                     ng-click="showAnsweredListeners(question)">
-                                                    <i class="fa fa-users"
-                                                       tooltip="Слухачі, які відповіли"></i>&nbsp;<b>{{
-                                                    (question.answers || []).length }}</b>
-                                                </div>
-
-                                                <div class="btn btn-primary"
-                                                     ng-show="!question.isAsked"
-                                                     tooltip="Редагувати запитання"
-                                                     ng-click="editQuestion(question)">
-                                                    <i class="fa fa-pencil"></i>
-                                                </div>
-
-                                                <div class="btn btn-danger"
-                                                     ng-show="!question.isAsked"
-                                                     tooltip="Видалити запитання"
-                                                     ng-click="removeQuestion(question)">
-                                                    <i class="fa fa-trash-o"></i>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-
-                                </li>
-                            </ul>
-
-                        </div>
-
-                        <div ng-switch-when="false">
-
-                            <div class="text-center">
-                                <div class="row clearfix">
-                                    <div class="col-md-12 column">
-                                        Немає запитань
-                                    </div>
+                        <div class="row clearfix">
+                            <div class="col-md-12" style="margin-bottom: 15px;">
+                                <div>
+                                    {{ question.text }}
                                 </div>
                             </div>
+                            <div class="col-md-12">
 
+                                <div class="pull-left" ng-if="!getAskedQuestion(question.id)">
+
+                                    <div class="btn btn-success"
+                                         tooltip="Задати запитання"
+                                         ng-click="askQuestion(question)">
+                                        <i class="fa fa-bullhorn" style="margin-right: -1px;margin-left: -1px;"></i>
+                                    </div>
+
+                                </div>
+
+                                <div class="pull-right">
+
+                                    <div ng-if="getAskedQuestion(question.id)" class="pull-left"
+                                         style="cursor: pointer;"
+                                         ng-click="showAnsweredListeners(question)">
+                                        <i class="fa fa-users"
+                                           tooltip="Слухачі, які відповіли"></i>&nbsp;<b>{{
+                                        getAskedQuestion(question.id).listenerAnswers['length'] }}</b>
+                                    </div>
+
+                                    <div class="btn btn-primary"
+                                         ng-if="!getAskedQuestion(question.id)"
+                                         tooltip="Редагувати запитання"
+                                         ng-click="editQuestion(question)">
+                                        <i class="fa fa-pencil"></i>
+                                    </div>
+
+                                    <div class="btn btn-danger"
+                                         ng-if="!getAskedQuestion(question.id)"
+                                         tooltip="Видалити запитання"
+                                         ng-click="removeQuestion(question)">
+                                        <i class="fa fa-trash-o" style="margin-left: 1px;"></i>
+                                    </div>
+
+                                </div>
+
+                            </div>
                         </div>
-                    </div>
 
-                </div>
+
+                    </li>
+                </ul>
+
             </div>
 
+            <div ng-switch-when="false">
+
+                <div class="text-center">
+                    <div class="row clearfix">
+                        <div class="col-md-12 column">
+                            Немає запитань
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     </div>

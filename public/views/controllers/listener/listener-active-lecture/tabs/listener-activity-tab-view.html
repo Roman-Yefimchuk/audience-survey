@@ -1,48 +1,62 @@
 <div class="row clearfix">
     <div class="col-md-12 col-xs-12 column">
 
-        <div class="row clearfix" style="margin-top: 15px;">
-            <div class="col-md-12 column">
-                <textarea rows="3" noresize class="form-control" required
-                          style="resize: none;/*border-top-left-radius: 0;border-top-right-radius: 0;"
-                          ng-model="message.text">
-                </textarea>
+        <form ng-submit="sendMessage()">
 
-                <div class="btn btn-success btn-sm btn-xs" ng-click="sendMessage()" style="margin-top: 15px;"
-                     ng-disabled="!message.text">
-                    <i class="fa fa-paper-plane"></i>
-                    &nbsp;
-                    Відправити
+            <div class="input-group">
+
+                <div class="form-group-sm" ng-class="{ 'has-feedback' : !!message.text }">
+
+                    <label class="control-label" ng-show="false"></label>
+
+                    <input type="text" class="form-control" id="main-input"
+                           placeholder="Введіть текст"
+                           autofocus autocomplete="off" ng-model="message.text"
+                           style="border-bottom-left-radius: 3px;border-top-left-radius: 3px;">
+
+                        <span class="form-control-feedback" style="top: 0"
+                              ng-show="!!message.text">
+                            <i class="fa fa-times" style="cursor: pointer"
+                               tooltip="Очистити"
+                               ng-click="message.text = ''"></i>
+                        </span>
                 </div>
+
+                 <span class="input-group-btn">
+
+                     <span class="btn btn-success"
+                           ng-click="sendMessage()">
+                         <i class="fa fa-plus"></i>
+                     </span>
+
+                 </span>
+
             </div>
-        </div>
 
-        <div class="panel panel-default" style="margin-top: 15px;margin-bottom: 0;">
-            <div id="activity-list" class="panel-body" style="/*height: 200px;overflow-y: auto;">
+        </form>
 
-                <div ng-switch="activityCollection.length > 0">
-                    <div ng-switch-when="true">
+        <div ng-switch="activityCollection.length > 0" style="margin-top: 15px;">
+            <div ng-switch-when="true">
 
-                        <ul class="list-group" style="margin: 0;">
-                            <li ng-repeat="activityItem in activityCollection" class="list-group-item text-left">
+                <ul class="list-group" style="margin: 0;">
+                    <li ng-repeat="activityItem in activityCollection" class="list-group-item text-left">
 
-                                <span>
-                                    <b>{{ activityItem.timestamp | formatDate : 'ISO_TIME' }}</b>
-                                </span>
-                                <br>
-                                <span>
-                                    {{ activityItem.title }}
-                                </span>
+                        <span>
+                            <b>{{ activityItem.timestamp | formatDate : 'ISO_TIME' }}</b>
+                        </span>
 
-                            </li>
-                        </ul>
+                        <br>
 
-                    </div>
-                    <div ng-switch-when="false">
-                        Немає активності
-                    </div>
-                </div>
+                        <span>
+                            {{ activityItem.title }}
+                        </span>
 
+                    </li>
+                </ul>
+
+            </div>
+            <div ng-switch-when="false">
+                Немає активності
             </div>
         </div>
 

@@ -2,7 +2,7 @@ UPDATE Lecture
 ADD questions = (
     INSERT INTO Question
     SET
-    title = :title,
+    text = :text,
     creationDate = :creationDate,
     type = :type,
     data = :data

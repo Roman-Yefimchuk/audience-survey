@@ -111,7 +111,8 @@ angular.module('application')
                             'on_lecturer_joined',
                             'on_lecturer_went',
                             'on_message_received',
-                            'on_statistic_updated'
+                            'on_statistic_updated',
+                            'on_understanding_value_updated'
                         ], function (command) {
                             socket.on(command, function (data) {
                                 socketEventsListener.trigger(command, data);

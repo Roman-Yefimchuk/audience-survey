@@ -1,4 +1,4 @@
-<div ng-controller="LecturerInfoTabController">
+<div ng-controller="LecturerInfoTabController" style="margin-top: -10px;">
     <div class="text-left">
 
         <div>
@@ -23,7 +23,7 @@
             <h4>Додаткові повилання</h4>
 
             <div ng-repeat="link in lecture.links">
-                <a ng-href="http://{{ link.url }}">{{ link.titla }}</a>
+                <a ng-href="{{ link.url }}">{{ link.title }}</a>
             </div>
         </div>
 

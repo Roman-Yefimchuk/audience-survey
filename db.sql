@@ -15,14 +15,10 @@ CREATE PROPERTY User.role STRING
 CREATE PROPERTY User.authorizationProvider STRING
 
 CREATE CLASS Question
-CREATE PROPERTY Question.title STRING
+CREATE PROPERTY Question.text STRING
 CREATE PROPERTY Question.creationDate LONG
 CREATE PROPERTY Question.type STRING
 CREATE PROPERTY Question.data STRING
-
-CREATE CLASS Link
-CREATE PROPERTY Link.title STRING
-CREATE PROPERTY Link.url STRING
 
 CREATE CLASS TimeMarker
 CREATE PROPERTY TimeMarker.startTime LONG
@@ -46,7 +42,7 @@ CREATE PROPERTY Lecture.creationDate LONG
 CREATE PROPERTY Lecture.lecturer LINK User
 CREATE PROPERTY Lecture.description STRING
 CREATE PROPERTY Lecture.statisticCharts LINKLIST StatisticChart
-CREATE PROPERTY Lecture.links LINKLIST Link
+CREATE PROPERTY Lecture.links STRING
 CREATE PROPERTY Lecture.questions LINKLIST Question
 
 CREATE CLASS AuthSession

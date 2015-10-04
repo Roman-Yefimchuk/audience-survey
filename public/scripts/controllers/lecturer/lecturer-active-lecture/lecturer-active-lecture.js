@@ -13,14 +13,17 @@ angular.module('application')
         'socketEventsManagerService',
         'activeLecturesService',
         'usersService',
+        'questionsService',
         'user',
         'lecture',
         'activeLecture',
+        'questions',
         'socketConnection',
 
-        function ($q, $scope, $filter, $location, $timeout, dialogsService, socketEventsManagerService, activeLecturesService, usersService, user, lecture, activeLecture, socketConnection) {
+        function ($q, $scope, $filter, $location, $timeout, dialogsService, socketEventsManagerService, activeLecturesService, usersService, questionsService, user, lecture, activeLecture, questions, socketConnection) {
 
             var userId = user.id;
+            var lectureId = lecture.id;
             var pieModel = [
                 {
                     value: 0,
@@ -35,11 +38,10 @@ angular.module('application')
                     highlight: "#ac2925"
                 }
             ];
-            var chartModel = getChartModel([]);
             var activityCollection = [];
             var tabs = [
                 {
-                    id: 'lecture-info',
+                    id: 'info',
                     title: 'Інформація',
                     icon: 'fa-info-circle',
                     templateUrl: '/public/views/controllers/lecturer/lecturer-active-lecture/tabs/lecturer-info-tab-view.html',
@@ -99,24 +101,111 @@ angular.module('application')
                     });
             }
 
-            /*            function clearInput() {
-             $scope.newQuestion['text'] = '';
-             }
+            function addQuestion() {
 
-             function askQuestion(question) {
+                var questions = $scope.questions;
 
-             var socketConnection = $scope.socketConnection;
-             socketConnection.askQuestion(lectureId, question);
+                var questionText = ($scope.newQuestion['text']).trim();
+                if (questionText) {
 
-             question.answers = [];
-             question.isAsked = true;
+                    questionsService.createQuestion(userId, lectureId, {
+                        text: questionText,
+                        type: 'default',
+                        data: {
+                            yes: 'Так',
+                            no: 'Ні'
+                        }
+                    }).then(function (response) {
 
-             addActivityItem('Ви задали запитання: ' + question.title);
-             }*/
+                        questions.push({
+                            id: response.questionId,
+                            text: questionText,
+                            type: 'default',
+                            data: {
+                                yes: 'Так',
+                                no: 'Ні'
+                            }
+                        });
+
+                        $scope.newQuestion['text'] = '';
+                    });
+                }
+            }
+
+            function editQuestion(question) {
+
+                dialogsService.showQuestionEditor({
+                    editorTitle: 'Редагувати запитання',
+                    questionModel: {
+                        text: question.text,
+                        type: question.type,
+                        data: question.data
+                    },
+                    onSave: function (questionModel, closeCallback) {
+
+                        questionsService.updateQuestion(userId, lectureId, question.id, {
+                            text: questionModel.text,
+                            type: questionModel.type,
+                            data: questionModel.data
+                        }).then(function () {
+
+                            question.text = questionModel.text;
+                            question.type = questionModel.type;
+                            question.data = questionModel.data;
+                            closeCallback();
+                        });
+                    }
+                });
+            }
+
+            function removeQuestion(question) {
+
+                dialogsService.showConfirmation({
+                    title: 'Видалити запитання',
+                    message: 'Ви дійсно хочете видалити запитання?',
+                    onAccept: function (closeCallback) {
+
+                        questionsService.removeQuestion(userId, lectureId, question.id)
+                            .then(function () {
+                                $scope.questions = _.without($scope.questions, question);
+                                closeCallback();
+                            });
+                    }
+                });
+            }
+
+            function askQuestion(question) {
+
+                socketConnection.emit('ask_question', {
+                    question: {
+                        id: question.id,
+                        text: question.text,
+                        type: question.type,
+                        data: question.data
+                    }
+                });
+
+                var askedQuestions = activeLecture.askedQuestions;
+                askedQuestions.push({
+                    questionId: question.id,
+                    listenerAnswers: []
+                });
+
+                addActivityItem('Ви задали запитання: ' + question.text);
+            }
+
+            function getAskedQuestion(questionId) {
+                return _.findWhere(activeLecture.askedQuestions, {
+                    questionId: questionId
+                });
+            }
 
             function showAnsweredListeners(question) {
                 dialogsService.showAnsweredListeners({
-                    answers: question.answers
+                    question: question,
+                    listenerAnswers: _.findWhere(activeLecture.askedQuestions, {
+                        questionId: question.id
+                    }).listenerAnswers
                 });
             }
 
@@ -132,73 +221,6 @@ angular.module('application')
                 $scope.tab = tab;
             }
 
-            function getChartModel(chartPoints) {
-                return {
-                    labels: (function () {
-                        var labels = (function () {
-                            if (chartPoints.length > 0) {
-                                return ["00:00"];
-                            }
-                            return ["00:00", "01:00"];
-                        })();
-                        _.forEach(chartPoints, function (chartPoint) {
-                            labels.push($filter('formatTime')(chartPoint.timestamp, '@{minutes}:@{seconds}'));
-                        });
-                        return labels;
-                    })(),
-                    datasets: [
-                        {
-                            fillColor: "rgba(220,220,220,0.2)",
-                            strokeColor: "rgba(220,220,220,1)",
-                            pointColor: "rgba(220,220,220,1)",
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(220,220,220,1)",
-                            data: (function () {
-                                var data = (function () {
-                                    if (chartPoints.length > 0) {
-                                        return [0];
-                                    }
-                                    return [0, 0];
-                                })();
-                                _.forEach(chartPoints, function (chartPoint) {
-                                    data.push(chartPoint.presentListeners);
-                                });
-                                return data;
-                            })()
-                        },
-                        {
-                            fillColor: "rgba(151,187,205,0.2)",
-                            strokeColor: "rgba(151,187,205,1)",
-                            pointColor: "rgba(151,187,205,1)",
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(151,187,205,1)",
-                            data: (function () {
-                                var data = (function () {
-                                    if (chartPoints.length > 0) {
-                                        return [0];
-                                    }
-                                    return [0, 0];
-                                })();
-                                _.forEach(chartPoints, function (chartPoint) {
-                                    data.push(((chartPoint.understandingPercentage * chartPoint.presentListeners) / 100).toFixed(2));
-                                });
-                                return data;
-                            })()
-                        }
-                    ]
-                };
-            }
-
-            function subscribeForSocketEvent() {
-
-                $scope.$on('socketsService:updateChart', function (event, chartPoints) {
-                    console.log(chartPoints);
-                    $scope.chartModel = getChartModel(chartPoints);
-                });
-            }
-
             $scope.user = user;
             $scope.lecture = lecture;
             $scope.activeLecture = activeLecture;
@@ -208,9 +230,8 @@ angular.module('application')
             $scope.newQuestion = {
                 text: ''
             };
-            $scope.questions = [];
+            $scope.questions = questions;
             $scope.pieModel = pieModel;
-            $scope.chartModel = chartModel;
             $scope.tabs = tabs;
             $scope.tab = _.find(tabs, function (tab) {
                 return tab.isActive;
@@ -219,6 +240,14 @@ angular.module('application')
             $scope.resumeLecture = resumeLecture;
             $scope.suspendLecture = suspendLecture;
             $scope.stopLecture = stopLecture;
+
+            $scope.addQuestion = addQuestion;
+            $scope.editQuestion = editQuestion;
+            $scope.removeQuestion = removeQuestion;
+
+            $scope.askQuestion = askQuestion;
+            $scope.getAskedQuestion = getAskedQuestion;
+
             $scope.showPresentListeners = showPresentListeners;
             $scope.showAnsweredListeners = showAnsweredListeners;
             $scope.addActivityItem = addActivityItem;
@@ -277,7 +306,7 @@ angular.module('application')
                             });
                         });
                 }),
-                socketConnection.on('on_statistic_updated', function (data) {
+                socketConnection.on('on_understanding_value_updated', function (data) {
 
                     var understandingValue = data.understandingValue;
 
@@ -287,6 +316,28 @@ angular.module('application')
                     });
                 }),
                 socketConnection.on('on_answer_received', function (data) {
+
+                    var userId = data.userId;
+                    var questionId = data.questionId;
+                    var answerData = data.answerData;
+
+                    var askedQuestion = getAskedQuestion(questionId);
+                    if (askedQuestion) {
+
+                        var listenerAnswers = askedQuestion.listenerAnswers;
+
+                        if (!_.findWhere(listenerAnswers, {
+                            userId: userId
+                        })) {
+                            $timeout(function () {
+
+                                listenerAnswers.push({
+                                    userId: userId,
+                                    answerData: answerData
+                                });
+                            });
+                        }
+                    }
                 })
             ]);
 

@@ -5,5 +5,5 @@ creationDate = :creationDate,
 lecturer = :lecturerId,
 description = :description,
 statisticCharts = [],
-links = [],
+links = '[]',
 questions = []

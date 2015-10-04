@@ -1,6 +1,6 @@
 UPDATE Question
 SET
-title = :title,
+text = :text,
 type = :type,
 data = :data
 WHERE @rid = :questionId

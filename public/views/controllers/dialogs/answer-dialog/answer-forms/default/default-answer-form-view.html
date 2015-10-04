@@ -1,0 +1,21 @@
+<div>
+    <span>
+        <input id="positiveAnswer" type="radio"
+               ng-model="answer" ng-value="true"
+               style="cursor: pointer;"/>
+        <label for="positiveAnswer" style="vertical-align: middle;cursor: pointer;">
+            {{ data.yes }}
+        </label>
+    </span>
+</div>
+
+<div>
+    <span>
+        <input id="negativeAnswer" type="radio"
+               ng-model="answer" ng-value="false"
+               style="cursor: pointer;"/>
+        <label for="negativeAnswer" style="vertical-align: middle;cursor: pointer;">
+            {{ data.no }}
+        </label>
+    </span>
+</div>

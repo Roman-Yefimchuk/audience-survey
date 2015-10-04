@@ -78,7 +78,7 @@ angular.module('application', [
 
                             var userId = getRouteParam($route, 'lecturerId');
 
-                            return activeLecturesService.getOwnActiveLectures(userId);
+                            return activeLecturesService.getLecturerActiveLectures(userId);
                         }
                     ],
                     socketConnection: [
@@ -136,7 +136,20 @@ angular.module('application', [
                             var userId = getRouteParam($route, 'lecturerId');
                             var lectureId = getRouteParam($route, 'lectureId');
 
-                            return activeLecturesService.getActiveLecture(userId, lectureId);
+                            return activeLecturesService.getLecturerActiveLecture(userId, lectureId);
+                        }
+                    ],
+                    questions: [
+
+                        '$route',
+                        'questionsService',
+
+                        function ($route, questionsService) {
+
+                            var userId = getRouteParam($route, 'lecturerId');
+                            var lectureId = getRouteParam($route, 'lectureId');
+
+                            return questionsService.getQuestions(userId, lectureId);
                         }
                     ],
                     socketConnection: [
@@ -220,7 +233,7 @@ angular.module('application', [
 
                             var userId = getRouteParam($route, 'listenerId');
 
-                            return activeLecturesService.getActiveLectures(userId);
+                            return activeLecturesService.getListenerActiveLectures(userId);
                         }
                     ],
                     socketConnection: [
@@ -278,7 +291,7 @@ angular.module('application', [
                             var userId = getRouteParam($route, 'listenerId');
                             var lectureId = getRouteParam($route, 'lectureId');
 
-                            return activeLecturesService.getActiveLecture(userId, lectureId);
+                            return activeLecturesService.getListenerActiveLecture(userId, lectureId);
                         }
                     ],
                     socketConnection: [

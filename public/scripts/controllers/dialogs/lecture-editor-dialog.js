@@ -16,9 +16,8 @@ angular.module('application')
 
             var model = {
                 name: options.name,
-                author: options.author,
                 description: options.description,
-                additionalLinks: options.additionalLinks
+                links: options.links
             };
 
             function send() {

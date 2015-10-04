@@ -20,19 +20,11 @@ angular.module('application')
 
         function ($q, $scope, $rootScope, $location, $timeout, dialogsService, notificationsService, socketEventsManagerService, usersService, user, lecture, activeLecture, socketConnection) {
 
+            var UNDERSTANDABLY_VALUE = 1;
+            var UNCLEAR_VALUE = 0;
+
             //TODO: bug
             activeLecture.listeners = _.without(activeLecture.listeners, user.id);
-
-            var answerForms = {
-                'default': '/client/views/controllers/lecture-room/tabs/answer-forms/default/' +
-                    'substrate-view.html',
-                'single-choice': '/client/views/controllers/lecture-room/tabs/answer-forms/multi-choice/' +
-                    'substrate-view.html',
-                'multi-choice': '/client/views/controllers/lecture-room/tabs/answer-forms/single-choice/' +
-                    'substrate-view.html',
-                'range': '/client/views/controllers/lecture-room/tabs/answer-forms/range/' +
-                    'substrate-view.html'
-            };
 
             var pieModel = [
                 {
@@ -49,7 +41,7 @@ angular.module('application')
                 }
             ];
 
-            var teacherQuestions = [];
+            var askedQuestions = [];
             var activityCollection = [];
             var message = {
                 text: ''
@@ -57,7 +49,7 @@ angular.module('application')
 
             var tabs = [
                 {
-                    id: 'lecture-info',
+                    id: 'info',
                     title: 'Інформація',
                     icon: 'fa-info-circle',
                     templateUrl: '/public/views/controllers/listener/listener-active-lecture/tabs/listener-info-tab-view.html',
@@ -108,50 +100,26 @@ angular.module('application')
                 $scope.tab = tab;
             }
 
-            function subscribeForSocketEvent() {
-
-                $scope.$on('socketsService:questionAsked', function (event, data) {
-                    var lecture = $scope.lecture;
-                    if (data['lectureId'] == lecture.id) {
-
-                        var question = data['question'];
-
-                        teacherQuestions.push({
-                            id: question.id,
-                            title: question.title,
-                            type: question.type,
-                            data: question.data,
-                            answer: undefined
-                        });
-
-                        $timeout(function () {
-                            addActivityItem('Викладач задав питання: ' + question.title);
-                        });
-                    }
+            function understandably() {
+                socketConnection.emit('update_understanding_value', {
+                    value: UNDERSTANDABLY_VALUE
                 });
             }
 
-            function updateStatistic(value) {
-                var socketConnection = $scope.socketConnection;
-                socketConnection.updateStatistic(lectureId, value);
+            function unclear() {
+                socketConnection.emit('update_understanding_value', {
+                    value: UNCLEAR_VALUE
+                });
             }
 
             function sendMessage() {
 
-                var message = $scope.message;
-                var socketConnection = $scope.socketConnection;
-                socketConnection.sendMessage(lectureId, message.text);
-
-                addActivityItem('Ви: ' + message.text);
+                socketConnection.emit('send_message', {
+                    userId: user.id,
+                    message: $scope.message['text']
+                });
 
                 message.text = '';
-            }
-
-            function replyForTeacherQuestion(question, answer) {
-                var socketConnection = $scope.socketConnection;
-                var questionId = question.id;
-                question.answer = answer;
-                socketConnection.replyForTeacherQuestion(lectureId, questionId, answer);
             }
 
             function showPresentListeners() {
@@ -176,19 +144,34 @@ angular.module('application')
                 });
             }
 
-            $scope.$on('$destroy', function () {
-                socketConnection.close();
-                $rootScope.$broadcast('suspendDialog:close');
-            });
+            function sendAnswer(askedQuestion) {
+
+                dialogsService.showAnswerDialog({
+                    question: {
+                        text: askedQuestion.text,
+                        type: askedQuestion.type,
+                        data: askedQuestion.data
+                    },
+                    onSendAnswer: function (answerData, closeCallback) {
+
+                        socketConnection.emit('send_answer', {
+                            questionId: askedQuestion.id,
+                            answerData: answerData
+                        });
+
+                        askedQuestion.answerData = answerData;
+                        closeCallback();
+                    }
+                });
+            }
 
             $scope.user = user;
             $scope.lecture = lecture;
             $scope.activeLecture = activeLecture;
 
-            $scope.answerForms = answerForms;
             $scope.activityCollection = activityCollection;
             $scope.message = message;
-            $scope.teacherQuestions = teacherQuestions;
+            $scope.askedQuestions = askedQuestions;
             $scope.showView = true;
             $scope.pieModel = pieModel;
             $scope.pieOptions = {
@@ -205,10 +188,17 @@ angular.module('application')
             $scope.setActiveTab = setActiveTab;
             $scope.showPresentListeners = showPresentListeners;
             $scope.quit = quit;
-            $scope.replyForTeacherQuestion = replyForTeacherQuestion;
+            $scope.sendAnswer = sendAnswer;
             $scope.sendMessage = sendMessage;
-            $scope.updateStatistic = updateStatistic;
             $scope.addActivityItem = addActivityItem;
+
+            $scope.understandably = understandably;
+            $scope.unclear = unclear;
+
+            $scope.$on('$destroy', function () {
+                socketConnection.close();
+                $rootScope.$broadcast('suspendDialog:close');
+            });
 
             if (activeLecture.status == 'suspended') {
                 showSuspendDialog();
@@ -295,14 +285,22 @@ angular.module('application')
                     var userId = data.userId;
                     var message = data.message;
 
-                    usersService.getUserName(userId)
-                        .then(function (user) {
-                            $timeout(function () {
-                                addActivityItem(user.name + ': ' + message);
-                            });
+                    if (userId == user.id) {
+
+                        $timeout(function () {
+                            addActivityItem('Ви: ' + message);
                         });
+                    } else {
+
+                        usersService.getUserName(userId)
+                            .then(function (user) {
+                                $timeout(function () {
+                                    addActivityItem(user.name + ': ' + message);
+                                });
+                            });
+                    }
                 }),
-                socketConnection.on('on_statistic_updated', function (data) {
+                socketConnection.on('on_understanding_value_updated', function (data) {
 
                     var understandingValue = data.understandingValue;
 
@@ -311,7 +309,18 @@ angular.module('application')
                         pieModel[1].value = (100 - understandingValue).toFixed(1);
                     });
                 }),
-                socketConnection.on('on_answer_received', function (data) {
+                socketConnection.on('on_question_asked', function (data) {
+
+                    var question = data.question;
+
+                    $timeout(function () {
+
+                        askedQuestions.push(_.extend(question, {
+                            answerData: null
+                        }));
+
+                        addActivityItem('Викладач задав питання: ' + question.text);
+                    });
                 })
             ]);
         }

@@ -8,6 +8,7 @@
     var UserRepository = require('./../db/data-access-layers/user-repository');
     var LectureRepository = require('./../db/data-access-layers/lecture-repository');
     var Timer = require('./../utils/timer');
+    var ArrayUtils = require('./../utils/array-utils');
 
     var SocketSession = (function () {
 
@@ -69,6 +70,12 @@
                 timeline.push(timeMarker);
             },
             addChartPoint: function (chartPoint) {
+            },
+            toJSON: function () {
+                return {
+                    chartPoints: this.chartPoints,
+                    timeline: this.timeline
+                };
             }
         };
 
@@ -77,13 +84,19 @@
 
     var ListenerAnswer = (function () {
 
-        function ListenerAnswer(listenerId, answerData) {
-            this.listenerId = listenerId;
+        function ListenerAnswer(userId, answerData) {
+            this.userId = userId;
             this.answerData = answerData;
         }
 
         ListenerAnswer.prototype = {
-            constructor: ListenerAnswer
+            constructor: ListenerAnswer,
+            toJSON: function () {
+                return {
+                    userId: this.userId,
+                    answerData: this.answerData
+                };
+            }
         };
 
         return ListenerAnswer;
@@ -97,7 +110,17 @@
         }
 
         AskedQuestion.prototype = {
-            constructor: AskedQuestion
+            constructor: AskedQuestion,
+            addListenerAnswer: function (userId, answerData) {
+                var listenerAnswers = this.listenerAnswers;
+                listenerAnswers.push(new ListenerAnswer(userId, answerData));
+            },
+            toJSON: function () {
+                return {
+                    questionId: this.questionId,
+                    listenerAnswers: this.listenerAnswers
+                };
+            }
         };
 
         return AskedQuestion;
@@ -174,6 +197,19 @@
 
                     activeLecture.lecturerSocketSession = socketSession;
 
+                    socket.on('ask_question', function (data) {
+
+                        var question = data.question;
+
+                        activeLecture.addAskedQuestion(question.id);
+
+                        _.forEach(activeLecture.listeners, function (listener) {
+                            var socketSession = listener.socketSession;
+                            socketSession.emit('on_question_asked', {
+                                question: question
+                            });
+                        });
+                    });
                 } else {
 
                     _.forEach(activeLecture.listeners, function (listener) {
@@ -207,7 +243,7 @@
                     var listeners = activeLecture.listeners;
                     listeners.push(listener);
 
-                    socket.on('update_statistic', function (data) {
+                    socket.on('update_understanding_value', function (data) {
 
                         listener.requestCount++;
                         listener.understandingValue += data.value;
@@ -216,16 +252,34 @@
 
                         _.forEach(activeLecture.listeners, function (listener) {
                             var socketSession = listener.socketSession;
-                            socketSession.emit('on_statistic_updated', {
+                            socketSession.emit('on_understanding_value_updated', {
                                 understandingValue: understandingValue
                             });
                         });
 
                         var lecturerSocketSession = activeLecture.lecturerSocketSession;
                         if (lecturerSocketSession) {
-                            lecturerSocketSession.emit('on_statistic_updated', {
+                            lecturerSocketSession.emit('on_understanding_value_updated', {
                                 understandingValue: understandingValue
                             });
+                        }
+                    });
+
+                    socket.on('send_answer', function (data) {
+
+                        var questionId = data.questionId;
+                        var answerData = data.answerData;
+
+                        if (activeLecture.addListenerAnswer(userId, questionId, answerData)) {
+
+                            lecturerSocketSession = activeLecture.lecturerSocketSession;
+                            if (lecturerSocketSession) {
+                                lecturerSocketSession.emit('on_answer_received', {
+                                    userId: userId,
+                                    questionId: questionId,
+                                    answerData: answerData
+                                });
+                            }
                         }
                     });
                 }
@@ -448,7 +502,24 @@
 
                 return 0;
             },
-            toJSON: function () {
+            addAskedQuestion: function (questionId) {
+                var askedQuestions = this.askedQuestions;
+                askedQuestions.push(new AskedQuestion(questionId));
+            },
+            addListenerAnswer: function (userId, questionId, answerData) {
+
+                var askedQuestion = _.findWhere(this.askedQuestions, {
+                    questionId: questionId
+                });
+
+                if (askedQuestion) {
+                    askedQuestion.addListenerAnswer(userId, answerData);
+                    return true;
+                }
+
+                return false;
+            },
+            toPublic: function (userId) {
                 return {
                     id: this.id,
                     name: this.name,
@@ -458,10 +529,29 @@
                     listeners: (_.bind(function () {
                         var listeners = [];
                         _.forEach(this.listeners, function (listener) {
-                            listeners.push(listener.userId);
+                            if (userId != listener.userId) {
+                                listeners.push(listener.userId);
+                            }
                         });
                         return listeners;
                     }, this))()
+                };
+            },
+            toPrivate: function () {
+                return {
+                    id: this.id,
+                    name: this.name,
+                    duration: this.getDuration(),
+                    status: this.status,
+                    listeners: (_.bind(function () {
+                        var listeners = [];
+                        _.forEach(this.listeners, function (listener) {
+                            listeners.push(listener.userId);
+                        });
+                        return listeners;
+                    }, this))(),
+                    askedQuestions: this.askedQuestions,
+                    statisticChart: this.statisticChart
                 };
             }
         };
@@ -641,33 +731,70 @@
         });
     }
 
-    function getOwnActiveLectures(userId) {
+    function getLecturerActiveLectures(userId) {
 
         return Promise(function (resolve) {
 
-            var ownActiveLectures = _.filter(activeLectures, function (activeLecture) {
-                return activeLecture.lecturer['id'] == userId;
-            });
+            try {
 
-            resolve(ownActiveLectures);
+                var lecturerActiveLectures = ArrayUtils.select((function () {
+                    return _.filter(activeLectures, function (activeLecture) {
+                        return activeLecture.lecturer['id'] == userId;
+                    });
+                })(), function (ownActiveLecture) {
+                    return ownActiveLecture.toPrivate();
+                });
+
+                resolve(lecturerActiveLectures);
+            } catch (e) {
+                resolve();
+            }
         });
     }
 
-    function getActiveLectures() {
-
+    function getLecturerActiveLecture(lectureId, userId) {
         return Promise(function (resolve) {
-            resolve(activeLectures);
+
+            try {
+                var lecturerActiveLecture = _.find(activeLectures, function (activeLecture) {
+                    return activeLecture.id == lectureId;
+                }).toPrivate();
+
+                resolve(lecturerActiveLecture);
+            } catch (e) {
+                resolve();
+            }
         });
     }
 
-    function getActiveLecture(lectureId) {
+    function getListenerActiveLectures(userId) {
+
         return Promise(function (resolve) {
 
-            var activeLecture = _.find(activeLectures, function (activeLecture) {
-                return activeLecture.id == lectureId;
-            });
+            try {
+                var listenerActiveLectures = ArrayUtils.select(activeLectures, function (ownActiveLecture) {
+                    return ownActiveLecture.toPublic(userId);
+                });
 
-            resolve(activeLecture);
+                resolve(listenerActiveLectures);
+            } catch (e) {
+                resolve();
+            }
+        });
+    }
+
+    function getListenerActiveLecture(lectureId, userId) {
+        return Promise(function (resolve) {
+
+            try {
+                var listenerActiveLecture = _.find(activeLectures, function (activeLecture) {
+                    return activeLecture.id == lectureId;
+                }).toPublic(userId);
+
+                resolve(listenerActiveLecture);
+            } catch (e) {
+                resolve();
+            }
         });
     }
 
@@ -677,9 +804,10 @@
         suspendLecture: suspendLecture,
         resumeLecture: resumeLecture,
         stopLecture: stopLecture,
-        getOwnActiveLectures: getOwnActiveLectures,
-        getActiveLectures: getActiveLectures,
-        getActiveLecture: getActiveLecture
+        getLecturerActiveLectures: getLecturerActiveLectures,
+        getLecturerActiveLecture: getLecturerActiveLecture,
+        getListenerActiveLectures: getListenerActiveLectures,
+        getListenerActiveLecture: getListenerActiveLecture
     };
 
 })(require);

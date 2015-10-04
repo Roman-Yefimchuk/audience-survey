@@ -12,7 +12,7 @@
         return Promise(function (resolve, reject) {
 
             DbProvider.executeQuery('create-question.sql', {
-                title: model.title,
+                text: model.text,
                 creationDate: _.now(),
                 type: model.type,
                 data: JSON.stringify(model.data),
@@ -43,7 +43,7 @@
 
                     resolve({
                         id: DbHelper.getRecordId(question),
-                        title: question.title,
+                        text: question.text,
                         creationDate: question.creationDate,
                         type: question.type,
                         data: JSON.parse(question.data)
@@ -73,7 +73,7 @@
                     _.forEach(result, function (question) {
                         questions.push({
                             id: DbHelper.getRecordId(question),
-                            title: question.title,
+                            text: question.text,
                             creationDate: question.creationDate,
                             type: question.type,
                             data: JSON.parse(question.data)
@@ -110,7 +110,7 @@
 
             DbProvider.executeQuery('update-question.sql', {
                 questionId: DbHelper.parseRecordId(questionId),
-                title: model.title,
+                text: model.text,
                 type: model.type,
                 data: JSON.stringify(model.data)
             }).then(function () {

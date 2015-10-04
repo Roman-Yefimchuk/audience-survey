@@ -56,8 +56,6 @@ angular.module('application')
                             })(),
                             description: ''
                         });
-
-                        $scope.newLectureName = '';
                     });
                 }
             }
@@ -108,17 +106,7 @@ angular.module('application')
                 activeLecturesService.startLecture(userId, lecture.id)
                     .then(function () {
                         $timeout(function () {
-                            var activeLectures = $scope.activeLectures;
-                            activeLectures.push({
-                                id: lecture.id,
-                                lecturer: {
-                                    id: user.id,
-                                    name: user.profile['name']
-                                },
-                                duration: 0,
-                                status: 'started',
-                                listeners: []
-                            });
+                            $location.path('/lecturers/' + user.id + '/activeLectures/' + lecture.id);
                         });
                     });
             }
