@@ -25,86 +25,91 @@
 
 <div id="ajax_loader" class="ajax-loader"></div>
 
-<script type="text/javascript" src="/public/libs/json3/lib/json3.js"></script>
-<script type="text/javascript" src="/public/libs/jquery/dist/jquery.js"></script>
-<script type="text/javascript" src="/public/libs/angular/angular.js"></script>
-<script type="text/javascript" src="/public/libs/angular-route/angular-route.js"></script>
-<script type="text/javascript" src="/public/libs/angular-sanitize/angular-sanitize.js"></script>
-<script type="text/javascript" src="/public/libs/angular-cookies/angular-cookies.js"></script>
-<script type="text/javascript" src="/public/libs/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script type="text/javascript" src="/public/libs/notifyjs/dist/notify-combined.js"></script>
-<script type="text/javascript" src="/public/libs/underscore/underscore.js"></script>
-<script type="text/javascript" src="/public/libs/Chart.js/Chart.js"></script>
-<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script src="/public/libs/json3/lib/json3.js"></script>
+<script src="/public/libs/jquery/dist/jquery.js"></script>
+<script src="/public/libs/angular/angular.js"></script>
+<script src="/public/libs/angular-route/angular-route.js"></script>
+<script src="/public/libs/angular-sanitize/angular-sanitize.js"></script>
+<script src="/public/libs/angular-cookies/angular-cookies.js"></script>
+<script src="/public/libs/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="/public/libs/notifyjs/dist/notify-combined.js"></script>
+<script src="/public/libs/underscore/underscore.js"></script>
+<script src="/public/libs/Chart.js/Chart.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 
-<script type="text/javascript" src="/public/app/modules/activeLectureChart/activeLectureChart.js"></script>
-<script type="text/javascript" src="/public/app/modules/constants/constants.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/alertDialog/alertDialog.js"></script>
+<script src="/public/app/modules/activeLectureChart/activeLectureChart.js"></script>
+<script src="/public/app/modules/constants/constants.js"></script>
+<script src="/public/app/modules/dialogs/alertDialog/alertDialog.js"></script>
 <!--TODO: answerDialog-->
-<script type="text/javascript" src="/public/app/modules/dialogs/answerDialog/answerDialog.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/answerDialog/answerForms/defaultAnswerForm/defaultAnswerForm.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/answerDialog/answerForms/multiChoiceAnswerForm/multiChoiceAnswerForm.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/answerDialog/answerForms/rangeAnswerForm/rangeAnswerForm.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/answerDialog/answerForms/singleChoiceAnswerForm/singleChoiceAnswerForm.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/answeredListenersDialog/answeredListenersDialog.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/confirmationDialog/confirmationDialog.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/lectureEditorDialog/lectureEditorDialog.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/lectureEditorDialog/linksEditor/linksEditor.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/presentListenersDialog/presentListenersDialog.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/profileBuilderDialog/profileBuilderDialog.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/profileEditorDialog/profileEditorDialog.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/questionEditorDialog/questionEditorDialog.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/questionEditorDialog/editorForms/choiceForm/choiceForm.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/questionEditorDialog/editorForms/defaultForm/defaultForm.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/questionEditorDialog/editorForms/rangeForm/rangeForm.js"></script>
-<script type="text/javascript" src="/public/app/modules/dialogs/suspendDialog/suspendDialog.js"></script>
+<script src="/public/app/modules/dialogs/answerDialog/answerDialog.js"></script>
+<script src="/public/app/modules/dialogs/answerDialog/answerForms/defaultAnswerForm/defaultAnswerForm.js"></script>
+<script src="/public/app/modules/dialogs/answerDialog/answerForms/multiChoiceAnswerForm/multiChoiceAnswerForm.js"></script>
+<script src="/public/app/modules/dialogs/answerDialog/answerForms/rangeAnswerForm/rangeAnswerForm.js"></script>
+<script src="/public/app/modules/dialogs/answerDialog/answerForms/singleChoiceAnswerForm/singleChoiceAnswerForm.js"></script>
+<script src="/public/app/modules/dialogs/answeredListenersDialog/answeredListenersDialog.js"></script>
+<script src="/public/app/modules/dialogs/confirmationDialog/confirmationDialog.js"></script>
+<script src="/public/app/modules/dialogs/lectureEditorDialog/lectureEditorDialog.js"></script>
+<script src="/public/app/modules/dialogs/lectureEditorDialog/linksEditor/linksEditor.js"></script>
+<script src="/public/app/modules/dialogs/presentListenersDialog/presentListenersDialog.js"></script>
+<script src="/public/app/modules/dialogs/profileBuilderDialog/profileBuilderDialog.js"></script>
+<script src="/public/app/modules/dialogs/profileEditorDialog/profileEditorDialog.js"></script>
+<script src="/public/app/modules/dialogs/questionEditorDialog/questionEditorDialog.js"></script>
+<script src="/public/app/modules/dialogs/questionEditorDialog/editorForms/choiceForm/choiceForm.js"></script>
+<script src="/public/app/modules/dialogs/questionEditorDialog/editorForms/defaultForm/defaultForm.js"></script>
+<script src="/public/app/modules/dialogs/questionEditorDialog/editorForms/rangeForm/rangeForm.js"></script>
+<script src="/public/app/modules/dialogs/suspendDialog/suspendDialog.js"></script>
 
-<script type="text/javascript" src="/public/app/modules/filters/formatDate.js"></script>
-<script type="text/javascript" src="/public/app/modules/filters/formatTime.js"></script>
+<script src="/public/app/modules/filters/formatDate.js"></script>
+<script src="/public/app/modules/filters/formatSeconds.js"></script>
+<script src="/public/app/modules/filters/formatTime.js"></script>
 
-<script type="text/javascript" src="/public/app/modules/genericHeader/genericHeader.js"></script>
-<script type="text/javascript" src="/public/app/modules/index/index.js"></script>
-<script type="text/javascript" src="/public/app/modules/lecturer/lecturerActiveLecture/lecturerActiveLecture.js"></script>
-<script type="text/javascript" src="/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerActivityTab/lecturerActivityTab.js"></script>
-<script type="text/javascript" src="/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerInfoTab/lecturerInfoTab.js"></script>
-<script type="text/javascript" src="/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerQuestionsTab/lecturerQuestionsTab.js"></script>
-<script type="text/javascript" src="/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerSurveyTab/lecturerSurveyTab.js"></script>
-<script type="text/javascript" src="/public/app/modules/lecturer/lecturesManager/lecturesManager.js"></script>
-<script type="text/javascript" src="/public/app/modules/lecturer/lectureStatistic/lectureStatistic.js"></script>
-<script type="text/javascript" src="/public/app/modules/lecturer/questionsManager/questionsManager.js"></script>
-<script type="text/javascript" src="/public/app/modules/listener/activeLectures/activeLectures.js"></script>
-<script type="text/javascript" src="/public/app/modules/listener/listenerActiveLecture/listenerActiveLecture.js"></script>
-<script type="text/javascript" src="/public/app/modules/listener/listenerActiveLecture/tabs/listenerActivityTab/listenerActivityTab.js"></script>
-<script type="text/javascript" src="/public/app/modules/listener/listenerActiveLecture/tabs/listenerInfoTab/listenerInfoTab.js"></script>
-<script type="text/javascript" src="/public/app/modules/listener/listenerActiveLecture/tabs/listenerQuestionsTab/listenerQuestionsTab.js"></script>
-<script type="text/javascript" src="/public/app/modules/listener/listenerActiveLecture/tabs/listenerSurveyTab/listenerSurveyTab.js"></script>
-<script type="text/javascript" src="/public/app/modules/notFound/notFound.js"></script>
-<script type="text/javascript" src="/public/app/modules/routes/routes.js"></script>
+<script src="/public/app/modules/genericHeader/genericHeader.js"></script>
+<script src="/public/app/modules/index/index.js"></script>
+<script src="/public/app/modules/lectureStatisticGraph/lectureStatisticGraph.js"></script>
+<script src="/public/app/modules/lecturer/lecturerActiveLecture/lecturerActiveLecture.js"></script>
+<script src="/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerActivityTab/lecturerActivityTab.js"></script>
+<script src="/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerInfoTab/lecturerInfoTab.js"></script>
+<script src="/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerQuestionsTab/lecturerQuestionsTab.js"></script>
+<script src="/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerSurveyTab/lecturerSurveyTab.js"></script>
+<script src="/public/app/modules/lecturer/lecturesManager/lecturesManager.js"></script>
+<script src="/public/app/modules/lecturer/lectureStatistic/lectureStatistic.js"></script>
+<script src="/public/app/modules/lecturer/questionsManager/questionsManager.js"></script>
+<script src="/public/app/modules/listener/activeLectures/activeLectures.js"></script>
+<script src="/public/app/modules/listener/listenerActiveLecture/listenerActiveLecture.js"></script>
+<script src="/public/app/modules/listener/listenerActiveLecture/tabs/listenerActivityTab/listenerActivityTab.js"></script>
+<script src="/public/app/modules/listener/listenerActiveLecture/tabs/listenerInfoTab/listenerInfoTab.js"></script>
+<script src="/public/app/modules/listener/listenerActiveLecture/tabs/listenerQuestionsTab/listenerQuestionsTab.js"></script>
+<script src="/public/app/modules/listener/listenerActiveLecture/tabs/listenerSurveyTab/listenerSurveyTab.js"></script>
+<script src="/public/app/modules/notFound/notFound.js"></script>
+<script src="/public/app/modules/routes/routes.js"></script>
 
-<script type="text/javascript" src="/public/app/modules/services/api/active-lectures.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/api/auth.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/api/lectures.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/api/profiles.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/api/questions.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/api/users.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/dialogs.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/httpClient.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/loader.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/notifications.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/oauth.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/profileExtractor.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/securityInterceptor.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/socketConnector.js"></script>
-<script type="text/javascript" src="/public/app/modules/services/socketEventsManager.js"></script>
+<script src="/public/app/modules/services/api/active-lectures.js"></script>
+<script src="/public/app/modules/services/api/auth.js"></script>
+<script src="/public/app/modules/services/api/lectures.js"></script>
+<script src="/public/app/modules/services/api/profiles.js"></script>
+<script src="/public/app/modules/services/api/questions.js"></script>
+<script src="/public/app/modules/services/api/users.js"></script>
+<script src="/public/app/modules/services/dialogs.js"></script>
+<script src="/public/app/modules/services/httpClient.js"></script>
+<script src="/public/app/modules/services/loader.js"></script>
+<script src="/public/app/modules/services/notifications.js"></script>
+<script src="/public/app/modules/services/oauth.js"></script>
+<script src="/public/app/modules/services/profileExtractor.js"></script>
+<script src="/public/app/modules/services/securityInterceptor.js"></script>
+<script src="/public/app/modules/services/socketConnector.js"></script>
+<script src="/public/app/modules/services/socketEventsManager.js"></script>
 
-<script type="text/javascript" src="/public/app/modules/signIn/signIn.js"></script>
-<script type="text/javascript" src="/public/app/modules/signUp/signUp.js"></script>
-<script type="text/javascript" src="/public/app/modules/surveyPie/surveyPie.js"></script>
+<script src="/public/app/modules/signIn/signIn.js"></script>
+<script src="/public/app/modules/signUp/signUp.js"></script>
+<script src="/public/app/modules/surveyPie/surveyPie.js"></script>
 
-<script type="text/javascript" src="/public/app/modules/application.js"></script>
+<div style="display: none">/public/app/modules/templates/templates.js</div>
 
-<script type="text/javascript" src="/public/app/utils/common.js"></script>
-<script type="text/javascript" src="/public/app/authorizeStatus.js"></script>
+<script src="/public/app/modules/application.js"></script>
+
+<script src="/public/app/utils/common.js"></script>
+<script src="/public/app/utils/timer.js"></script>
+<script src="/public/app/authorizeStatus.js"></script>
 
 </body>
 </html>

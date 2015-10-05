@@ -135,6 +135,8 @@ angular.module('services.dialogsService', [
                     return open({
                         templateUrl: '/public/app/modules/dialogs/profileBuilderDialog/profileBuilderDialog.html',
                         controller: 'ProfileBuilderDialogController',
+                        backdrop: 'static',
+                        keyboard: false,
                         resolve: {
                             options: function () {
                                 return options;
@@ -146,6 +148,8 @@ angular.module('services.dialogsService', [
                     return open({
                         templateUrl: '/public/app/modules/dialogs/answerDialog/answerDialog.html',
                         controller: 'AnswerDialogController',
+                        backdrop: 'static',
+                        keyboard: false,
                         resolve: {
                             options: function () {
                                 return options;

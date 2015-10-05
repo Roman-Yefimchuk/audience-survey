@@ -34,23 +34,11 @@ angular.module('lecturer.lecturerActiveLecture', [
 
         function ($q, $scope, $filter, $location, $timeout, dialogsService, socketEventsManagerService, activeLecturesService, usersService, questionsService, user, lecture, activeLecture, questions, socketConnection) {
 
+            var UNDERSTANDABLY_VALUE_INDEX = 0;
+            var UNCLEAR_VALUE_INDEX = 1;
+
             var userId = user.id;
             var lectureId = lecture.id;
-            var pieModel = [
-                {
-                    value: 0,
-                    label: 'Зрозуміло',
-                    color: "#449d44",
-                    highlight: "#398439"
-                },
-                {
-                    value: 100,
-                    label: 'Незрозуміло',
-                    color: "#c9302c",
-                    highlight: "#ac2925"
-                }
-            ];
-            var activityCollection = [];
             var tabs = [
                 {
                     id: 'info',
@@ -222,6 +210,7 @@ angular.module('lecturer.lecturerActiveLecture', [
             }
 
             function addActivityItem(title) {
+                var activityCollection = $scope.activityCollection;
                 activityCollection.unshift({
                     timestamp: _.now(),
                     title: title
@@ -237,13 +226,25 @@ angular.module('lecturer.lecturerActiveLecture', [
             $scope.lecture = lecture;
             $scope.activeLecture = activeLecture;
 
-            $scope.activityCollection = activityCollection;
-            $scope.lectures = [];
+            $scope.activityCollection = [];
             $scope.newQuestion = {
                 text: ''
             };
             $scope.questions = questions;
-            $scope.pieModel = pieModel;
+            $scope.pieModel = [
+                {
+                    value: 0,
+                    label: 'Зрозуміло',
+                    color: "#449d44",
+                    highlight: "#398439"
+                },
+                {
+                    value: 100,
+                    label: 'Не зрозуміло',
+                    color: "#c9302c",
+                    highlight: "#ac2925"
+                }
+            ];
             $scope.tabs = tabs;
             $scope.tab = _.find(tabs, function (tab) {
                 return tab.isActive;
@@ -327,8 +328,11 @@ angular.module('lecturer.lecturerActiveLecture', [
                     var understandingValue = data.understandingValue;
 
                     $timeout(function () {
-                        pieModel[0].value = understandingValue.toFixed(1);
-                        pieModel[1].value = (100 - understandingValue).toFixed(1);
+
+                        var pieModel = $scope.pieModel;
+
+                        pieModel[UNDERSTANDABLY_VALUE_INDEX].value = understandingValue.toFixed(1);
+                        pieModel[UNCLEAR_VALUE_INDEX].value = (100 - understandingValue).toFixed(1);
                     });
                 }),
                 socketConnection.on('on_answer_received', function (data) {

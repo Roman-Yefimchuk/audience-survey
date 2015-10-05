@@ -87,14 +87,14 @@
                                                 <div class="btn btn-primary"
                                                      tooltip="Зробити паузу"
                                                      ng-click="suspendLecture(lecture)"
-                                                     ng-show="getActiveLecture(lecture.id).status == 'started'">
+                                                     ng-if="getActiveLecture(lecture.id).status == 'started'">
                                                     <i class="fa fa-pause"></i>
                                                 </div>
 
                                                 <div class="btn btn-primary"
                                                      tooltip="Продовжити лекцію"
                                                      ng-click="resumeLecture(lecture)"
-                                                     ng-show="getActiveLecture(lecture.id).status == 'suspended'">
+                                                     ng-if="getActiveLecture(lecture.id).status == 'suspended'">
                                                     <i class="fa fa-play"></i>
                                                 </div>
 

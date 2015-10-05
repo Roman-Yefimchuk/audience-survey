@@ -3,8 +3,8 @@
 module.exports = function (grunt) {
 
     grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
-        jshint: {
+        'pkg': grunt.file.readJSON('package.json'),
+        'jshint': {
             options: {
                 'jshintrc': '.jshintrc',
                 '-W015': true
@@ -15,7 +15,69 @@ module.exports = function (grunt) {
                 'public/app/{,*/}*.js'
             ]
         },
-        uglify: {
+        'htmlmin': {
+            dist: {
+                options: {
+                    removeComments: true,
+                    collapseWhitespace: true
+                },
+                files: [
+                    {
+                        'production/build/public/index.html': 'public/index.html'
+                    }
+                ]
+            }
+        },
+        'html2js': {
+            templates: {
+                options: {
+                    singleModule: true,
+                    useStrict: true,
+                    indentString: '    ',
+                    module: 'templates',
+                    rename: function (moduleName) {
+                        return moduleName.replace(/^\.\.(.*)$/, function (s, moduleName) {
+                            return moduleName;
+                        });
+                    },
+                    htmlmin: {
+                        /*collapseWhitespace: true,*/
+                        removeComments: true
+                    }
+                },
+                src: ['public/app/**/*.html'],
+                dest: 'production/build/public/app/modules/templates/templates.js'
+            }
+        },
+        'string-replace': {
+            replaceTemplatesUrl: {
+                files: {
+                    'production/build/': 'production/build/public/index.html'
+                },
+                options: {
+                    replacements: [
+                        {
+                            pattern: '<div style="display: none">/public/app/modules/templates/templates.js</div>',
+                            replacement: '<script src="/public/app/modules/templates/templates.js"></script>'
+                        }
+                    ]
+                }
+            },
+            injectTemplatesModule: {
+                files: {
+                    'production/build/': 'production/build/public/app/modules/application.js'
+                },
+                options: {
+                    replacements: [
+                        {
+                            pattern: '"constants"',
+                            replacement: '"constants","templates"'
+                        }
+                    ]
+                }
+            }
+        },
+        'uglify': {
             options: {
                 compress: {
                     drop_console: true
@@ -47,6 +109,9 @@ module.exports = function (grunt) {
                         cwd: 'public/app',
                         src: '**/*.js',
                         dest: 'production/build/public/app'
+                    },
+                    {
+                        'production/build/public/app/modules/templates/templates.js': 'production/build/public/app/modules/templates/templates.js'
                     }
                 ]
             },
@@ -67,26 +132,7 @@ module.exports = function (grunt) {
                 ]
             }
         },
-        htmlmin: {
-            dist: {
-                options: {
-                    removeComments: true/*,
-                     collapseWhitespace: true*/
-                },
-                files: [
-                    {
-                        expand: true,
-                        cwd: 'public/app',
-                        src: ['**/*.html'],
-                        dest: 'production/build/public/app'
-                    },
-                    {
-                        'production/build/public/index.html': 'public/index.html'
-                    }
-                ]
-            }
-        },
-        cssmin: {
+        'cssmin': {
             dist: {
                 files: [
                     {
@@ -103,7 +149,7 @@ module.exports = function (grunt) {
                 ]
             }
         },
-        copy: {
+        'copy': {
             images: {
                 files: [
                     {
@@ -152,15 +198,19 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-html2js');
+    grunt.loadNpmTasks('grunt-string-replace');
 
     grunt.registerTask('verification', [
         'jshint'
     ]);
 
     grunt.registerTask('default', [
-        'uglify',
         'htmlmin',
+        'html2js',
         'cssmin',
+        'uglify',
+        'string-replace',
         'copy'
     ]);
 };

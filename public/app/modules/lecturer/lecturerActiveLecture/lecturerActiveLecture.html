@@ -33,17 +33,17 @@
                             <div class="btn btn-primary"
                                  tooltip="Продовжити лекцію"
                                  ng-click="resumeLecture()"
-                                 ng-show="activeLecture.status == 'suspended'">
+                                 ng-if="activeLecture.status == 'suspended'">
                                 <i class="fa fa-play"></i>
                             </div>
 
                             <div class="btn btn-primary"
                                  tooltip="Зробити паузу"
                                  ng-click="suspendLecture()"
-                                 ng-show="activeLecture.status == 'started'">
+                                 ng-if="activeLecture.status == 'started'">
                                 <i class="fa fa-pause"></i>
                             </div>
-
+                            &nbsp;
                             <div class="btn btn-danger"
                                  tooltip="Зупинити лекцію"
                                  ng-click="stopLecture()">

@@ -42,7 +42,12 @@
 
     </div>
     <div class="modal-footer ng-scope" style="margin-top: 0">
-        <span class="btn btn-warning" ng-click="close()">
+        <span class="btn btn-warning" ng-click="close()"
+              ng-if="autoCloseTimer">
+            Закрити ({{(autoCloseTimer.autoCloseTimeout - autoCloseTimer.count) | formatSeconds }})
+        </span>
+        <span class="btn btn-warning" ng-click="close()"
+              ng-if="!autoCloseTimer">
             Закрити
         </span>
         <span class="btn btn-primary" ng-click="sendAnswer()"

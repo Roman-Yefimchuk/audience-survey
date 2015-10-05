@@ -104,7 +104,8 @@ angular.module('lecturer.questionsManager', [
                     onSendAnswer: function (answerData, closeCallback) {
                         alert(JSON.stringify(answerData));
                         closeCallback();
-                    }
+                    },
+                    autoCloseTimeout: 10
                 });
             }
 

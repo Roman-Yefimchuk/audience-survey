@@ -1,8 +1,8 @@
 "use strict";
 
-angular.module('application')
+angular.module('lectureStatisticGraph', [])
 
-    .directive('lectureStatistic', [
+    .directive('lectureStatisticGraph', [
 
         '$rootScope',
         '$filter',
@@ -13,7 +13,7 @@ angular.module('application')
                     model: '=',
                     graphId: '@'
                 },
-                templateUrl: '/public/views/directives/statistic-graph-view.html',
+                templateUrl: '/public/app/modules/lectureStatisticGraph/lectureStatisticGraph.html',
                 controller: ['$scope', function ($scope) {
 
                     var data = {

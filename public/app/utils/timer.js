@@ -1,8 +1,4 @@
-"use strict";
-
-(function (require) {
-
-    var _ = require('underscore');
+var Timer = (function () {
 
     function Timer(callback, interval) {
         this.callback = _.bind(callback, this);
@@ -102,5 +98,5 @@
         }
     };
 
-    module.exports = Timer;
-})(require);
+    return Timer;
+})();
