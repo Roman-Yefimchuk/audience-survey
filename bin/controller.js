@@ -64,6 +64,9 @@
 
         if (!(error instanceof RequestError)) {
             if (error instanceof Error) {
+
+                console.error(error.stack);
+
                 error = RequestError.internalServerError(error);
             } else {
                 error = RequestError.internalServerError(error || '');
