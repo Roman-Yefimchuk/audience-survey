@@ -24,8 +24,8 @@
             emit: function (command, data) {
                 var socket = this.socket;
                 socket.emit(command, data);
-
-                console.log('command: ' + command + ', data: ' + JSON.stringify(data));
+                /*
+                 console.log('command: ' + command + ', data: ' + JSON.stringify(data));*/
             },
             close: function () {
                 var socket = this.socket;
@@ -295,6 +295,12 @@
                     if (lecturerSocketSession) {
                         lecturerSocketSession.emit('on_message_received', data);
                     }
+                });
+
+                socket.on('joined', function () {
+                    socketSession.emit('on_understanding_value_updated', {
+                        understandingValue: activeLecture.getAverageUnderstandingValue()
+                    });
                 });
 
                 socket.on('disconnect', function () {

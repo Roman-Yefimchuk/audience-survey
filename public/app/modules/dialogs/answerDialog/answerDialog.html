@@ -1,0 +1,53 @@
+<div>
+
+    <div class="modal-header">
+        <span class="close" ng-click="close()">×</span>
+        <h4 style="margin-bottom: 0;margin-top: 0;">
+            <i class="fa fa-bullhorn"></i>
+            &nbsp;
+            Дайте відповідь на запитання
+        </h4>
+    </div>
+
+    <div class="modal-body">
+
+        <label>
+            Запитання:
+        </label>
+
+        <div>
+            {{ question.text }}
+        </div>
+
+        <br>
+
+        <label>
+            Ваша відповідь:
+        </label>
+
+        <div>
+            <div ng-if="question.type == 'single-choice'"
+                 single-choice-answer-form="question.data" options="options">
+            </div>
+            <div ng-if="question.type == 'multi-choice'"
+                 multi-choice-answer-form="question.data" options="options">
+            </div>
+            <div ng-if="question.type == 'default'"
+                 default-answer-form="question.data" options="options">
+            </div>
+            <div ng-if="question.type == 'range'"
+                 range-answer-form="question.data" options="options">
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer ng-scope" style="margin-top: 0">
+        <span class="btn btn-warning" ng-click="close()">
+            Закрити
+        </span>
+        <span class="btn btn-primary" ng-click="sendAnswer()"
+              ng-disabled="!options.canSendAnswer">
+            Відповісти
+        </span>
+    </div>
+</div>

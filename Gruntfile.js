@@ -12,7 +12,7 @@ module.exports = function (grunt) {
             all: [
                 'Gruntfile.js',
                 'bin/{,*/}*.js',
-                'public/scripts/{,*/}*.js'
+                'public/app/{,*/}*.js'
             ]
         },
         uglify: {
@@ -44,15 +44,9 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: 'public/scripts',
+                        cwd: 'public/app',
                         src: '**/*.js',
-                        dest: 'production/build/public/scripts'
-                    },
-                    {
-                        expand: true,
-                        cwd: 'config',
-                        src: '**/*.js',
-                        dest: 'production/build/config'
+                        dest: 'production/build/public/app'
                     }
                 ]
             },
@@ -63,6 +57,12 @@ module.exports = function (grunt) {
                         cwd: 'bin',
                         src: '**/*.js',
                         dest: 'production/build/bin'
+                    },
+                    {
+                        expand: true,
+                        cwd: 'config',
+                        src: '**/*.js',
+                        dest: 'production/build/config'
                     }
                 ]
             }
@@ -76,9 +76,9 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: 'public/views',
+                        cwd: 'public/app',
                         src: ['**/*.html'],
-                        dest: 'production/build/public/views/'
+                        dest: 'production/build/public/app'
                     },
                     {
                         'production/build/public/index.html': 'public/index.html'
