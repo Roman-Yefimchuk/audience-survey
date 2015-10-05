@@ -8,6 +8,7 @@ angular.module('routes', [
     'services.api.activeLecturesService',
     'services.api.questionsService',
     'services.socketConnectorService',
+    'services.loaderService',
     'index',
     'lecturer.lecturesManager',
     'lecturer.lecturerActiveLecture',
@@ -331,10 +332,31 @@ angular.module('routes', [
     '$rootScope',
     '$location',
     '$document',
+    'loaderService',
 
-    function ($rootScope, $location, $document) {
+    function ($rootScope, $location, $document, loaderService) {
 
-        $rootScope.$on('$routeChangeStart', function (event, nextRoute, currentRoute) {
+        $rootScope.$on('$routeChangeStart', function () {
+
+            var showLoader = false;
+            var timeoutId = setTimeout(function () {
+                loaderService.showLoader();
+                showLoader = true;
+            });
+
+            var hideLoader = function () {
+
+                clearTimeout(timeoutId);
+                onRouteChangeSuccess();
+                onRouteChangeError();
+
+                if (showLoader) {
+                    loaderService.hideLoader();
+                }
+            };
+
+            var onRouteChangeSuccess = $rootScope.$on('$routeChangeSuccess', hideLoader);
+            var onRouteChangeError = $rootScope.$on('$routeChangeError', hideLoader);
         });
 
         $rootScope.$on('$routeChangeSuccess', function (event, currentRoute, prevRoute) {
