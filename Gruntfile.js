@@ -189,6 +189,13 @@ module.exports = function (grunt) {
                         dest: 'production/build/views/'
                     }
                 ]
+            },
+            favicon: {
+                files: [
+                    {
+                        'production/build/public/favicon.ico': 'public/favicon.ico'
+                    }
+                ]
             }
         }
     });
