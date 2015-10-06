@@ -2,7 +2,7 @@
 
 module.exports = {
     "development": {
-        "port": 8081,
+        "port": 8084,
         "debug": true
     },
     "standard": {
