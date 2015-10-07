@@ -1,14 +1,17 @@
 "use strict";
 
-angular.module('services.socketConnectorService', [])
+angular.module('services.socketConnectorService', [
 
-    .service('socketConnectorService', [
+    'constants'
+
+]).service('socketConnectorService', [
 
         '$q',
         '$rootScope',
         '$cookies',
+        'socketUrl',
 
-        function ($q, $rootScope, $cookies) {
+        function ($q, $rootScope, $cookies, socketUrl) {
 
             var SocketEventsListener = (function () {
 
@@ -83,7 +86,7 @@ angular.module('services.socketConnectorService', [])
                 return $q(function (resolve) {
 
                     var socketEventsListener = new SocketEventsListener();
-                    var socket = io(location.origin + url, {
+                    var socket = io(socketUrl + url, {
                         'forceNew': true,
                         'query': "token=" + $cookies.token + '&userId=' + userId + '&url=' + url
                     });

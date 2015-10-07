@@ -12,7 +12,9 @@ module.exports = function (app, passport) {
     passport.use('google-authorize', new GoogleStrategy({
         clientID: CLIENT_ID,
         clientSecret: CLIENT_SECRET,
-        callbackURL: "/authorize/google/resolved"
+        callbackURL: "/authorize/google/resolved",
+        approvalPrompt: 'force',
+        prompt: 'select_account'
     }, function (token, refreshToken, profile, done) {
         done(null, {
             profile: {
