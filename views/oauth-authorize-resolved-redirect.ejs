@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script type="text/javascript">
+
+    (function () {
+
+        function account2Query(account) {
+
+            var profile = account.profile;
+            var provider = account.provider;
+
+            var query = 'profileId=' + profile.id + '&name=' + profile.name;
+
+            if (profile.email) {
+                query += '&email=' + profile.email;
+            }
+
+            return query + '&provider=' + provider;
+        }
+
+        setTimeout(function () {
+            window.location = window.location['origin'] + '/authorize/resolved?' + account2Query(<%- JSON.stringify(account) %>);
+        }, 0);
+    })();
+
+</script>
+</body>
+</html>

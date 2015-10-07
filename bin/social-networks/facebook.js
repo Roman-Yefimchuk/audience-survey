@@ -15,7 +15,15 @@ module.exports = function (app, passport) {
         callbackURL: "/authorize/facebook/resolved"
     }, function (token, refreshToken, profile, done) {
         done(null, {
-            profile: profile,
+            profile: {
+                id: profile.id,
+                name: profile.displayName,
+                email: (function () {
+                    if ((profile.emails || []).length > 0) {
+                        return profile.emails[0].value;
+                    }
+                })()
+            },
             provider: 'facebook'
         });
     }));
@@ -28,15 +36,14 @@ module.exports = function (app, passport) {
     }));
 
     app.get('/authorize/facebook/resolved', passport.authorize('facebook-authorize', {
-            failureRedirect: '/authorize/facebook/rejected'
-        }), function (request, response) {
-            response.render('oauth-authorize-resolved.ejs', {
-                account: request.account
-            });
-        }
-    );
+        failureRedirect: '/authorize/facebook/rejected'
+    }), function (request, response) {
+        response.render('oauth-authorize-resolved-redirect.ejs', {
+            account: request.account
+        });
+    });
 
     app.get('/authorize/facebook/rejected', function (request, response) {
-        response.render('oauth-authorize-rejected.ejs');
+        response.render('oauth-authorize-rejected-redirect.ejs');
     });
 };

@@ -15,7 +15,11 @@ module.exports = function (app, passport) {
         callbackURL: "/authorize/google/resolved"
     }, function (token, refreshToken, profile, done) {
         done(null, {
-            profile: profile,
+            profile: {
+                id: profile.id,
+                name: profile.displayName,
+                email: profile._json['email']
+            },
             provider: 'google'
         });
     }));
@@ -31,12 +35,12 @@ module.exports = function (app, passport) {
     app.get('/authorize/google/resolved', passport.authorize('google-authorize', {
         failureRedirect: '/authorize/google/rejected'
     }), function (request, response) {
-        response.render('oauth-authorize-resolved.ejs', {
+        response.render('oauth-authorize-resolved-redirect.ejs', {
             account: request.account
         });
     });
 
     app.get('/authorize/google/rejected', function (request, response) {
-        response.render('oauth-authorize-rejected.ejs');
+        response.render('oauth-authorize-rejected-redirect.ejs');
     });
 };

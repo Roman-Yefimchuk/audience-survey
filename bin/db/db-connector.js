@@ -100,7 +100,7 @@
                             connectionRequest = Promise(function (resolve, reject) {
 
                                 var db = OrientDbHttp.connect({
-                                    host: "http://localhost:2480",
+                                    host: "http://confirm.ikrok.net:2480",
                                     user: serverConfig.username,
                                     password: serverConfig.password,
                                     database: databaseConfig.name

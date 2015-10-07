@@ -126,6 +126,14 @@
                 socialNetworkAuthProvider(app, passport);
             });
 
+            app.get('/authorize/resolved', function (request, response) {
+                response.render('oauth-authorize-resolved.ejs');
+            });
+
+            app.get('/authorize/rejected', function (request, response) {
+                response.render('oauth-authorize-rejected.ejs');
+            });
+
         })(app);
 
         app.use(function (request, response, next) {

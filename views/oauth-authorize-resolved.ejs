@@ -8,16 +8,33 @@
 <script type="text/javascript" src="/public/libs/jquery/dist/jquery.js"></script>
 <script type="text/javascript" src="/public/app/authorizeStatus.js"></script>
 <script type="text/javascript">
-    $(document).ready(function () {
 
-        var account = <%- JSON.stringify(account) %>;
+    (function () {
+
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+            var results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
 
         var mainWindow = window.opener;
         if (mainWindow) {
+
+            var account = {
+                profile: {
+                    id: getParameterByName('profileId'),
+                    name: getParameterByName('name'),
+                    email: getParameterByName('email')
+                },
+                provider: getParameterByName('provider')
+            };
+
             var authorizeStatus = new AuthorizeStatus(AuthorizeStatus.AUTHORIZE_RESOLVED, account);
             mainWindow.postMessage(authorizeStatus, window.location['origin']);
         }
-    });
+    })();
+
 </script>
 </body>
 </html>

@@ -15,7 +15,10 @@ module.exports = function (app, passport) {
         callbackURL: "/authorize/twitter/resolved"
     }, function (token, tokenSecret, profile, done) {
         done(null, {
-            profile: profile,
+            profile: {
+                id: profile.id,
+                name: profile.displayName
+            },
             provider: 'twitter'
         });
     }));
@@ -30,12 +33,12 @@ module.exports = function (app, passport) {
     app.get('/authorize/twitter/resolved', passport.authorize('twitter-authorize', {
         failureRedirect: '/authorize/twitter/rejected'
     }), function (request, response) {
-        response.render('oauth-authorize-resolved.ejs', {
+        response.render('oauth-authorize-resolved-redirect.ejs', {
             account: request.account
         });
     });
 
     app.get('/authorize/twitter/rejected', function (request, response) {
-        response.render('oauth-authorize-rejected.ejs');
+        response.render('oauth-authorize-rejected-redirect.ejs');
     });
 };
