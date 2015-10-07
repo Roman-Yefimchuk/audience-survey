@@ -75,14 +75,14 @@ angular.module('signUp', [
                     .then(function (account) {
 
                         profileExtractorService.extractProfile(account)
-                            .then(function (data) {
+                            .then(function (profile) {
 
                                 authService.externalSignUp({
-                                    genericId: data.genericId,
-                                    name: data.name,
-                                    email: data.email,
+                                    profileId: profile.id,
+                                    name: profile.name,
+                                    email: profile.email,
                                     role: $scope.role['id'],
-                                    isEmailVerified: data.isEmailVerified,
+                                    isEmailVerified: profile.isEmailVerified,
                                     authorizationProvider: providerId
                                 }).then(function (response) {
 

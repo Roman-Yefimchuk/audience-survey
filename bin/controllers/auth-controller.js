@@ -196,7 +196,7 @@
                         return Promise(function (resolve, reject) {
 
                             UserRepository.createUser({
-                                genericId: model.genericId,
+                                genericId: model.profileId,
                                 name: model.name,
                                 password: SecurityUtils.generateToken(8),
                                 email: model.email,
