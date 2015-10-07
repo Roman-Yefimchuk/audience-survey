@@ -6,11 +6,5 @@ angular.module('constants', [])
     .constant("EMAIL_PATTERN", /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
     .constant("PASSWORD_PATTERN", /^(.+){6}$/)
     .constant("DEBUG_MODE", true)
-    .constant("socketUrl", window.location['protocol'] + '//' + (function () {
-        if (window.location['host'] == 'confirm.ikrok.net') {
-            return '91.239.65.137';
-        } else {
-            return window.location['host'];
-        }
-    })())
+    .constant("socketUrl", window.location['protocol'] + "//" + window.location['host'])
     .constant("isEmbeddedClient", !!window['__embeddedClient__']);

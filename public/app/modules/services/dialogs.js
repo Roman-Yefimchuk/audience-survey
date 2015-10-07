@@ -11,7 +11,9 @@ angular.module('services.dialogsService', [
     'dialogs.answeredListenersDialog',
     'dialogs.profileEditorDialog',
     'dialogs.profileBuilderDialog',
-    'dialogs.answerDialog'
+    'dialogs.answerDialog',
+    'dialogs.feedbackDialog',
+    'dialogs.infoDialog'
 
 ]).service('dialogsService', [
 
@@ -155,6 +157,27 @@ angular.module('services.dialogsService', [
                                 return options;
                             }
                         }
+                    });
+                },
+                showFeedbackDialog: function (options) {
+                    return open({
+                        templateUrl: '/public/app/modules/dialogs/feedbackDialog/feedbackView.html',
+                        controller: 'FeedbackDialogController',
+                        backdrop: 'static',
+                        keyboard: false,
+                        resolve: {
+                            options: function () {
+                                return options;
+                            }
+                        }
+                    });
+                },
+                showInfoDialog: function () {
+                    return open({
+                        templateUrl: '/public/app/modules/dialogs/infoDialog/infoDialog.html',
+                        controller: 'InfoDialogController',
+                        backdrop: 'static',
+                        keyboard: false
                     });
                 }
             };

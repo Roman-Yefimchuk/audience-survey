@@ -74,32 +74,63 @@ body {
     -webkit-animation-name: tada;
     animation-name: tada;
 }
-svg{
+
+svg {
     height: auto;
     width: auto;
 }
-.nav-tabs > li{
+
+.nav-tabs > li {
     font-size: 20px;
 }
-.header{
+
+.header {
     position: fixed;
     top: 0;
     right: 0;
     left: 0;
     z-index: 1030;
-    -webkit-transform: translate3d(0,0,0);
-    -o-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
     margin-bottom: 20px;
     background: #fff;
-
 }
-.tab_content{
+
+.main-div {
+    padding-bottom: 50px;
+}
+
+footer {
+    border-top: #DDDDDD 1px solid;
+    background: #fff;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    height: 50px;
+}
+
+footer .container {
+    margin-top: 7px;
+}
+
+footer .a {
+    cursor: pointer;
+}
+
+.tab_content {
     margin-top: 35px;
 }
 
-.nav-tabs{
+.nav-tabs {
     margin-left: auto;
     margin-right: auto;
     display: block;
+}
+
+@media screen and (min-width: 768px) {
+    .footer {
+        padding-left: 0;
+        padding-right: 0;
+    }
 }

@@ -18,10 +18,12 @@
 
 <body ng-app="application" ng-cloak>
 
-<div class="container">
+<div class="container main-div">
     <div ng-view>
     </div>
 </div>
+
+<div footer-widget></div>
 
 <div id="ajax_loader" class="ajax-loader"></div>
 
@@ -48,6 +50,8 @@
 <script src="/public/app/modules/dialogs/answerDialog/answerForms/singleChoiceAnswerForm/singleChoiceAnswerForm.js"></script>
 <script src="/public/app/modules/dialogs/answeredListenersDialog/answeredListenersDialog.js"></script>
 <script src="/public/app/modules/dialogs/confirmationDialog/confirmationDialog.js"></script>
+<script src="/public/app/modules/dialogs/feedbackDialog/feedbackDialog.js"></script>
+<script src="/public/app/modules/dialogs/infoDialog/infoDialog.js"></script>
 <script src="/public/app/modules/dialogs/lectureEditorDialog/lectureEditorDialog.js"></script>
 <script src="/public/app/modules/dialogs/lectureEditorDialog/linksEditor/linksEditor.js"></script>
 <script src="/public/app/modules/dialogs/presentListenersDialog/presentListenersDialog.js"></script>
@@ -65,6 +69,7 @@
 
 <script src="/public/app/modules/genericHeader/genericHeader.js"></script>
 <script src="/public/app/modules/index/index.js"></script>
+<script src="/public/app/modules/footerWidget/footerWidget.js"></script>
 <script src="/public/app/modules/lectureStatisticGraph/lectureStatisticGraph.js"></script>
 <script src="/public/app/modules/lecturer/lecturerActiveLecture/lecturerActiveLecture.js"></script>
 <script src="/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerActivityTab/lecturerActivityTab.js"></script>
@@ -85,6 +90,7 @@
 
 <script src="/public/app/modules/services/api/active-lectures.js"></script>
 <script src="/public/app/modules/services/api/auth.js"></script>
+<script src="/public/app/modules/services/api/feedback.js"></script>
 <script src="/public/app/modules/services/api/lectures.js"></script>
 <script src="/public/app/modules/services/api/profiles.js"></script>
 <script src="/public/app/modules/services/api/questions.js"></script>
