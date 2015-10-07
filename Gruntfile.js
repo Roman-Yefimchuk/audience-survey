@@ -99,6 +99,16 @@ module.exports = function (grunt) {
                     }
                 ]
             },
+            dynamicScripts: {
+                options: {
+                    beautify: false
+                },
+                files: [
+                    {
+                        'production/build/public/dynamicLibs/cordova-2.4.0.js': 'public/dynamicLibs/cordova-2.4.0.js'
+                    }
+                ]
+            },
             scripts: {
                 options: {
                     beautify: false
