@@ -2,16 +2,20 @@
 
 angular.module('lecturer.lectureStatistic', [
 
-    'genericHeader'
+    'genericHeader',
+    'lecturer.lectureStatistic.statisticChart'
 
 ]).controller('LectureStatisticController', [
 
         '$scope',
         '$routeParams',
-        'loaderService',
-        'apiService',
+        'user',
+        'statisticCharts',
 
-        function ($scope, $routeParams, loaderService, apiService) {
+        function ($scope, $routeParams, user, statisticCharts) {
+
+            $scope.user = user;
+            $scope.statisticCharts = statisticCharts;
         }
     ]
 );

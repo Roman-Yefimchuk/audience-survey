@@ -45,6 +45,8 @@ angular.module('lecturer.lecturesManager', [
                         name: lectureName
                     }).then(function (lecture) {
 
+                        $scope.newLectureName = '';
+
                         lectures.push({
                             id: lecture.id,
                             name: lectureName,

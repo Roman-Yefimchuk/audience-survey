@@ -20,19 +20,9 @@ CREATE PROPERTY Question.creationDate LONG
 CREATE PROPERTY Question.type STRING
 CREATE PROPERTY Question.data STRING
 
-CREATE CLASS TimeMarker
-CREATE PROPERTY TimeMarker.startTime LONG
-CREATE PROPERTY TimeMarker.finishTime LONG
-CREATE PROPERTY TimeMarker.status STRING
-
-CREATE CLASS ChartPoint
-CREATE PROPERTY ChartPoint.timestamp LONG
-CREATE PROPERTY ChartPoint.presentListeners INTEGER
-CREATE PROPERTY ChartPoint.understandingPercentage INTEGER
-
 CREATE CLASS StatisticChart
-CREATE PROPERTY StatisticChart.chartPoints LINKLIST ChartPoint
-CREATE PROPERTY StatisticChart.timeline LINKLIST TimeMarker
+CREATE PROPERTY StatisticChart.chartPoints STRING
+CREATE PROPERTY StatisticChart.timeline STRING
 CREATE PROPERTY StatisticChart.startTime LONG
 CREATE PROPERTY StatisticChart.finishTime LONG
 

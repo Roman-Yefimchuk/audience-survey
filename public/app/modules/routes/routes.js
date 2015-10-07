@@ -3,9 +3,11 @@
 angular.module('routes', [
 
     'ngRoute',
+    'services.api.authService',
     'services.api.usersService',
     'services.api.lecturesService',
     'services.api.activeLecturesService',
+    'services.api.statisticChartsService',
     'services.api.questionsService',
     'services.socketConnectorService',
     'services.loaderService',
@@ -34,6 +36,28 @@ angular.module('routes', [
         $routeProvider.when('/', {
             templateUrl: '/public/app/modules/index/index.html',
             controller: 'IndexController',
+            resolve: {
+                quickSignIn: [
+
+                    '$q',
+                    '$location',
+                    'authService',
+
+                    function ($q, $location, authService) {
+
+                        return $q(function (resolve) {
+
+                            authService.quickSignIn()
+                                .then(function (redirect) {
+                                    redirect($location);
+                                    resolve();
+                                }, function () {
+                                    resolve();
+                                });
+                        });
+                    }
+                ]
+            },
             options: {
                 title: 'Головна'
             }
@@ -201,6 +225,33 @@ angular.module('routes', [
         }).when('/lecturers/:lecturerId/lectures/:lectureId/statistic/', {
             templateUrl: '/public/app/modules/lecturer/lectureStatistic/lectureStatistic.html',
             controller: 'LectureStatisticController',
+            resolve: {
+                user: [
+
+                    '$route',
+                    'usersService',
+
+                    function ($route, usersService) {
+
+                        var userId = getRouteParam($route, 'lecturerId');
+
+                        return usersService.getUser(userId);
+                    }
+                ],
+                statisticCharts: [
+
+                    '$route',
+                    'statisticChartsService',
+
+                    function ($route, statisticChartsService) {
+
+                        var userId = getRouteParam($route, 'lecturerId');
+                        var lectureId = getRouteParam($route, 'lectureId');
+
+                        return statisticChartsService.getStatisticCharts(userId, lectureId);
+                    }
+                ]
+            },
             options: {
                 title: 'Ститистика'
             }

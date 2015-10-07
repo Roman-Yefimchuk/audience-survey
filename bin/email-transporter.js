@@ -71,7 +71,7 @@
         });
     }
 
-    function sendFeedback(subject, senderAddress, message, handler) {
+    function sendFeedback(subject, senderAddress, message) {
         return send('templates/feedback-template.ejs', {
             recipient: 'yefimchuk.roman@gmail.com',
             subject: subject

@@ -1,11 +1,14 @@
 (function (require) {
 
+    var TIMER_INTERVAL = 1000;
+    var UPDATE_STATISTIC_INTERVAL = 60;
+
     var _ = require('underscore');
     var Q = require('q');
     var Promise = Q['promise'];
 
     var AuthSessionProvider = require('./auth-session-provider');
-    var UserRepository = require('./../db/data-access-layers/user-repository');
+    var StatisticChartRepository = require('./../db/data-access-layers/statistic-chart-repository');
     var LectureRepository = require('./../db/data-access-layers/lecture-repository');
     var Timer = require('./../utils/timer');
     var ArrayUtils = require('./../utils/array-utils');
@@ -41,7 +44,9 @@
         function StatisticChart() {
             _.extend(this, {
                 chartPoints: [],
-                timeline: []
+                timeline: [],
+                startTime: -1,
+                finishTime: -1
             });
         }
 
@@ -70,11 +75,15 @@
                 timeline.push(timeMarker);
             },
             addChartPoint: function (chartPoint) {
+                var chartPoints = this.chartPoints;
+                chartPoints.push(chartPoint);
             },
             toJSON: function () {
                 return {
                     chartPoints: this.chartPoints,
-                    timeline: this.timeline
+                    timeline: this.timeline,
+                    startTime: this.startTime,
+                    finishTime: this.finishTime
                 };
             }
         };
@@ -170,7 +179,17 @@
                             duration: duration
                         });
                     }
-                }, 1000),
+
+                    if (duration % UPDATE_STATISTIC_INTERVAL == 0) {
+
+                        var statisticChart = activeLecture.statisticChart;
+                        statisticChart.addChartPoint({
+                            timestamp: activeLecture.getDuration(),
+                            presentListeners: activeLecture.listeners['length'],
+                            understandingPercentage: activeLecture.getAverageUnderstandingValue()
+                        });
+                    }
+                }, TIMER_INTERVAL),
                 connection: connection,
                 lecturerSocketSession: null
             });
@@ -490,6 +509,17 @@
 
                 return Math.floor(duration / 1000);
             },
+            getTotalDuration: function () {
+
+                var timeline = this.statisticChart['timeline'];
+                var startTime = timeline[0].startTime;
+                var finishTime = timeline[timeline.length - 1].finishTime;
+                if (finishTime == 'expected') {
+                    finishTime = _.now();
+                }
+
+                return Math.floor((finishTime - startTime) / 1000);
+            },
             getAverageUnderstandingValue: function () {
 
                 var value = 0;
@@ -726,11 +756,19 @@
 
             if (activeLecture) {
 
-                activeLectures = _.without(activeLectures, activeLecture);
-
                 activeLecture.stop();
 
-                resolve('success');
+                StatisticChartRepository.createStatisticChart(activeLecture.id, (function () {
+                    var statisticChart = activeLecture.statisticChart;
+                    return statisticChart.toJSON();
+                })()).then(function () {
+
+                    activeLectures = _.without(activeLectures, activeLecture);
+
+                    resolve('success');
+                }, function () {
+                    resolve('cant_update_statistic');
+                });
             } else {
                 resolve('not_found');
             }

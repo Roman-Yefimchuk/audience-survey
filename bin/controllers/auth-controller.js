@@ -2,6 +2,7 @@
 
 (function (require) {
 
+    var _ = require('underscore');
     var Q = require('q');
     var Promise = Q['promise'];
 
@@ -18,6 +19,10 @@
 
     function request() {
         return new ControllerUtils.RequestResolver();
+    }
+
+    function query(queryName) {
+        return new ControllerUtils.RequestResolver('query.' + queryName);
     }
 
     function model() {
@@ -222,6 +227,48 @@
                             }).catch(function (e) {
                                 reject(e);
                             });
+                        });
+                    }
+                },
+                {
+                    route: 'checkToken',
+                    params: [query('token')],
+                    handler: function (token) {
+
+                        return Promise(function (resolve, reject) {
+
+                            if (token) {
+
+                                AuthSessionProvider.getAuthSessionByToken(token)
+                                    .then(function (authSession) {
+
+                                        if (authSession) {
+
+                                            if (_.now() >= authSession.expirationDate) {
+
+                                                resolve({
+                                                    isAuthorized: false
+                                                });
+                                            } else {
+
+                                                resolve({
+                                                    isAuthorized: true
+                                                });
+                                            }
+                                        } else {
+
+                                            resolve({
+                                                isAuthorized: false
+                                            });
+                                        }
+                                    }, function (e) {
+                                        reject(e);
+                                    });
+                            } else {
+                                resolve({
+                                    isAuthorized: false
+                                });
+                            }
                         });
                     }
                 },
