@@ -2,16 +2,14 @@
 
 angular.module('services.oauthService', [
 
-    'services.logProxyService',
     'constants'
 
 ]).service('oauthService', [
 
     '$q',
-    'logProxyService',
-    'isEmbeddedClient',
+    'isCordovaApp',
 
-    function ($q, logProxyService, isEmbeddedClient) {
+    function ($q, isCordovaApp) {
 
         var providers = {
             facebook: {
@@ -34,7 +32,7 @@ angular.module('services.oauthService', [
 
         var authorize = (function () {
 
-            if (isEmbeddedClient) {
+            if (isCordovaApp) {
 
                 return function (providerId) {
 
@@ -99,7 +97,6 @@ angular.module('services.oauthService', [
                                     reject();
                                 }
                             } catch (e) {
-                                logProxyService.error(e);
                                 reject();
                             }
 

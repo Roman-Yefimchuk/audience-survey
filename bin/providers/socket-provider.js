@@ -231,10 +231,18 @@
                     });
                 } else {
 
+                    var understandingValue = activeLecture.getAverageUnderstandingValue();
+
                     _.forEach(activeLecture.listeners, function (listener) {
+
                         var socketSession = listener.socketSession;
+
                         socketSession.emit('on_listener_joined', {
                             userId: userId
+                        });
+
+                        socketSession.emit('on_understanding_value_updated', {
+                            understandingValue: understandingValue
                         });
                     });
 
@@ -247,8 +255,13 @@
 
                     var lecturerSocketSession = activeLecture.lecturerSocketSession;
                     if (lecturerSocketSession) {
+
                         lecturerSocketSession.emit('on_listener_joined', {
                             userId: userId
+                        });
+
+                        lecturerSocketSession.emit('on_understanding_value_updated', {
+                            understandingValue: understandingValue
                         });
                     }
 
@@ -344,10 +357,18 @@
 
                         activeLecture.listeners = _.without(activeLecture.listeners, listener);
 
+                        var understandingValue = activeLecture.getAverageUnderstandingValue();
+
                         _.forEach(activeLecture.listeners, function (listener) {
+
                             var socketSession = listener.socketSession;
+
                             socketSession.emit('on_listener_went', {
                                 userId: userId
+                            });
+
+                            socketSession.emit('on_understanding_value_updated', {
+                                understandingValue: understandingValue
                             });
                         });
 
@@ -360,8 +381,13 @@
 
                         var lecturerSocketSession = activeLecture.lecturerSocketSession;
                         if (lecturerSocketSession) {
+
                             lecturerSocketSession.emit('on_listener_went', {
                                 userId: userId
+                            });
+
+                            lecturerSocketSession.emit('on_understanding_value_updated', {
+                                understandingValue: understandingValue
                             });
                         }
                     }
@@ -508,17 +534,6 @@
                 });
 
                 return Math.floor(duration / 1000);
-            },
-            getTotalDuration: function () {
-
-                var timeline = this.statisticChart['timeline'];
-                var startTime = timeline[0].startTime;
-                var finishTime = timeline[timeline.length - 1].finishTime;
-                if (finishTime == 'expected') {
-                    finishTime = _.now();
-                }
-
-                return Math.floor((finishTime - startTime) / 1000);
             },
             getAverageUnderstandingValue: function () {
 

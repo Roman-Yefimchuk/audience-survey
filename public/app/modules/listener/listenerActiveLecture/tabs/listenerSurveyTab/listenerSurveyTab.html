@@ -1,6 +1,18 @@
 <div style="margin-top: -15px;" class="clearfix">
 
-    <div survey-pie="pieModel" style="margin-top: 15px;margin-bottom: 15px;">
+<!--    <div survey-pie="pieModel" style="margin-top: 15px;margin-bottom: 15px;">
+    </div>-->
+
+    <div class="col-md-12 column text-center" style="padding-left: 0;padding-right: 0;margin-top: 15px;margin-bottom: 15px;">
+
+        <canvas id="pie" class="chart chart-pie"
+                style="margin-bottom: -5px;"
+                chart-options="pieChartModel.options"
+                chart-data="pieChartModel.data"
+                chart-labels="pieChartModel.labels"
+                chart-colours="pieChartModel.colors">
+        </canvas>
+
     </div>
 
     <div class="col-md-6 col-xs-6" style="padding-left: 0;padding-right: 7px;">

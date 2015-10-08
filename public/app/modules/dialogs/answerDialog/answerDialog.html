@@ -25,18 +25,18 @@
             Ваша відповідь:
         </label>
 
-        <div>
-            <div ng-if="question.type == 'single-choice'"
-                 single-choice-answer-form="question.data" options="options">
+        <div ng-switch="question.type">
+            <div ng-switch-when="single-choice"
+                 editable-single-choice-answer-form="question.data" options="options">
             </div>
-            <div ng-if="question.type == 'multi-choice'"
-                 multi-choice-answer-form="question.data" options="options">
+            <div ng-switch-when="multi-choice"
+                 editable-multi-choice-answer-form="question.data" options="options">
             </div>
-            <div ng-if="question.type == 'default'"
-                 default-answer-form="question.data" options="options">
+            <div ng-switch-when="default"
+                 editable-default-answer-form="question.data" options="options">
             </div>
-            <div ng-if="question.type == 'range'"
-                 range-answer-form="question.data" options="options">
+            <div ng-switch-when="range"
+                 editable-range-answer-form="question.data" options="options">
             </div>
         </div>
 
@@ -51,7 +51,7 @@
             Закрити
         </span>
         <span class="btn btn-primary" ng-click="sendAnswer()"
-              ng-disabled="!options.canSendAnswer">
+              ng-disabled="!options.isAnswerChosen">
             Відповісти
         </span>
     </div>

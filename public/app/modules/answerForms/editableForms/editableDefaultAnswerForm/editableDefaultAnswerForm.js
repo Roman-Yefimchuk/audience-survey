@@ -1,17 +1,17 @@
 "use strict";
 
-angular.module('dialogs.answerDialog.answerForms.defaultAnswerForm', [])
+angular.module('answerForms.editableForms.editableDefaultAnswerForm', [])
 
-    .directive('defaultAnswerForm', [
+    .directive('editableDefaultAnswerForm', [
 
         function () {
 
             return {
                 scope: {
-                    data: '=defaultAnswerForm',
+                    data: '=editableDefaultAnswerForm',
                     options: '='
                 },
-                templateUrl: '/public/app/modules/dialogs/answerDialog/answerForms/defaultAnswerForm/defaultAnswerForm.html',
+                templateUrl: '/public/app/modules/answerForms/editableForms/editableDefaultAnswerForm/editableDefaultAnswerForm.html',
                 controller: ['$scope', function ($scope) {
 
                     $scope.answer = null;
@@ -20,7 +20,7 @@ angular.module('dialogs.answerDialog.answerForms.defaultAnswerForm', [])
 
                         if (typeof answer == 'boolean') {
 
-                            $scope.options['canSendAnswer'] = true;
+                            $scope.options['isAnswerChosen'] = true;
                             $scope.options['answerData'] = answer ? 'yes' : 'no';
                         }
                     });

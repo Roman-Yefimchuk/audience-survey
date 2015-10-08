@@ -1,37 +1,34 @@
 "use strict";
 
-angular.module('dialogs.answeredListenersDialog', [])
+angular.module('dialogs.answeredQuestionInfoDialog.tabs.answeredListenersTab', [
 
-    .controller('AnsweredListenersDialogController', [
+    'answerForms.viewableForms.viewableDefaultAnswerForm',
+    'answerForms.viewableForms.viewableMultiChoiceAnswerForm',
+    'answerForms.viewableForms.viewableRangeAnswerForm',
+    'answerForms.viewableForms.viewableSingleChoiceAnswerForm'
+
+]).controller('AnsweredListenersTabController', [
 
         '$q',
         '$scope',
-        '$modalInstance',
         'usersService',
-        'options',
 
-        function ($q, $scope, $modalInstance, usersService, options) {
+        function ($q, $scope, usersService) {
 
-            var question = options.question;
-            var listenerAnswers = options.listenerAnswers;
             var visibleUsers = [];
 
             var pagination = {
                 itemsPerPage: 5,
                 maxPaginationSize: 5,
-                totalItems: listenerAnswers.length,
+                totalItems: $scope.listenerAnswers['length'],
                 pageNumber: 1
             };
 
-            function updateDialogTitle() {
-                $scope.dialogTitle = 'На запитання відповіли ' + listenerAnswers.length + ' користувач(ів)';
-            }
-
             function updatePage() {
 
-                pagination.totalItems = listenerAnswers.length;
+                pagination.totalItems = $scope.listenerAnswers['length'];
 
-                if (listenerAnswers.length > 0) {
+                if ($scope.listenerAnswers['length'] > 0) {
 
                     var users = getUsersForPage();
 
@@ -40,14 +37,20 @@ angular.module('dialogs.answeredListenersDialog', [])
                         visibleUsers = angular.copy(users);
 
                         $q.all((function () {
+
                             var requests = [];
+
                             _.forEach(visibleUsers, function (userId) {
+
                                 requests.push($q(function (resolve, reject) {
                                     usersService.getUserName(userId)
                                         .then(function (user) {
                                             resolve({
                                                 id: userId,
-                                                name: user.name
+                                                name: user.name,
+                                                answerData: _.findWhere($scope.listenerAnswers, {
+                                                    userId: userId
+                                                }).answerData
                                             });
                                         }, function (e) {
                                             reject(e);
@@ -87,11 +90,11 @@ angular.module('dialogs.answeredListenersDialog', [])
                 if (pagination.totalItems > pagination.itemsPerPage) {
 
                     var fromIndex = (pagination.pageNumber - 1) * pagination.itemsPerPage;
-                    for (var index = 0; (index + fromIndex < listenerAnswers.length) && (index < pagination.itemsPerPage); index++) {
-                        users.push(listenerAnswers[index + fromIndex].userId);
+                    for (var index = 0; (index + fromIndex < $scope.listenerAnswers['length']) && (index < pagination.itemsPerPage); index++) {
+                        users.push($scope.listenerAnswers[index + fromIndex].userId);
                     }
                 } else {
-                    _.forEach(listenerAnswers, function (item) {
+                    _.forEach($scope.listenerAnswers, function (item) {
                         users.push(item.userId);
                     });
                 }
@@ -100,26 +103,19 @@ angular.module('dialogs.answeredListenersDialog', [])
             }
 
             function getListenerAnswer(userId) {
-                return _.findWhere(listenerAnswers, {
+                return _.findWhere($scope.listenerAnswers, {
                     userId: userId
                 }).answer;
-            }
-
-            function cancel() {
-                $modalInstance.dismiss('cancel');
             }
 
             $scope.pagination = pagination;
             $scope.usersForPage = [];
 
+            $scope.getListenerAnswer = getListenerAnswer;
+
             $scope.$watch('pagination.pageNumber', function () {
                 updatePage();
             });
-
-            $scope.getListenerAnswer = getListenerAnswer;
-            $scope.cancel = cancel;
-
-            updateDialogTitle();
         }
     ]
 );

@@ -1,0 +1,10 @@
+<div ng-repeat="itemText in questionData">
+    <span>
+        <input id="{{ $index }}" type="checkbox"
+               ng-checked="isChecked($index)"
+               disabled="disabled"/>
+        <label for="{{ $index }}" style="vertical-align: middle;">
+            {{ itemText }}
+        </label>
+    </span>
+</div>

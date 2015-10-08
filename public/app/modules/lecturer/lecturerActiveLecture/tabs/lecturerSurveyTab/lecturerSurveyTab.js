@@ -2,7 +2,7 @@
 
 angular.module('lecturer.lecturerActiveLecture.tabs.lecturerSurveyTab', [
 
-    'surveyPie'
+    'chart.js'
 
 ]).controller('LecturerSurveyTabController', [
 

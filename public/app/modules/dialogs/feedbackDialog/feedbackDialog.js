@@ -19,7 +19,7 @@ angular.module('dialogs.feedbackDialog', [
 
             var model = {
                 subject: "",
-                senderAddress: "",
+                senderAddress: options.email || '',
                 message: ""
             };
 

@@ -1,0 +1,9 @@
+<div ng-repeat="itemText in questionData">
+    <span>
+        <input id="{{ $index }}" type="radio" ng-checked="$index == answerData"
+               disabled="disabled"/>
+        <label for="{{ $index }}" style="vertical-align: middle;">
+            {{ itemText }}
+        </label>
+    </span>
+</div>

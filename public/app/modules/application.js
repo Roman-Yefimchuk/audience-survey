@@ -12,7 +12,7 @@ angular.module('application', [
 
     '$logProvider',
     '$tooltipProvider',
-    'DEBUG_MODE',
+    'debugMode',
 
     function ($logProvider, $tooltipProvider, debugMode) {
 
@@ -27,25 +27,25 @@ angular.module('application', [
     }
 ]).run([
 
-    'isEmbeddedClient',
+    'isCordovaApp',
 
-    function (isEmbeddedClient) {
+    function (isCordovaApp) {
 
-        if (isEmbeddedClient) {
+        if (isCordovaApp) {
 
             angular.injector([
+
                 'ng',
                 'services.contentLoaderService',
-                'services.loaderService',
-                'services.logProxyService'
+                'services.loaderService'
+
             ], true).invoke([
 
                 '$timeout',
                 'loaderService',
                 'contentLoaderService',
-                'logProxyService',
 
-                function ($timeout, loaderService, contentLoaderService, logProxyService) {
+                function ($timeout, loaderService, contentLoaderService) {
 
                     loaderService.showLoader();
 
@@ -55,7 +55,7 @@ angular.module('application', [
                             .then(function () {
 
                                 document.addEventListener("deviceready", function () {
-                                    logProxyService.info('Device ready');
+                                    console.log('Device ready');
                                 }, false);
 
                                 loaderService.hideLoader();

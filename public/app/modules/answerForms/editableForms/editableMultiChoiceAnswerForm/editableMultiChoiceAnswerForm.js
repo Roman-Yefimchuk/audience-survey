@@ -1,17 +1,17 @@
 "use strict";
 
-angular.module('dialogs.answerDialog.answerForms.multiChoiceAnswerForm', [])
+angular.module('answerForms.editableForms.editableMultiChoiceAnswerForm', [])
 
-    .directive('multiChoiceAnswerForm', [
+    .directive('editableMultiChoiceAnswerForm', [
 
         function () {
 
             return {
                 scope: {
-                    data: '=multiChoiceAnswerForm',
+                    data: '=editableMultiChoiceAnswerForm',
                     options: '='
                 },
-                templateUrl: '/public/app/modules/dialogs/answerDialog/answerForms/multiChoiceAnswerForm/multiChoiceAnswerForm.html',
+                templateUrl: '/public/app/modules/answerForms/editableForms/editableMultiChoiceAnswerForm/editableMultiChoiceAnswerForm.html',
                 controller: ['$scope', function ($scope) {
 
                     $scope.items = (function () {
@@ -35,7 +35,7 @@ angular.module('dialogs.answerDialog.answerForms.multiChoiceAnswerForm', [])
                             }
                         });
 
-                        $scope.options['canSendAnswer'] = chosenItems.length > 0;
+                        $scope.options['isAnswerChosen'] = chosenItems.length > 0;
                         $scope.options['answerData'] = chosenItems;
                     }, true);
                 }]

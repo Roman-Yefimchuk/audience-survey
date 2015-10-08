@@ -46,7 +46,7 @@
 
                         <tabset style="margin-left: 15px;margin-right: 15px;">
                             <tab ng-repeat="tab in tabs" select="setActiveTab(tab)" active="tab.isActive"
-                                 style="width: 60px;cursor: pointer" class="text-center">
+                                 style="width: 60px;cursor: pointer;z-index: 1;" class="text-center">
                                 <tab-heading>
                                     <i class="fa {{ tab.icon }}"></i>
                                 </tab-heading>

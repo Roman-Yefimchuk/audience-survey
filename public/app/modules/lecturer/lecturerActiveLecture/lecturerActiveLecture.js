@@ -70,6 +70,10 @@ angular.module('lecturer.lecturerActiveLecture', [
                 }
             ];
 
+            function round(n, s) {
+                return parseFloat(n.toFixed(s));
+            }
+
             function showPresentListeners() {
                 dialogsService.showPresentListeners(activeLecture.listeners, socketConnection);
             }
@@ -200,8 +204,8 @@ angular.module('lecturer.lecturerActiveLecture', [
                 });
             }
 
-            function showAnsweredListeners(question) {
-                dialogsService.showAnsweredListeners({
+            function showAnsweredQuestionInfo(question) {
+                dialogsService.showAnsweredQuestionInfoDialog({
                     question: question,
                     listenerAnswers: _.findWhere(activeLecture.askedQuestions, {
                         questionId: question.id
@@ -231,20 +235,14 @@ angular.module('lecturer.lecturerActiveLecture', [
                 text: ''
             };
             $scope.questions = questions;
-            $scope.pieModel = [
-                {
-                    value: 0,
-                    label: 'Зрозуміло',
-                    color: "#449d44",
-                    highlight: "#398439"
+            $scope.pieChartModel = {
+                options: {
+                    animation: false
                 },
-                {
-                    value: 100,
-                    label: 'Не зрозуміло',
-                    color: "#c9302c",
-                    highlight: "#ac2925"
-                }
-            ];
+                labels: ['Зрозуміло', 'Не зрозуміло'],
+                data: [0, 100],
+                colors: ['#449d44', '#c9302c']
+            };
             $scope.tabs = tabs;
             $scope.tab = _.find(tabs, function (tab) {
                 return tab.isActive;
@@ -262,7 +260,7 @@ angular.module('lecturer.lecturerActiveLecture', [
             $scope.getAskedQuestion = getAskedQuestion;
 
             $scope.showPresentListeners = showPresentListeners;
-            $scope.showAnsweredListeners = showAnsweredListeners;
+            $scope.showAnsweredQuestionInfo = showAnsweredQuestionInfo;
             $scope.addActivityItem = addActivityItem;
             $scope.setActiveTab = setActiveTab;
 
@@ -329,10 +327,10 @@ angular.module('lecturer.lecturerActiveLecture', [
 
                     $timeout(function () {
 
-                        var pieModel = $scope.pieModel;
+                        var pieChartModel = $scope.pieChartModel;
 
-                        pieModel[UNDERSTANDABLY_VALUE_INDEX].value = understandingValue.toFixed(1);
-                        pieModel[UNCLEAR_VALUE_INDEX].value = (100 - understandingValue).toFixed(1);
+                        pieChartModel.data[UNDERSTANDABLY_VALUE_INDEX] = round(understandingValue, 1);
+                        pieChartModel.data[UNCLEAR_VALUE_INDEX] = round(100 - understandingValue, 1);
                     });
                 }),
                 socketConnection.on('on_answer_received', function (data) {

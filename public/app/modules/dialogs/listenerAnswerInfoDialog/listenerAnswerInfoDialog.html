@@ -1,0 +1,50 @@
+<div>
+    <div class="modal-header">
+        <span class="close" ng-click="close()">×</span>
+        <h4 style="margin-bottom: 0;margin-top: 0;">
+            <i class="fa fa-info"></i>
+            &nbsp;
+            Результат вашої відповіді
+        </h4>
+    </div>
+    <div class="modal-body">
+
+
+        <label>
+            Запитання:
+        </label>
+
+        <div>
+            {{ question.text }}
+        </div>
+
+        <br>
+
+        <label>
+            Ваша відповідь:
+        </label>
+
+        <div ng-switch="question.type">
+            <div ng-switch-when="single-choice"
+                 viewable-single-choice-answer-form="answerData" question-data="question.data">
+            </div>
+            <div ng-switch-when="multi-choice"
+                 viewable-multi-choice-answer-form="answerData" question-data="question.data">
+            </div>
+            <div ng-switch-when="default"
+                 viewable-default-answer-form="answerData" question-data="question.data">
+            </div>
+            <div ng-switch-when="range"
+                 viewable-range-answer-form="answerData" question-data="question.data">
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer ng-scope" style="margin-top: 0">
+        <span class="btn btn-success btn-sm" ng-click="close()">
+            <i class="fa fa-check"></i>
+            &nbsp;
+            Добре
+        </span>
+    </div>
+</div>

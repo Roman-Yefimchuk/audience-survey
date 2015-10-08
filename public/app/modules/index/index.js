@@ -1,12 +1,18 @@
 "use strict";
 
-angular.module('index', [])
+angular.module('index', [
 
-    .controller('IndexController', [
+    'constants'
+
+]).controller('IndexController', [
 
         '$scope',
+        'productName',
+        'isCordovaApp',
 
-        function ($scope) {
+        function ($scope, productName, isCordovaApp) {
+            $scope.productName = productName;
+            $scope.isCordovaApp = isCordovaApp;
         }
     ]
 );

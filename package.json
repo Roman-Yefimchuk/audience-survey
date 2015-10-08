@@ -1,6 +1,6 @@
 {
     "name": "Democratia",
-    "version": "0.1.0",
+    "version": "0.9",
     "scripts": {
         "start": "node ./bin/server.js"
     },

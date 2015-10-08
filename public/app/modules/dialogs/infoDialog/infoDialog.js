@@ -1,17 +1,24 @@
 "use strict";
 
-angular.module('dialogs.infoDialog', [])
+angular.module('dialogs.infoDialog', [
 
-    .controller('InfoDialogController', [
+    'constants'
+
+]).controller('InfoDialogController', [
 
         '$scope',
         '$modalInstance',
+        'productName',
+        'productVersion',
 
-        function ($scope, $modalInstance) {
+        function ($scope, $modalInstance, productName, productVersion) {
 
             function ok() {
                 $modalInstance.close();
             }
+
+            $scope.productName = productName;
+            $scope.productVersion = productVersion;
 
             $scope.ok = ok;
         }

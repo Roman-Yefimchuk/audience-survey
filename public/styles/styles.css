@@ -98,10 +98,11 @@ svg {
 }
 
 .main-div {
-    padding-bottom: 50px;
+    padding-bottom: 45px;
 }
 
 footer {
+    z-index: 1000;
     border-top: #DDDDDD 1px solid;
     background: #fff;
     width: 100%;

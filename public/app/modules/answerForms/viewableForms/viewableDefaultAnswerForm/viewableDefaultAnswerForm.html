@@ -1,0 +1,19 @@
+<div>
+    <span>
+        <input id="positiveAnswer" type="radio" ng-checked="answerData == 'yes'"
+               disabled="disabled"/>
+        <label for="positiveAnswer" style="vertical-align: middle;">
+            {{ questionData.yes }}
+        </label>
+    </span>
+</div>
+
+<div>
+    <span>
+        <input id="negativeAnswer" type="radio" ng-checked="answerData == 'no'"
+               disabled="disabled"/>
+        <label for="negativeAnswer" style="vertical-align: middle;">
+            {{ questionData.no }}
+        </label>
+    </span>
+</div>

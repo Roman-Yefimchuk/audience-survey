@@ -95,7 +95,8 @@ module.exports = function (grunt) {
                         'production/build/public/libs/jquery/dist/jquery.js': 'public/libs/jquery/dist/jquery.js',
                         'production/build/public/libs/json3/lib/json3.js': 'public/libs/json3/lib/json3.js',
                         'production/build/public/libs/notifyjs/dist/notify-combined.js': 'public/libs/notifyjs/dist/notify-combined.js',
-                        'production/build/public/libs/underscore/underscore.js': 'public/libs/underscore/underscore.js'
+                        'production/build/public/libs/underscore/underscore.js': 'public/libs/underscore/underscore.js',
+                        'production/build/public/libs/angular-chart.js/dist/angular-chart.js': 'public/libs/angular-chart.js/dist/angular-chart.js'
                     }
                 ]
             },
@@ -154,7 +155,8 @@ module.exports = function (grunt) {
                     },
                     {
                         'production/build/public/libs/bootstrap/dist/css/bootstrap.css': 'public/libs/bootstrap/dist/css/bootstrap.css',
-                        'production/build/public/libs/font-awesome/css/font-awesome.css': 'public/libs/font-awesome/css/font-awesome.css'
+                        'production/build/public/libs/font-awesome/css/font-awesome.css': 'public/libs/font-awesome/css/font-awesome.css',
+                        'production/build/public/libs/angular-chart.js/dist/angular-chart.css': 'public/libs/angular-chart.js/dist/angular-chart.css'
                     }
                 ]
             }
@@ -204,6 +206,16 @@ module.exports = function (grunt) {
                 files: [
                     {
                         'production/build/public/favicon.ico': 'public/favicon.ico'
+                    }
+                ]
+            },
+            mobile: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'public/mobile',
+                        src: ['**'],
+                        dest: 'production/build/public/mobile/'
                     }
                 ]
             }

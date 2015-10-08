@@ -1,10 +1,8 @@
 "use strict";
 
-angular.module('listener.listenerActiveLecture.tabs.listenerSurveyTab', [
+angular.module('listener.listenerActiveLecture.tabs.listenerSurveyTab', [])
 
-    'surveyPie'
-
-]).controller('ListenerSurveyTabController', [
+    .controller('ListenerSurveyTabController', [
 
         '$scope',
 

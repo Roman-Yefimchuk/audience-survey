@@ -3,10 +3,10 @@
 angular.module('dialogs.answerDialog', [
 
     'filters.formatSeconds',
-    'dialogs.answerDialog.answerForms.defaultAnswerForm',
-    'dialogs.answerDialog.answerForms.multiChoiceAnswerForm',
-    'dialogs.answerDialog.answerForms.rangeAnswerForm',
-    'dialogs.answerDialog.answerForms.singleChoiceAnswerForm'
+    'answerForms.editableForms.editableDefaultAnswerForm',
+    'answerForms.editableForms.editableMultiChoiceAnswerForm',
+    'answerForms.editableForms.editableRangeAnswerForm',
+    'answerForms.editableForms.editableSingleChoiceAnswerForm'
 
 ]).controller('AnswerDialogController', [
 

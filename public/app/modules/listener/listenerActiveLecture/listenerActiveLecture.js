@@ -33,24 +33,11 @@ angular.module('listener.listenerActiveLecture', [
 
             var UNDERSTANDABLY_VALUE = 1;
             var UNCLEAR_VALUE = 0;
+            var UNDERSTANDABLY_VALUE_INDEX = 0;
+            var UNCLEAR_VALUE_INDEX = 1;
 
             //TODO: bug
             activeLecture.listeners = _.without(activeLecture.listeners, user.id);
-
-            var pieModel = [
-                {
-                    value: 0,
-                    label: 'Зрозуміло',
-                    color: "#449d44",
-                    highlight: "#398439"
-                },
-                {
-                    value: 100,
-                    label: 'Незрозуміло',
-                    color: "#c9302c",
-                    highlight: "#ac2925"
-                }
-            ];
 
             var askedQuestions = [];
             var activityCollection = [];
@@ -88,6 +75,10 @@ angular.module('listener.listenerActiveLecture', [
                     isActive: false
                 }
             ];
+
+            function round(n, s) {
+                return parseFloat(n.toFixed(s));
+            }
 
             function showSuspendDialog() {
                 dialogsService.showSuspendedDialog({
@@ -176,6 +167,10 @@ angular.module('listener.listenerActiveLecture', [
                 });
             }
 
+            function showAnswerInfo(askedQuestion) {
+                dialogsService.showListenerAnswerInfoDialog(askedQuestion);
+            }
+
             $scope.user = user;
             $scope.lecture = lecture;
             $scope.activeLecture = activeLecture;
@@ -184,12 +179,13 @@ angular.module('listener.listenerActiveLecture', [
             $scope.message = message;
             $scope.askedQuestions = askedQuestions;
             $scope.showView = true;
-            $scope.pieModel = pieModel;
-            $scope.pieOptions = {
-                segmentShowStroke: true,
-                segmentStrokeColor: "#fff",
-                segmentStrokeWidth: 1,
-                animateRotate: false
+            $scope.pieChartModel = {
+                options: {
+                    animation: false
+                },
+                labels: ['Зрозуміло', 'Не зрозуміло'],
+                data: [0, 100],
+                colors: ['#449d44', '#c9302c']
             };
             $scope.tabs = tabs;
             $scope.tab = _.find(tabs, function (tab) {
@@ -200,6 +196,7 @@ angular.module('listener.listenerActiveLecture', [
             $scope.showPresentListeners = showPresentListeners;
             $scope.quit = quit;
             $scope.sendAnswer = sendAnswer;
+            $scope.showAnswerInfo = showAnswerInfo;
             $scope.sendMessage = sendMessage;
             $scope.addActivityItem = addActivityItem;
 
@@ -316,8 +313,11 @@ angular.module('listener.listenerActiveLecture', [
                     var understandingValue = data.understandingValue;
 
                     $timeout(function () {
-                        pieModel[0].value = understandingValue.toFixed(1);
-                        pieModel[1].value = (100 - understandingValue).toFixed(1);
+
+                        var pieChartModel = $scope.pieChartModel;
+
+                        pieChartModel.data[UNDERSTANDABLY_VALUE_INDEX] = round(understandingValue, 1);
+                        pieChartModel.data[UNCLEAR_VALUE_INDEX] = round(100 - understandingValue, 1);
                     });
                 }),
                 socketConnection.on('on_question_asked', function (data) {

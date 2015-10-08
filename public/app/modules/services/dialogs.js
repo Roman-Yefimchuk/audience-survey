@@ -8,12 +8,13 @@ angular.module('services.dialogsService', [
     'dialogs.questionEditorDialog',
     'dialogs.suspendDialog',
     'dialogs.presentListeners',
-    'dialogs.answeredListenersDialog',
+    'dialogs.answeredQuestionInfoDialog',
     'dialogs.profileEditorDialog',
     'dialogs.profileBuilderDialog',
     'dialogs.answerDialog',
     'dialogs.feedbackDialog',
-    'dialogs.infoDialog'
+    'dialogs.infoDialog',
+    'dialogs.listenerAnswerInfoDialog'
 
 ]).service('dialogsService', [
 
@@ -21,13 +22,13 @@ angular.module('services.dialogsService', [
 
         function ($modal) {
 
-            function open(modalOptions) {
+            function showDialog(modalOptions) {
                 return $modal.open(modalOptions)['result'];
             }
 
             return {
                 showConfirmation: function (options) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/confirmationDialog/confirmationDialog.html',
                         controller: 'ConfirmationDialogController',
                         backdrop: 'static',
@@ -40,7 +41,7 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showAlert: function (options) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/alertDialog/alertDialog.html',
                         controller: 'AlertDialogController',
                         backdrop: 'static',
@@ -53,7 +54,7 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showLectureEditor: function (options) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/lectureEditorDialog/lectureEditorDialog.html',
                         controller: 'LectureEditorDialogController',
                         backdrop: 'static',
@@ -66,7 +67,7 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showQuestionEditor: function (options) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/questionEditorDialog/questionEditorDialog.html',
                         controller: 'QuestionEditorDialogController',
                         backdrop: 'static',
@@ -79,7 +80,7 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showSuspendedDialog: function (options) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/suspendDialog/suspendedDialog.html',
                         controller: 'SuspendDialogController',
                         backdrop: 'static',
@@ -92,7 +93,7 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showPresentListeners: function (listeners, socketConnection) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/presentListenersDialog/presentListenersDialog.html',
                         controller: 'PresentListenersController',
                         backdrop: 'static',
@@ -107,10 +108,10 @@ angular.module('services.dialogsService', [
                         }
                     });
                 },
-                showAnsweredListeners: function (options) {
-                    return open({
-                        templateUrl: '/public/app/modules/dialogs/answeredListenersDialog/answeredListenersDialog.html',
-                        controller: 'AnsweredListenersDialogController',
+                showAnsweredQuestionInfoDialog: function (options) {
+                    return showDialog({
+                        templateUrl: '/public/app/modules/dialogs/answeredQuestionInfoDialog/answeredQuestionInfoDialog.html',
+                        controller: 'AnsweredQuestionInfoDialogController',
                         backdrop: 'static',
                         keyboard: false,
                         resolve: {
@@ -121,7 +122,7 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showProfileEditor: function (options) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/profileEditorDialog/profileEditorDialog.html',
                         controller: 'ProfileEditorDialogController',
                         backdrop: 'static',
@@ -134,7 +135,7 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showProfileBuilderDialog: function (options) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/profileBuilderDialog/profileBuilderDialog.html',
                         controller: 'ProfileBuilderDialogController',
                         backdrop: 'static',
@@ -147,7 +148,7 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showAnswerDialog: function (options) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/answerDialog/answerDialog.html',
                         controller: 'AnswerDialogController',
                         backdrop: 'static',
@@ -160,7 +161,7 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showFeedbackDialog: function (options) {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/feedbackDialog/feedbackView.html',
                         controller: 'FeedbackDialogController',
                         backdrop: 'static',
@@ -173,11 +174,24 @@ angular.module('services.dialogsService', [
                     });
                 },
                 showInfoDialog: function () {
-                    return open({
+                    return showDialog({
                         templateUrl: '/public/app/modules/dialogs/infoDialog/infoDialog.html',
                         controller: 'InfoDialogController',
                         backdrop: 'static',
                         keyboard: false
+                    });
+                },
+                showListenerAnswerInfoDialog: function (askedQuestion) {
+                    return showDialog({
+                        templateUrl: '/public/app/modules/dialogs/listenerAnswerInfoDialog/listenerAnswerInfoDialog.html',
+                        controller: 'ListenerAnswerInfoDialogController',
+                        backdrop: 'static',
+                        keyboard: false,
+                        resolve: {
+                            askedQuestion: function () {
+                                return askedQuestion;
+                            }
+                        }
                     });
                 }
             };

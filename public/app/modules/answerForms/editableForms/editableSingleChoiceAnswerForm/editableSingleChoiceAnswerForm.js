@@ -1,17 +1,17 @@
 "use strict";
 
-angular.module('dialogs.answerDialog.answerForms.singleChoiceAnswerForm', [])
+angular.module('answerForms.editableForms.editableSingleChoiceAnswerForm', [])
 
-    .directive('singleChoiceAnswerForm', [
+    .directive('editableSingleChoiceAnswerForm', [
 
         function () {
 
             return {
                 scope: {
-                    data: '=singleChoiceAnswerForm',
+                    data: '=editableSingleChoiceAnswerForm',
                     options: '='
                 },
-                templateUrl: '/public/app/modules/dialogs/answerDialog/answerForms/singleChoiceAnswerForm/singleChoiceAnswerForm.html',
+                templateUrl: '/public/app/modules/answerForms/editableForms/editableSingleChoiceAnswerForm/editableSingleChoiceAnswerForm.html',
                 controller: ['$scope', function ($scope) {
 
                     $scope.items = $scope.data;
@@ -22,7 +22,7 @@ angular.module('dialogs.answerDialog.answerForms.singleChoiceAnswerForm', [])
                     $scope.$watch('chosenItem', function (chosenItem) {
 
                         if (chosenItem.index != -1) {
-                            $scope.options['canSendAnswer'] = true;
+                            $scope.options['isAnswerChosen'] = true;
                             $scope.options['answerData'] = chosenItem.index;
                         }
                     }, true);

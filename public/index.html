@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="/public/libs/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/public/libs/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="/public/libs/angular-chart.js/dist/angular-chart.css">
 
     <link rel="stylesheet" href="/public/styles/styles.css">
     <link rel="stylesheet" href="/public/styles/ajax-loader.css">
@@ -37,23 +38,29 @@
 <script src="/public/libs/notifyjs/dist/notify-combined.js"></script>
 <script src="/public/libs/underscore/underscore.js"></script>
 <script src="/public/libs/Chart.js/Chart.js"></script>
+<script src="/public/libs/angular-chart.js/dist/angular-chart.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 
-<script src="/public/app/modules/activeLectureChart/activeLectureChart.js"></script>
+<script src="/public/app/modules/answerForms/editableForms/editableDefaultAnswerForm/editableDefaultAnswerForm.js"></script>
+<script src="/public/app/modules/answerForms/editableForms/editableMultiChoiceAnswerForm/editableMultiChoiceAnswerForm.js"></script>
+<script src="/public/app/modules/answerForms/editableForms/editableRangeAnswerForm/editableRangeAnswerForm.js"></script>
+<script src="/public/app/modules/answerForms/editableForms/editableSingleChoiceAnswerForm/editableSingleChoiceAnswerForm.js"></script>
+<script src="/public/app/modules/answerForms/viewableForms/viewableDefaultAnswerForm/viewableDefaultAnswerForm.js"></script>
+<script src="/public/app/modules/answerForms/viewableForms/viewableMultiChoiceAnswerForm/viewableMultiChoiceAnswerForm.js"></script>
+<script src="/public/app/modules/answerForms/viewableForms/viewableRangeAnswerForm/viewableRangeAnswerForm.js"></script>
+<script src="/public/app/modules/answerForms/viewableForms/viewableSingleChoiceAnswerForm/viewableSingleChoiceAnswerForm.js"></script>
 <script src="/public/app/modules/constants/constants.js"></script>
 <script src="/public/app/modules/dialogs/alertDialog/alertDialog.js"></script>
-<!--TODO: answerDialog-->
 <script src="/public/app/modules/dialogs/answerDialog/answerDialog.js"></script>
-<script src="/public/app/modules/dialogs/answerDialog/answerForms/defaultAnswerForm/defaultAnswerForm.js"></script>
-<script src="/public/app/modules/dialogs/answerDialog/answerForms/multiChoiceAnswerForm/multiChoiceAnswerForm.js"></script>
-<script src="/public/app/modules/dialogs/answerDialog/answerForms/rangeAnswerForm/rangeAnswerForm.js"></script>
-<script src="/public/app/modules/dialogs/answerDialog/answerForms/singleChoiceAnswerForm/singleChoiceAnswerForm.js"></script>
-<script src="/public/app/modules/dialogs/answeredListenersDialog/answeredListenersDialog.js"></script>
+<script src="/public/app/modules/dialogs/answeredQuestionInfoDialog/tabs/answeredListenersTab/answeredListenersTab.js"></script>
+<script src="/public/app/modules/dialogs/answeredQuestionInfoDialog/tabs/answerStatisticTab/answerStatisticTab.js"></script>
+<script src="/public/app/modules/dialogs/answeredQuestionInfoDialog/answeredQuestionInfoDialog.js"></script>
 <script src="/public/app/modules/dialogs/confirmationDialog/confirmationDialog.js"></script>
 <script src="/public/app/modules/dialogs/feedbackDialog/feedbackDialog.js"></script>
 <script src="/public/app/modules/dialogs/infoDialog/infoDialog.js"></script>
-<script src="/public/app/modules/dialogs/lectureEditorDialog/lectureEditorDialog.js"></script>
 <script src="/public/app/modules/dialogs/lectureEditorDialog/linksEditor/linksEditor.js"></script>
+<script src="/public/app/modules/dialogs/lectureEditorDialog/lectureEditorDialog.js"></script>
+<script src="/public/app/modules/dialogs/listenerAnswerInfoDialog/listenerAnswerInfoDialog.js"></script>
 <script src="/public/app/modules/dialogs/presentListenersDialog/presentListenersDialog.js"></script>
 <script src="/public/app/modules/dialogs/profileBuilderDialog/profileBuilderDialog.js"></script>
 <script src="/public/app/modules/dialogs/profileEditorDialog/profileEditorDialog.js"></script>
@@ -100,7 +107,6 @@
 <script src="/public/app/modules/services/dialogs.js"></script>
 <script src="/public/app/modules/services/httpClient.js"></script>
 <script src="/public/app/modules/services/loader.js"></script>
-<script src="/public/app/modules/services/logProxy.js"></script>
 <script src="/public/app/modules/services/notifications.js"></script>
 <script src="/public/app/modules/services/oauth.js"></script>
 <script src="/public/app/modules/services/profileExtractor.js"></script>
@@ -110,7 +116,6 @@
 
 <script src="/public/app/modules/signIn/signIn.js"></script>
 <script src="/public/app/modules/signUp/signUp.js"></script>
-<script src="/public/app/modules/surveyPie/surveyPie.js"></script>
 
 <div style="display: none">/public/app/modules/templates/templates.js</div>
 

@@ -1,17 +1,17 @@
 "use strict";
 
-angular.module('dialogs.answerDialog.answerForms.rangeAnswerForm', [])
+angular.module('answerForms.editableForms.editableRangeAnswerForm', [])
 
-    .directive('rangeAnswerForm', [
+    .directive('editableRangeAnswerForm', [
 
         function () {
 
             return {
                 scope: {
-                    data: '=rangeAnswerForm',
+                    data: '=editableRangeAnswerForm',
                     options: '='
                 },
-                templateUrl: '/public/app/modules/dialogs/answerDialog/answerForms/rangeAnswerForm/rangeAnswerForm.html',
+                templateUrl: '/public/app/modules/answerForms/editableForms/editableRangeAnswerForm/editableRangeAnswerForm.html',
                 controller: ['$scope', function ($scope) {
 
                     $scope.range = parseInt(($scope.data['maxValue'] - $scope.data['minValue']) / 2) + $scope.data['minValue'];
@@ -20,7 +20,7 @@ angular.module('dialogs.answerDialog.answerForms.rangeAnswerForm', [])
                         $scope.options['answerData'] = range;
                     });
 
-                    $scope.options['canSendAnswer'] = true;
+                    $scope.options['isAnswerChosen'] = true;
                 }]
             };
         }
