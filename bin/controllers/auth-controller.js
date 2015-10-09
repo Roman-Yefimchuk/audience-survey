@@ -111,7 +111,7 @@
                         'name': {
                             rules: [
                                 ValidationRule.stringLength(3, 15, "Name must be from @{min} to @{max} characters"),
-                                ValidationRule.reqExpr(/^(\w+){3}$/, "Invalid first name")
+                                ValidationRule.reqExpr(/^(.+){3}$/, "Invalid name name")
                             ]
                         },
                         'email': {
