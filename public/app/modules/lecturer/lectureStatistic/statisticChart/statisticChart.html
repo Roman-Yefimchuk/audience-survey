@@ -1,14 +1,18 @@
-<div class="text-left">
-    <p>Початок: <b>{{ model.startTime | formatDate : 'HH:MM:ss dd/mm/yyyy' }}</b>
+<div class="text-center">
+    <div class="text-left">
+        <p>Початок: <b>{{ model.startTime | formatDate : 'HH:MM:ss dd/mm/yyyy' }}</b>
 
-    <p>Кінець: <b>{{ model.finishTime | formatDate : 'HH:MM:ss dd/mm/yyyy' }}</b>
-</div>
-<div>
-    <canvas class="chart chart-line"
-            chart-options="lineChartModel.options"
-            chart-data="lineChartModel.data"
-            chart-labels="lineChartModel.labels"
-            chart-legend="true"
-            chart-series="lineChartModel.series">
-    </canvas>
+        <p>Кінець: <b>{{ model.finishTime | formatDate : 'HH:MM:ss dd/mm/yyyy' }}</b>
+    </div>
+    <div style="overflow-x: auto;overflow-y: auto;border: 1px solid #ddd;">
+        <div chart-container style="padding: 5px 10px 5px 5px;">
+            <canvas class="chart chart-line"
+                    chart-options="lineChartModel.options"
+                    chart-data="lineChartModel.data"
+                    chart-labels="lineChartModel.labels"
+                    chart-series="lineChartModel.series"
+                    height="200" style="width: 100% !important;height: 100% !important; max-height: 200px;">
+            </canvas>
+        </div>
+    </div>
 </div>

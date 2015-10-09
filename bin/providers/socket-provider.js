@@ -184,7 +184,7 @@
 
                         var statisticChart = activeLecture.statisticChart;
                         statisticChart.addChartPoint({
-                            timestamp: activeLecture.getDuration(),
+                            timestamp: duration,
                             presentListeners: activeLecture.listeners['length'],
                             understandingPercentage: activeLecture.getAverageUnderstandingValue()
                         });

@@ -1,12 +1,16 @@
 "use strict";
 
 module.exports = {
-    "development": {
-        "port": 8084,
-        "debug": true
+    development: {
+        port: 8084,
+        debug: true
     },
-    "standard": {
-        "port": 80,
-        "debug": false
+    demo: {
+        port: 8084,
+        debug: false
+    },
+    production: {
+        port: 80,
+        debug: false
     }
 };

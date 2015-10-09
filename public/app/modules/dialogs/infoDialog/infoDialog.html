@@ -12,10 +12,38 @@
 
         <div class="text-center" style="margin-bottom: -10px;">
             <div class="row clearfix" style="background-color: #fff">
-                <p> <b>{{ productName }}</b>
-                <p> Версія: {{ productVersion }}
-                <p> Автор: LLC IKROK
-                <p> Сайт: <a href="http://www.ikrok.net" target="_blank">www.ikrok.net</a>
+
+                <p>
+                    <b>{{ productName }}</b>
+                </p>
+
+                <p>
+                    Версія: {{ productVersion }}
+                </p>
+
+                <p style="cursor: pointer;"
+                   ng-click="isAuthorCollapsed = !isAuthorCollapsed">
+                    Автор: LLC IKROK
+                </p>
+
+                <p collapse="!isAuthorCollapsed">
+                    <span>
+                        var authors = [
+                        <a href="https://www.facebook.com/KVikster"
+                           target="_blank">
+                            '<b>Віктор Калініченко</b>'
+                        </a>
+                        ,
+                        <a href="https://www.facebook.com/yefimchuk.roman"
+                           target="_blank">
+                            '<b>Роман Єфімчук</b>'
+                        </a>];
+                    </span>
+                </p>
+
+                <p>
+                    Сайт: <a href="http://www.ikrok.net" target="_blank">www.ikrok.net</a>
+                </p>
             </div>
         </div>
 

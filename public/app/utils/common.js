@@ -13,3 +13,7 @@ String.prototype.replaceAll = function (searchValue, replaceValue) {
     var pattern = new RegExp(searchValue, 'g');
     return this.replace(pattern, replaceValue);
 };
+
+function px(v) {
+    return parseFloat(v.replace('px', ''));
+}
