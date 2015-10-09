@@ -149,9 +149,9 @@ angular.module('services.api.authService', [
                     httpClientService.get('/auth/logout')
                         .then(function () {
 
-                            $cookies.userId = null;
-                            $cookies.userRole = null;
-                            $cookies.token = null;
+                            $cookies.userId = '';
+                            $cookies.userRole = '';
+                            $cookies.token = '';
 
                             resolve();
                         }, function (e) {

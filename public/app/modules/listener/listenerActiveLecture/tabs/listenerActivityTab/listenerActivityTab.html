@@ -5,20 +5,20 @@
 
             <div class="input-group">
 
-                <div class="form-group-sm" ng-class="{ 'has-feedback' : !!message.text }">
+                <div class="form-group-sm" ng-class="{ 'has-feedback' : !!messageText }">
 
                     <label class="control-label" ng-show="false"></label>
 
                     <input type="text" class="form-control" id="main-input"
                            placeholder="Введіть текст"
-                           autofocus autocomplete="off" ng-model="message.text"
+                           autofocus autocomplete="off" ng-model="messageText"
                            style="border-bottom-left-radius: 3px;border-top-left-radius: 3px;">
 
                         <span class="form-control-feedback" style="top: 0"
-                              ng-show="!!message.text">
+                              ng-show="!!messageText">
                             <i class="fa fa-times" style="cursor: pointer"
                                tooltip="Очистити"
-                               ng-click="message.text = ''"></i>
+                               ng-click="messageText = ''"></i>
                         </span>
                 </div>
 
@@ -35,20 +35,22 @@
 
         </form>
 
-        <div ng-switch="activityCollection.length > 0" style="margin-top: 15px;">
+        <div ng-switch="(activityManager.getItems()).length > 0" style="margin-top: 15px;">
             <div ng-switch-when="true">
 
                 <ul class="list-group" style="margin: 0;">
-                    <li ng-repeat="activityItem in activityCollection" class="list-group-item text-left">
+                    <li ng-repeat="item in activityManager.getItems()" class="list-group-item text-left">
 
                         <span>
-                            <b>{{ activityItem.timestamp | formatDate : 'ISO_TIME' }}</b>
+                            <b>
+                                {{ item.timestamp | formatDate : 'ISO_TIME' }}&nbsp;[{{ item.duration | formatTime }}]
+                            </b>
                         </span>
 
                         <br>
 
                         <span>
-                            {{ activityItem.title }}
+                            {{ item.text }}
                         </span>
 
                     </li>

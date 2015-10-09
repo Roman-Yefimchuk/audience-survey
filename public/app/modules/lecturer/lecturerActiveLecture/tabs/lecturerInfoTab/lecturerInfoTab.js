@@ -1,12 +1,16 @@
 "use strict";
 
-angular.module('lecturer.lecturerActiveLecture.tabs.lecturerInfoTab',[])
+angular.module('lecturer.lecturerActiveLecture.tabs.lecturerInfoTab', [])
 
     .controller('LecturerInfoTabController', [
 
         '$scope',
+        'savedState',
+        'lecture',
 
-        function ($scope) {
+        function ($scope, savedState, lecture) {
+
+            $scope.lecture = lecture;
         }
     ]
 );

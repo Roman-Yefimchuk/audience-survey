@@ -7,8 +7,12 @@ angular.module('lecturer.lecturerActiveLecture.tabs.lecturerActivityTab', [
 ]).controller('LecturerActivityTabController', [
 
         '$scope',
+        'savedState',
+        'activityManager',
 
-        function ($scope) {
+        function ($scope, savedState, activityManager) {
+
+            $scope.activityManager = activityManager;
         }
     ]
 );

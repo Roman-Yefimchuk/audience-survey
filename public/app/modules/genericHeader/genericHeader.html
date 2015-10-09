@@ -1,12 +1,11 @@
-<div class="row clearfix" style="margin-bottom: 15px;">
+<div class="row clearfix" style="margin-bottom: 15px;margin-left: 0;margin-right: 0;">
 
-    <span ng-show="!!backLink" class="col-md-6 text-left">
+    <span ng-show="!!backLink" class="pull-left">
         <i class="fa fa-reply"></i>
         <a ng-href="{{ backLink }}">Назад</a>
     </span>
 
-    <div class="text-right"
-         ng-class="{ 'col-md-6' : backLink, 'col-md-12' : !backLink }">
+    <div class="pull-right">
         <i class="fa fa-user" style="cursor: pointer"
            tooltip="Редагувати профіль" tooltip-placement="left"
            ng-click="editProfile()"></i>

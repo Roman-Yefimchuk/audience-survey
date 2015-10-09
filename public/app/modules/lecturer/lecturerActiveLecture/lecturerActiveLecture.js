@@ -4,15 +4,16 @@ angular.module('lecturer.lecturerActiveLecture', [
 
     'filters.formatTime',
     'genericHeader',
+    'tabHost',
     'services.dialogsService',
     'services.socketEventsManagerService',
     'services.api.activeLecturesService',
     'services.api.usersService',
-    'services.api.questionsService',
     'lecturer.lecturerActiveLecture.tabs.lecturerActivityTab',
     'lecturer.lecturerActiveLecture.tabs.lecturerInfoTab',
     'lecturer.lecturerActiveLecture.tabs.lecturerQuestionsTab',
-    'lecturer.lecturerActiveLecture.tabs.lecturerSurveyTab'
+    'lecturer.lecturerActiveLecture.tabs.lecturerSurveyTab',
+    'services.notificationsService'
 
 ]).controller('LecturerActiveLectureController', [
 
@@ -25,57 +26,106 @@ angular.module('lecturer.lecturerActiveLecture', [
         'socketEventsManagerService',
         'activeLecturesService',
         'usersService',
-        'questionsService',
+        'notificationsService',
         'user',
         'lecture',
         'activeLecture',
         'questions',
         'socketConnection',
 
-        function ($q, $scope, $filter, $location, $timeout, dialogsService, socketEventsManagerService, activeLecturesService, usersService, questionsService, user, lecture, activeLecture, questions, socketConnection) {
+        function ($q, $scope, $filter, $location, $timeout, dialogsService, socketEventsManagerService, activeLecturesService, usersService, notificationsService, user, lecture, activeLecture, questions, socketConnection) {
 
             var UNDERSTANDABLY_VALUE_INDEX = 0;
             var UNCLEAR_VALUE_INDEX = 1;
 
             var userId = user.id;
             var lectureId = lecture.id;
-            var tabs = [
-                {
-                    id: 'info',
-                    title: 'Інформація',
-                    icon: 'fa-info-circle',
-                    templateUrl: '/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerInfoTab/lecturerInfoTab.html',
-                    isActive: false
+
+            var activityManager = (function () {
+
+                var items = [];
+
+                return {
+                    addItem: function (text, notificationType) {
+
+                        items.unshift({
+                            timestamp: _.now(),
+                            duration: activeLecture.duration,
+                            text: text
+                        });
+
+                        if ($scope.activeTabId != 'activity' && notificationType) {
+                            notificationsService.notify(text, notificationType);
+                        }
+                    },
+                    getItems: function () {
+                        return items;
+                    }
+                };
+            })();
+
+            var questionsManager = (function () {
+
+                return {
+                    addQuestion: function (question) {
+                        questions.push(question);
+                    },
+                    removeQuestion: function (question) {
+                        questions = _.without(questions, question);
+                    },
+                    getQuestions: function () {
+                        return questions;
+                    }
+                };
+            })();
+
+            var askedQuestionsManager = (function () {
+
+                return {
+                    getAskedQuestion: function (questionId) {
+                        return _.findWhere(activeLecture.askedQuestions, {
+                            questionId: questionId
+                        });
+                    },
+                    askQuestion: function (question) {
+
+                        socketConnection.emit('ask_question', {
+                            question: {
+                                id: question.id,
+                                text: question.text,
+                                type: question.type,
+                                data: question.data
+                            }
+                        });
+
+                        var askedQuestions = activeLecture.askedQuestions;
+                        askedQuestions.push({
+                            questionId: question.id,
+                            listenerAnswers: []
+                        });
+
+                        activityManager.addItem('Ви задали запитання: ' + question.text);
+                    },
+                    getAskedQuestions: function () {
+                        return activeLecture.askedQuestions;
+                    }
+                };
+            })();
+
+            var pieChartModel = {
+                options: {
+                    animation: false,
+                    segmentStrokeColor: '#dddddd',
+                    segmentStrokeWidth: 1,
+                    tooltipTemplate: "<%= label %>: <%= value %>%"
                 },
-                {
-                    id: 'survey',
-                    title: 'Опитування',
-                    icon: 'fa-pie-chart',
-                    templateUrl: '/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerSurveyTab/lecturerSurveyTab.html',
-                    isActive: true
-                },
-                {
-                    id: 'activity',
-                    title: 'Активність',
-                    icon: 'fa-bolt',
-                    templateUrl: '/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerActivityTab/lecturerActivityTab.html',
-                    isActive: false
-                },
-                {
-                    id: 'questions',
-                    title: 'Запитання лектора',
-                    icon: 'fa-question-circle',
-                    templateUrl: '/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerQuestionsTab/lecturerQuestionsTab.html',
-                    isActive: false
-                }
-            ];
+                labels: ['Зрозуміло', 'Не зрозуміло'],
+                data: [0, 100],
+                colors: ['#449d44', '#c9302c']
+            };
 
             function round(n, s) {
                 return parseFloat(n.toFixed(s));
-            }
-
-            function showPresentListeners() {
-                dialogsService.showPresentListeners(activeLecture.listeners, socketConnection);
             }
 
             function suspendLecture() {
@@ -105,164 +155,71 @@ angular.module('lecturer.lecturerActiveLecture', [
                     });
             }
 
-            function addQuestion() {
-
-                var questions = $scope.questions;
-
-                var questionText = ($scope.newQuestion['text']).trim();
-                if (questionText) {
-
-                    questionsService.createQuestion(userId, lectureId, {
-                        text: questionText,
-                        type: 'default',
-                        data: {
-                            yes: 'Так',
-                            no: 'Ні'
-                        }
-                    }).then(function (response) {
-
-                        questions.push({
-                            id: response.questionId,
-                            text: questionText,
-                            type: 'default',
-                            data: {
-                                yes: 'Так',
-                                no: 'Ні'
-                            }
-                        });
-
-                        $scope.newQuestion['text'] = '';
-                    });
-                }
+            function showPresentListeners() {
+                dialogsService.showPresentListeners(activeLecture.listeners, socketConnection);
             }
 
-            function editQuestion(question) {
-
-                dialogsService.showQuestionEditor({
-                    editorTitle: 'Редагувати запитання',
-                    questionModel: {
-                        text: question.text,
-                        type: question.type,
-                        data: question.data
-                    },
-                    onSave: function (questionModel, closeCallback) {
-
-                        questionsService.updateQuestion(userId, lectureId, question.id, {
-                            text: questionModel.text,
-                            type: questionModel.type,
-                            data: questionModel.data
-                        }).then(function () {
-
-                            question.text = questionModel.text;
-                            question.type = questionModel.type;
-                            question.data = questionModel.data;
-                            closeCallback();
-                        });
-                    }
-                });
-            }
-
-            function removeQuestion(question) {
-
-                dialogsService.showConfirmation({
-                    title: 'Видалити запитання',
-                    message: 'Ви дійсно хочете видалити запитання?',
-                    onAccept: function (closeCallback) {
-
-                        questionsService.removeQuestion(userId, lectureId, question.id)
-                            .then(function () {
-                                $scope.questions = _.without($scope.questions, question);
-                                closeCallback();
-                            });
-                    }
-                });
-            }
-
-            function askQuestion(question) {
-
-                socketConnection.emit('ask_question', {
-                    question: {
-                        id: question.id,
-                        text: question.text,
-                        type: question.type,
-                        data: question.data
-                    }
-                });
-
-                var askedQuestions = activeLecture.askedQuestions;
-                askedQuestions.push({
-                    questionId: question.id,
-                    listenerAnswers: []
-                });
-
-                addActivityItem('Ви задали запитання: ' + question.text);
-            }
-
-            function getAskedQuestion(questionId) {
-                return _.findWhere(activeLecture.askedQuestions, {
-                    questionId: questionId
-                });
-            }
-
-            function showAnsweredQuestionInfo(question) {
-                dialogsService.showAnsweredQuestionInfoDialog({
-                    question: question,
-                    listenerAnswers: _.findWhere(activeLecture.askedQuestions, {
-                        questionId: question.id
-                    }).listenerAnswers
-                });
-            }
-
-            function addActivityItem(title) {
-                var activityCollection = $scope.activityCollection;
-                activityCollection.unshift({
-                    timestamp: _.now(),
-                    title: title
-                });
-            }
-
-            function setActiveTab(tab) {
-                tab.isActive = true;
-                $scope.tab = tab;
+            function onTabChanged(tab) {
+                $scope.activeTabId = tab.id;
             }
 
             $scope.user = user;
-            $scope.lecture = lecture;
             $scope.activeLecture = activeLecture;
-
-            $scope.activityCollection = [];
-            $scope.newQuestion = {
-                text: ''
-            };
-            $scope.questions = questions;
-            $scope.pieChartModel = {
-                options: {
-                    animation: false
+            $scope.tabs = [
+                {
+                    id: 'info',
+                    title: 'Інформація',
+                    icon: 'fa-info-circle',
+                    isActive: false,
+                    controller: 'LecturerInfoTabController',
+                    templateUrl: '/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerInfoTab/lecturerInfoTab.html',
+                    resolve: {
+                        lecture: lecture
+                    }
                 },
-                labels: ['Зрозуміло', 'Не зрозуміло'],
-                data: [0, 100],
-                colors: ['#449d44', '#c9302c']
-            };
-            $scope.tabs = tabs;
-            $scope.tab = _.find(tabs, function (tab) {
-                return tab.isActive;
-            });
+                {
+                    id: 'survey',
+                    title: 'Опитування',
+                    icon: 'fa-pie-chart',
+                    isActive: true,
+                    controller: 'LecturerSurveyTabController',
+                    templateUrl: '/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerSurveyTab/lecturerSurveyTab.html',
+                    resolve: {
+                        pieChartModel: pieChartModel
+                    }
+                },
+                {
+                    id: 'activity',
+                    title: 'Активність',
+                    icon: 'fa-bolt',
+                    isActive: false,
+                    controller: 'LecturerActivityTabController',
+                    templateUrl: '/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerActivityTab/lecturerActivityTab.html',
+                    resolve: {
+                        activityManager: activityManager
+                    }
+                },
+                {
+                    id: 'questions',
+                    title: 'Запитання лектора',
+                    icon: 'fa-question-circle',
+                    isActive: false,
+                    controller: 'LecturerQuestionTabController',
+                    templateUrl: '/public/app/modules/lecturer/lecturerActiveLecture/tabs/lecturerQuestionsTab/lecturerQuestionsTab.html',
+                    resolve: {
+                        userId: userId,
+                        lectureId: lectureId,
+                        questionsManager: questionsManager,
+                        askedQuestionsManager: askedQuestionsManager
+                    }
+                }
+            ];
 
             $scope.resumeLecture = resumeLecture;
             $scope.suspendLecture = suspendLecture;
             $scope.stopLecture = stopLecture;
-
-            $scope.addQuestion = addQuestion;
-            $scope.editQuestion = editQuestion;
-            $scope.removeQuestion = removeQuestion;
-
-            $scope.askQuestion = askQuestion;
-            $scope.getAskedQuestion = getAskedQuestion;
-
             $scope.showPresentListeners = showPresentListeners;
-            $scope.showAnsweredQuestionInfo = showAnsweredQuestionInfo;
-            $scope.addActivityItem = addActivityItem;
-            $scope.setActiveTab = setActiveTab;
+            $scope.onTabChanged = onTabChanged;
 
             $scope.$on('$destroy', function () {
                 socketConnection.close();
@@ -283,7 +240,7 @@ angular.module('lecturer.lecturerActiveLecture', [
                                 .then(function (user) {
                                     $timeout(function () {
                                         listeners.push(userId);
-                                        addActivityItem(user.name + ' приєднався до лекції');
+                                        activityManager.addItem(user.name + ' приєднався до лекції', 'info');
                                     });
                                 });
                         }
@@ -297,7 +254,7 @@ angular.module('lecturer.lecturerActiveLecture', [
                         .then(function (user) {
                             $timeout(function () {
                                 activeLecture.listeners = _.without(activeLecture.listeners, userId);
-                                addActivityItem(user.name + ' покинув лекцію');
+                                activityManager.addItem(user.name + ' покинув лекцію', 'info');
                             });
                         });
                 }),
@@ -317,7 +274,7 @@ angular.module('lecturer.lecturerActiveLecture', [
                     usersService.getUserName(userId)
                         .then(function (user) {
                             $timeout(function () {
-                                addActivityItem(user.name + ': ' + message);
+                                activityManager.addItem(user.name + ': ' + message, 'info');
                             });
                         });
                 }),
@@ -326,9 +283,6 @@ angular.module('lecturer.lecturerActiveLecture', [
                     var understandingValue = data.understandingValue;
 
                     $timeout(function () {
-
-                        var pieChartModel = $scope.pieChartModel;
-
                         pieChartModel.data[UNDERSTANDABLY_VALUE_INDEX] = round(understandingValue, 1);
                         pieChartModel.data[UNCLEAR_VALUE_INDEX] = round(100 - understandingValue, 1);
                     });
@@ -339,7 +293,7 @@ angular.module('lecturer.lecturerActiveLecture', [
                     var questionId = data.questionId;
                     var answerData = data.answerData;
 
-                    var askedQuestion = getAskedQuestion(questionId);
+                    var askedQuestion = askedQuestionsManager.getAskedQuestion(questionId);
                     if (askedQuestion) {
 
                         var listenerAnswers = askedQuestion.listenerAnswers;
@@ -347,13 +301,19 @@ angular.module('lecturer.lecturerActiveLecture', [
                         if (!_.findWhere(listenerAnswers, {
                             userId: userId
                         })) {
-                            $timeout(function () {
 
-                                listenerAnswers.push({
-                                    userId: userId,
-                                    answerData: answerData
+                            usersService.getUserName(userId)
+                                .then(function (user) {
+                                    $timeout(function () {
+
+                                        listenerAnswers.push({
+                                            userId: userId,
+                                            answerData: answerData
+                                        });
+
+                                        notificationsService.info(user.name + ' дав відповідь на питання');
+                                    });
                                 });
-                            });
                         }
                     }
                 })

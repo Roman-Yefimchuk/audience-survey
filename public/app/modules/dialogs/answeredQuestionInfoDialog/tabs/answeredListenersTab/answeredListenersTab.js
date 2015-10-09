@@ -12,23 +12,25 @@ angular.module('dialogs.answeredQuestionInfoDialog.tabs.answeredListenersTab', [
         '$q',
         '$scope',
         'usersService',
+        'question',
+        'listenerAnswers',
 
-        function ($q, $scope, usersService) {
+        function ($q, $scope, usersService, question, listenerAnswers) {
 
             var visibleUsers = [];
 
             var pagination = {
                 itemsPerPage: 5,
                 maxPaginationSize: 5,
-                totalItems: $scope.listenerAnswers['length'],
+                totalItems: listenerAnswers.length,
                 pageNumber: 1
             };
 
             function updatePage() {
 
-                pagination.totalItems = $scope.listenerAnswers['length'];
+                pagination.totalItems = listenerAnswers.length;
 
-                if ($scope.listenerAnswers['length'] > 0) {
+                if (listenerAnswers.length > 0) {
 
                     var users = getUsersForPage();
 
@@ -48,7 +50,7 @@ angular.module('dialogs.answeredQuestionInfoDialog.tabs.answeredListenersTab', [
                                             resolve({
                                                 id: userId,
                                                 name: user.name,
-                                                answerData: _.findWhere($scope.listenerAnswers, {
+                                                answerData: _.findWhere(listenerAnswers, {
                                                     userId: userId
                                                 }).answerData
                                             });
@@ -66,21 +68,6 @@ angular.module('dialogs.answeredQuestionInfoDialog.tabs.answeredListenersTab', [
                     $scope.answeredListeners = [];
                     visibleUsers = [];
                 }
-
-                /*                if (listenerAnswers.length > 0) {
-                 var users = getUsersForPage();
-                 if (!angular.equals(users, visibleUsers)) {
-                 visibleUsers = angular.copy(users);
-                 apiService.getUsersById(visibleUsers, {
-                 success: function (response) {
-                 $scope.answeredListeners = response.users;
-                 }
-                 });
-                 }
-                 } else {
-                 $scope.answeredListeners = [];
-                 visibleUsers = [];
-                 }*/
             }
 
             function getUsersForPage() {
@@ -90,11 +77,11 @@ angular.module('dialogs.answeredQuestionInfoDialog.tabs.answeredListenersTab', [
                 if (pagination.totalItems > pagination.itemsPerPage) {
 
                     var fromIndex = (pagination.pageNumber - 1) * pagination.itemsPerPage;
-                    for (var index = 0; (index + fromIndex < $scope.listenerAnswers['length']) && (index < pagination.itemsPerPage); index++) {
-                        users.push($scope.listenerAnswers[index + fromIndex].userId);
+                    for (var index = 0; (index + fromIndex < listenerAnswers.length) && (index < pagination.itemsPerPage); index++) {
+                        users.push(listenerAnswers[index + fromIndex].userId);
                     }
                 } else {
-                    _.forEach($scope.listenerAnswers, function (item) {
+                    _.forEach(listenerAnswers, function (item) {
                         users.push(item.userId);
                     });
                 }
@@ -103,13 +90,15 @@ angular.module('dialogs.answeredQuestionInfoDialog.tabs.answeredListenersTab', [
             }
 
             function getListenerAnswer(userId) {
-                return _.findWhere($scope.listenerAnswers, {
+                return _.findWhere(listenerAnswers, {
                     userId: userId
                 }).answer;
             }
 
             $scope.pagination = pagination;
             $scope.usersForPage = [];
+            $scope.question = question;
+            $scope.listenerAnswers = listenerAnswers;
 
             $scope.getListenerAnswer = getListenerAnswer;
 

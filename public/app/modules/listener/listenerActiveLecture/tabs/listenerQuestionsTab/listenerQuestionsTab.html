@@ -1,11 +1,11 @@
 <div class="row clearfix" style="margin-top: -15px;">
     <div class="col-md-12 column">
 
-        <div ng-switch="askedQuestions.length > 0">
+        <div ng-switch="getAskedQuestions().length > 0">
             <div ng-switch-when="true">
 
                 <ul class="list-group" style="margin-top: 15px;margin-bottom: 0;">
-                    <li ng-repeat="askedQuestion in askedQuestions"
+                    <li ng-repeat="askedQuestion in getAskedQuestions()"
                         class="list-group-item text-left"
                         style="padding-left: 10px;padding-right: 10px;">
 

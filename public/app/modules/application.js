@@ -4,6 +4,7 @@ angular.module('application', [
 
     'ui.bootstrap',
 
+    'notificationsWidget',
     'footerWidget',
     'routes',
     'constants'

@@ -4,41 +4,53 @@ angular.module('services.notificationsService', [])
 
     .service('notificationsService', [
 
-        function () {
+        '$timeout',
+
+        function ($timeout) {
+
+            var onNotificationCallback = function () {
+            };
 
             function showNotification(message, type, data) {
                 if (message) {
+
                     if (data) {
                         message = message.format(data);
                     }
-                    $.notify(message, {
-                        position: "right bottom",
-                        className: type,
-                        autoHideDelay: 3000
+
+                    $timeout(function () {
+                        onNotificationCallback({
+                            message: message,
+                            type: type,
+                            autoHideDelay: 3000,
+                            closeable: true
+                        });
                     });
                 }
             }
 
             return {
-                notify: function (message, type, data) {
-                    if (type == 'warning') {
-                        type = 'warn';
-                    }
-                    showNotification(message, type, data);
+                onNotification: function (callback) {
+                    onNotificationCallback = callback || function () {
+                    };
                 },
-                info: function (message, data) {
-                    showNotification(message, 'info', data);
+                notify: function (message, type, data) {
+                    showNotification(message, type, data);
                 },
                 success: function (message, data) {
                     showNotification(message, 'success', data);
                 },
-                error: function (message, data) {
-                    showNotification(message, 'error', data);
+                info: function (message, data) {
+                    showNotification(message, 'info', data);
                 },
                 warning: function (message, data) {
-                    showNotification(message, 'warn', data);
+                    showNotification(message, 'warning', data);
+                },
+                error: function (message, data) {
+                    showNotification(message, 'danger', data);
                 }
             };
         }
     ]
-);
+)
+;

@@ -7,8 +7,12 @@ angular.module('lecturer.lecturerActiveLecture.tabs.lecturerSurveyTab', [
 ]).controller('LecturerSurveyTabController', [
 
         '$scope',
+        'savedState',
+        'pieChartModel',
 
-        function ($scope) {
+        function ($scope, savedState, pieChartModel) {
+
+            $scope.pieChartModel = pieChartModel;
         }
     ]
 );

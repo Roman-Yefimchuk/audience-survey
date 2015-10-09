@@ -4,10 +4,11 @@ angular.module('listener.listenerActiveLecture', [
 
     'filters.formatTime',
     'genericHeader',
+    'tabHost',
     'services.dialogsService',
-    'services.notificationsService',
     'services.socketEventsManagerService',
     'services.api.usersService',
+    'services.notificationsService',
     'listener.listenerActiveLecture.tabs.listenerActivityTab',
     'listener.listenerActiveLecture.tabs.listenerInfoTab',
     'listener.listenerActiveLecture.tabs.listenerQuestionsTab',
@@ -21,60 +22,75 @@ angular.module('listener.listenerActiveLecture', [
         '$location',
         '$timeout',
         'dialogsService',
-        'notificationsService',
         'socketEventsManagerService',
         'usersService',
+        'notificationsService',
         'user',
         'lecture',
         'activeLecture',
         'socketConnection',
 
-        function ($q, $scope, $rootScope, $location, $timeout, dialogsService, notificationsService, socketEventsManagerService, usersService, user, lecture, activeLecture, socketConnection) {
+        function ($q, $scope, $rootScope, $location, $timeout, dialogsService, socketEventsManagerService, usersService, notificationsService, user, lecture, activeLecture, socketConnection) {
 
-            var UNDERSTANDABLY_VALUE = 1;
-            var UNCLEAR_VALUE = 0;
             var UNDERSTANDABLY_VALUE_INDEX = 0;
             var UNCLEAR_VALUE_INDEX = 1;
 
             //TODO: bug
             activeLecture.listeners = _.without(activeLecture.listeners, user.id);
 
-            var askedQuestions = [];
-            var activityCollection = [];
-            var message = {
-                text: ''
-            };
+            var activityManager = (function () {
 
-            var tabs = [
-                {
-                    id: 'info',
-                    title: 'Інформація',
-                    icon: 'fa-info-circle',
-                    templateUrl: '/public/app/modules/listener/listenerActiveLecture/tabs/listenerInfoTab/listenerInfoTab.html',
-                    isActive: false
+                var items = [];
+
+                return {
+                    addItem: function (text, notificationType) {
+
+                        items.unshift({
+                            timestamp: _.now(),
+                            duration: activeLecture.duration,
+                            text: text
+                        });
+
+                        if ($scope.activeTabId != 'activity' && notificationType) {
+                            notificationsService.notify(text, notificationType);
+                        }
+                    },
+                    getItems: function () {
+                        return items;
+                    }
+                };
+            })();
+
+            var askedQuestionsManager = (function () {
+
+                var askedQuestions = [];
+
+                return {
+                    addAskedQuestion: function (question) {
+
+                        askedQuestions.push(_.extend(question, {
+                            answerData: null
+                        }));
+
+                        activityManager.addItem('Викладач задав питання: ' + question.text, 'info');
+                    },
+                    getAskedQuestions: function () {
+                        return askedQuestions;
+                    }
+                };
+            })();
+
+            var pieChartModel = {
+                options: {
+                    animation: false,
+                    segmentStrokeColor: '#dddddd',
+                    segmentStrokeWidth: 1,
+                    tooltipTemplate: "<%= label %>: <%= value %>%"
                 },
-                {
-                    id: 'survey',
-                    title: 'Опитування',
-                    icon: 'fa-pie-chart',
-                    templateUrl: '/public/app/modules/listener/listenerActiveLecture/tabs/listenerSurveyTab/listenerSurveyTab.html',
-                    isActive: true
-                },
-                {
-                    id: 'activity',
-                    title: 'Активність',
-                    icon: 'fa-bolt',
-                    templateUrl: '/public/app/modules/listener/listenerActiveLecture/tabs/listenerActivityTab/listenerActivityTab.html',
-                    isActive: false
-                },
-                {
-                    id: 'questions',
-                    title: 'Запитання лектора',
-                    icon: 'fa-question-circle',
-                    templateUrl: '/public/app/modules/listener/listenerActiveLecture/tabs/listenerQuestionsTab/listenerQuestionsTab.html',
-                    isActive: false
-                }
-            ];
+                labels: ['Зрозуміло', 'Не зрозуміло'],
+                data: [0, 100],
+                colors: ['#449d44', '#c9302c']
+            };
 
             function round(n, s) {
                 return parseFloat(n.toFixed(s));
@@ -88,40 +104,6 @@ angular.module('listener.listenerActiveLecture', [
                         });
                     }
                 });
-            }
-
-            function addActivityItem(title) {
-                activityCollection.unshift({
-                    timestamp: _.now(),
-                    title: title
-                });
-            }
-
-            function setActiveTab(tab) {
-                tab.isActive = true;
-                $scope.tab = tab;
-            }
-
-            function understandably() {
-                socketConnection.emit('update_understanding_value', {
-                    value: UNDERSTANDABLY_VALUE
-                });
-            }
-
-            function unclear() {
-                socketConnection.emit('update_understanding_value', {
-                    value: UNCLEAR_VALUE
-                });
-            }
-
-            function sendMessage() {
-
-                socketConnection.emit('send_message', {
-                    userId: user.id,
-                    message: $scope.message['text']
-                });
-
-                message.text = '';
             }
 
             function showPresentListeners() {
@@ -146,62 +128,67 @@ angular.module('listener.listenerActiveLecture', [
                 });
             }
 
-            function sendAnswer(askedQuestion) {
-
-                dialogsService.showAnswerDialog({
-                    question: {
-                        text: askedQuestion.text,
-                        type: askedQuestion.type,
-                        data: askedQuestion.data
-                    },
-                    onSendAnswer: function (answerData, closeCallback) {
-
-                        socketConnection.emit('send_answer', {
-                            questionId: askedQuestion.id,
-                            answerData: answerData
-                        });
-
-                        askedQuestion.answerData = answerData;
-                        closeCallback();
-                    }
-                });
-            }
-
-            function showAnswerInfo(askedQuestion) {
-                dialogsService.showListenerAnswerInfoDialog(askedQuestion);
+            function onTabChanged(tab) {
+                $scope.activeTabId = tab.id;
             }
 
             $scope.user = user;
-            $scope.lecture = lecture;
             $scope.activeLecture = activeLecture;
 
-            $scope.activityCollection = activityCollection;
-            $scope.message = message;
-            $scope.askedQuestions = askedQuestions;
-            $scope.showView = true;
-            $scope.pieChartModel = {
-                options: {
-                    animation: false
+            $scope.tabs = [
+                {
+                    id: 'info',
+                    title: 'Інформація',
+                    icon: 'fa-info-circle',
+                    isActive: false,
+                    controller: 'ListenerInfoTabController',
+                    templateUrl: '/public/app/modules/listener/listenerActiveLecture/tabs/listenerInfoTab/listenerInfoTab.html',
+                    resolve: {
+                        lecture: lecture
+                    }
                 },
-                labels: ['Зрозуміло', 'Не зрозуміло'],
-                data: [0, 100],
-                colors: ['#449d44', '#c9302c']
-            };
-            $scope.tabs = tabs;
-            $scope.tab = _.find(tabs, function (tab) {
-                return tab.isActive;
-            });
+                {
+                    id: 'survey',
+                    title: 'Опитування',
+                    icon: 'fa-pie-chart',
+                    isActive: true,
+                    controller: 'ListenerSurveyTabController',
+                    templateUrl: '/public/app/modules/listener/listenerActiveLecture/tabs/listenerSurveyTab/listenerSurveyTab.html',
+                    resolve: {
+                        pieChartModel: pieChartModel,
+                        socketConnection: socketConnection
+                    }
+                },
+                {
+                    id: 'activity',
+                    title: 'Активність',
+                    icon: 'fa-bolt',
+                    isActive: false,
+                    controller: 'ListenerActivityTabController',
+                    templateUrl: '/public/app/modules/listener/listenerActiveLecture/tabs/listenerActivityTab/listenerActivityTab.html',
+                    resolve: {
+                        userId: user.id,
+                        activityManager: activityManager,
+                        socketConnection: socketConnection
+                    }
+                },
+                {
+                    id: 'questions',
+                    title: 'Запитання лектора',
+                    icon: 'fa-question-circle',
+                    isActive: false,
+                    controller: 'ListenerQuestionTabController',
+                    templateUrl: '/public/app/modules/listener/listenerActiveLecture/tabs/listenerQuestionsTab/listenerQuestionsTab.html',
+                    resolve: {
+                        socketConnection: socketConnection,
+                        askedQuestionsManager: askedQuestionsManager
+                    }
+                }
+            ];
 
-            $scope.setActiveTab = setActiveTab;
             $scope.showPresentListeners = showPresentListeners;
             $scope.quit = quit;
-            $scope.sendAnswer = sendAnswer;
-            $scope.showAnswerInfo = showAnswerInfo;
-            $scope.sendMessage = sendMessage;
-            $scope.addActivityItem = addActivityItem;
-
-            $scope.understandably = understandably;
-            $scope.unclear = unclear;
+            $scope.onTabChanged = onTabChanged;
 
             $scope.$on('$destroy', function () {
                 socketConnection.close();
@@ -216,7 +203,7 @@ angular.module('listener.listenerActiveLecture', [
                 socketConnection.on('on_lecture_suspended', function () {
 
                     $timeout(function () {
-                        addActivityItem('Лекція призупинена');
+                        activityManager.addItem('Лекція призупинена');
                     });
 
                     showSuspendDialog();
@@ -226,7 +213,7 @@ angular.module('listener.listenerActiveLecture', [
                     $rootScope.$broadcast('suspendDialog:close');
 
                     $timeout(function () {
-                        addActivityItem('Лекція продовжена');
+                        activityManager.addItem('Лекція продовжена');
                     });
                 }),
                 socketConnection.on('on_lecture_stopped', function () {
@@ -262,7 +249,7 @@ angular.module('listener.listenerActiveLecture', [
                                 .then(function (user) {
                                     $timeout(function () {
                                         listeners.push(userId);
-                                        addActivityItem(user.name + ' приєднався до лекції');
+                                        activityManager.addItem(user.name + ' приєднався до лекції', 'info');
                                     });
                                 });
                         }
@@ -276,7 +263,7 @@ angular.module('listener.listenerActiveLecture', [
                         .then(function (user) {
                             $timeout(function () {
                                 activeLecture.listeners = _.without(activeLecture.listeners, userId);
-                                addActivityItem(user.name + ' покинув лекцію');
+                                activityManager.addItem(user.name + ' покинув лекцію', 'info');
                             });
                         });
                 }),
@@ -296,14 +283,14 @@ angular.module('listener.listenerActiveLecture', [
                     if (userId == user.id) {
 
                         $timeout(function () {
-                            addActivityItem('Ви: ' + message);
+                            activityManager.addItem('Ви: ' + message);
                         });
                     } else {
 
                         usersService.getUserName(userId)
                             .then(function (user) {
                                 $timeout(function () {
-                                    addActivityItem(user.name + ': ' + message);
+                                    activityManager.addItem(user.name + ': ' + message, 'info');
                                 });
                             });
                     }
@@ -313,9 +300,6 @@ angular.module('listener.listenerActiveLecture', [
                     var understandingValue = data.understandingValue;
 
                     $timeout(function () {
-
-                        var pieChartModel = $scope.pieChartModel;
-
                         pieChartModel.data[UNDERSTANDABLY_VALUE_INDEX] = round(understandingValue, 1);
                         pieChartModel.data[UNCLEAR_VALUE_INDEX] = round(100 - understandingValue, 1);
                     });
@@ -325,12 +309,7 @@ angular.module('listener.listenerActiveLecture', [
                     var question = data.question;
 
                     $timeout(function () {
-
-                        askedQuestions.push(_.extend(question, {
-                            answerData: null
-                        }));
-
-                        addActivityItem('Викладач задав питання: ' + question.text);
+                        askedQuestionsManager.addAskedQuestion(question);
                     });
                 })
             ]);

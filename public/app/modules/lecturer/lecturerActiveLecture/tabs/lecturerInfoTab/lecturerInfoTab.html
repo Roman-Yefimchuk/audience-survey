@@ -1,31 +1,29 @@
-<div ng-controller="LecturerInfoTabController" style="margin-top: -10px;">
-    <div class="text-left">
+<div class="text-left">
 
-        <div>
-            <h4>Тема</h4>
+    <div>
+        <h4>Тема</h4>
 
-            <div>{{ lecture.name }}</div>
-        </div>
-
-        <div>
-            <h4>Автор</h4>
-
-            <div>{{ lecture.lecturer['profile']['name'] }}</div>
-        </div>
-
-        <div ng-if="lecture.description">
-            <h4>Опис</h4>
-
-            <div>{{ lecture.description }}</div>
-        </div>
-
-        <div ng-if="lecture.links['length'] > 0">
-            <h4>Додаткові повилання</h4>
-
-            <div ng-repeat="link in lecture.links">
-                <a ng-href="{{ link.url }}" target="_blank">{{ link.title }}</a>
-            </div>
-        </div>
-
+        <div>{{ lecture.name }}</div>
     </div>
+
+    <div>
+        <h4>Автор</h4>
+
+        <div>{{ lecture.lecturer['profile']['name'] }}</div>
+    </div>
+
+    <div ng-if="lecture.description">
+        <h4>Опис</h4>
+
+        <div>{{ lecture.description }}</div>
+    </div>
+
+    <div ng-if="lecture.links['length'] > 0">
+        <h4>Додаткові повилання</h4>
+
+        <div ng-repeat="link in lecture.links">
+            <a ng-href="{{ link.url }}" target="_blank">{{ link.title }}</a>
+        </div>
+    </div>
+
 </div>

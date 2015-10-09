@@ -1,30 +1,30 @@
-<div ng-controller="LecturerActivityTabController">
-    <div class="row clearfix">
-        <div class="col-md-12 column text-center">
+<div class="row clearfix">
+    <div class="col-md-12 column text-center">
 
-            <div ng-switch="activityCollection.length > 0">
-                <div ng-switch-when="true">
+        <div ng-switch="(activityManager.getItems()).length > 0">
+            <div ng-switch-when="true">
 
-                    <ul class="list-group" style="margin: 0;">
-                        <li ng-repeat="activityItem in activityCollection"
-                            class="list-group-item text-left">
+                <ul class="list-group" style="margin: 0;">
+                    <li ng-repeat="item in activityManager.getItems()"
+                        class="list-group-item text-left">
 
-                            <div>
-                                <b>{{ activityItem.timestamp | formatDate : 'ISO_TIME' }}</b>
-                            </div>
-                            <div>
-                                {{ activityItem.title }}
-                            </div>
+                        <div>
+                            <b>
+                                {{ item.timestamp | formatDate : 'ISO_TIME' }}&nbsp;[{{ item.duration | formatTime }}]
+                            </b>
+                        </div>
+                        <div>
+                            {{ item.text }}
+                        </div>
 
-                        </li>
-                    </ul>
+                    </li>
+                </ul>
 
-                </div>
-                <div ng-switch-when="false">
-                    Немає активності
-                </div>
             </div>
-
+            <div ng-switch-when="false">
+                Немає активності
+            </div>
         </div>
+
     </div>
 </div>

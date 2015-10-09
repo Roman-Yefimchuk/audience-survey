@@ -5,8 +5,12 @@ angular.module('listener.listenerActiveLecture.tabs.listenerInfoTab', [])
     .controller('ListenerInfoTabController', [
 
         '$scope',
+        'savedState',
+        'lecture',
 
-        function ($scope) {
+        function ($scope, savedState, lecture) {
+
+            $scope.lecture = lecture;
         }
     ]
 );

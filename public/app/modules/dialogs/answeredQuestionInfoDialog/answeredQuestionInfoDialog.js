@@ -15,7 +15,11 @@ angular.module('dialogs.answeredQuestionInfoDialog', [
 
         function ($q, $scope, $modalInstance, usersService, options) {
 
-            var tabs = [
+            function cancel() {
+                $modalInstance.dismiss('cancel');
+            }
+
+            $scope.tabs = [
                 /*                {
                  id: 'answerStatistic',
                  title: 'Статистика',
@@ -27,28 +31,16 @@ angular.module('dialogs.answeredQuestionInfoDialog', [
                     id: 'answeredListeners',
                     title: 'Опитування',
                     icon: 'fa-users',
+                    isActive: true,
+                    controller: 'AnsweredListenersTabController',
                     templateUrl: '/public/app/modules/dialogs/answeredQuestionInfoDialog/tabs/answeredListenersTab/answeredListenersTab.html',
-                    isActive: true
+                    resolve: {
+                        question: options.question,
+                        listenerAnswers: options.listenerAnswers
+                    }
                 }
             ];
 
-            function setActiveTab(tab) {
-                tab.isActive = true;
-                $scope.tab = tab;
-            }
-
-            function cancel() {
-                $modalInstance.dismiss('cancel');
-            }
-
-            $scope.question = options.question;
-            $scope.listenerAnswers = options.listenerAnswers;
-            $scope.tabs = tabs;
-            $scope.tab = _.findWhere(tabs, {
-                isActive: true
-            });
-
-            $scope.setActiveTab = setActiveTab;
             $scope.cancel = cancel;
         }
     ]
