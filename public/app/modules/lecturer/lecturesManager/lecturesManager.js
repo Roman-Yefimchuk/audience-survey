@@ -51,6 +51,7 @@ angular.module('lecturer.lecturesManager', [
                             id: lecture.id,
                             name: lectureName,
                             creationDate: lecture.creationDate,
+                            links: [],
                             lecturer: (function () {
                                 return {
                                     id: user.id,

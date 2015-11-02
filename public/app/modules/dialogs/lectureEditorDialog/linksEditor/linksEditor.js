@@ -3,53 +3,71 @@
 angular.module('dialogs.lectureEditorDialog.linksEditor', [])
 
     .directive('linksEditor', [
+        '$q',
+        "$sce",
+        "$timeout",
 
-        function () {
+        function ($q, $sce, $timeout) {
             return {
                 scope: {
                     links: '=linksEditor'
                 },
                 templateUrl: '/public/app/modules/dialogs/lectureEditorDialog/linksEditor/linksEditor.html',
                 controller: ['$scope', function ($scope) {
-
                     var linkPattern = /^\[url=([^\]]+)\]([^\[]+)\[\/url\]$/;
 
-                    function addLink() {
+                    function getLink(url) {
+                        var link = {
+                            title: url,
+                            url: url,
+                            type: "regular",
+                            data: {}
+                        };
+                        if (linkPattern.test(url)) {
+                            url.replace(linkPattern, function (s, url, title) {
+                                link.title = title;
+                                link.url = url;
+                            });
+                        }
+                        return link;
+                    }
 
+                    function getHtmlContent(linkPointer) {
+                        return $sce.trustAsHtml(_.unescape(linkPointer.link.data.html));
+                    }
+
+                    function addLink() {
                         var newLink = ($scope.newLink).trim();
                         if (newLink.length > 0) {
-
+                            var link = getLink(newLink);
                             var links = $scope.links;
                             var linkPointers = $scope.linkPointers;
-
-                            if (linkPattern.test(newLink)) {
-                                newLink.replace(linkPattern, function (s, url, title) {
-                                    (function (link) {
-                                        links.push(link);
-                                        linkPointers.push({
-                                            link: link,
-                                            editingLink: null
-                                        });
-                                    })({
-                                        title: title,
-                                        url: url
-                                    });
+                            tryLoadOEmbed(newLink).then(function (data) {
+                                if (data.isOEmbed) {
+                                    link.type = "oEmbed";
+                                    data.data.html = _.escape(data.data.html.trim());
+                                    link.data = data.data;
+                                }
+                                links.push(link);
+                                linkPointers.push({
+                                    link: link,
+                                    editingLink: null
                                 });
-                            } else {
-                                (function (link) {
-                                    links.push(link);
-                                    linkPointers.push({
-                                        link: link,
-                                        editingLink: null
-                                    });
-                                })({
-                                    title: newLink,
-                                    url: newLink
-                                });
-                            }
+                                $scope.newLink = '';
+                            });
 
-                            $scope.newLink = '';
                         }
+                    }
+
+                    function tryLoadOEmbed(url, callback) {
+                        return $q(function (resolve) {
+                            loadOEmbedData(url)
+                                .done(function (data) {
+                                    $timeout(function () {
+                                        resolve(data || {});
+                                    });
+                                });
+                        });
                     }
 
                     function editLink(linkPointer) {
@@ -68,28 +86,34 @@ angular.module('dialogs.lectureEditorDialog.linksEditor', [])
                     }
 
                     function updateLink(linkPointer) {
-
-                        (function (text) {
-                            if (linkPattern.test(text)) {
-                                text.replace(linkPattern, function (s, url, title) {
-                                    linkPointer.link = {
-                                        title: title,
-                                        url: url
-                                    };
-                                });
-                            } else {
+                        var url = linkPointer.editingLink['text'];
+                        if (linkPattern.test(url)) {
+                            text.replace(linkPattern, function (s, url, title) {
                                 linkPointer.link = {
-                                    title: text,
-                                    url: text
+                                    title: title,
+                                    url: url
                                 };
+                            });
+                        } else {
+                            linkPointer.link = {
+                                title: url,
+                                url: url
+                            };
+                        }
+                        tryLoadOEmbed(url).then(function (data) {
+                            if (data.isOEmbed) {
+                                linkPointer.link.type = "oEmbed";
+                                data.data.html = _.escape(data.data.html.trim());
+                                linkPointer.link.data = data.data;
+                            } else {
+                                linkPointer.link.type = "regular";
+                                linkPointer.link.data = {};
                             }
-                        })(linkPointer.editingLink['text']);
 
-                        linkPointer.editingLink = null;
-
-                        var index = _.indexOf($scope.linkPointers, linkPointer);
-
-                        $scope.links[index] = linkPointer.link;
+                            linkPointer.editingLink = null;
+                            var index = _.indexOf($scope.linkPointers, linkPointer);
+                            $scope.links[index] = linkPointer.link;
+                        });
                     }
 
                     function restoreLink(linkPointer) {
@@ -112,6 +136,7 @@ angular.module('dialogs.lectureEditorDialog.linksEditor', [])
                     $scope.updateLink = updateLink;
                     $scope.restoreLink = restoreLink;
                     $scope.removeLink = removeLink;
+                    $scope.getHtmlContent = getHtmlContent;
 
                     _.forEach($scope.links, function (link) {
                         var linkPointers = $scope.linkPointers;
