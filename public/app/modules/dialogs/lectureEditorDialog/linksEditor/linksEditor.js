@@ -6,8 +6,9 @@ angular.module('dialogs.lectureEditorDialog.linksEditor', [])
         '$q',
         "$sce",
         "$timeout",
+        "utilsService",
 
-        function ($q, $sce, $timeout) {
+        function ($q, $sce, $timeout, utilsService) {
             return {
                 scope: {
                     links: '=linksEditor'
@@ -30,10 +31,6 @@ angular.module('dialogs.lectureEditorDialog.linksEditor', [])
                             });
                         }
                         return link;
-                    }
-
-                    function getHtmlContent(linkPointer) {
-                        return $sce.trustAsHtml(_.unescape(linkPointer.link.data.html));
                     }
 
                     function addLink() {
@@ -136,7 +133,7 @@ angular.module('dialogs.lectureEditorDialog.linksEditor', [])
                     $scope.updateLink = updateLink;
                     $scope.restoreLink = restoreLink;
                     $scope.removeLink = removeLink;
-                    $scope.getHtmlContent = getHtmlContent;
+                    $scope.getTrustHtmlContent = utilsService.getTrustHtmlContent;
 
                     _.forEach($scope.links, function (link) {
                         var linkPointers = $scope.linkPointers;

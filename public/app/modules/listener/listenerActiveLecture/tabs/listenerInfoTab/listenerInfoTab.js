@@ -8,12 +8,11 @@ angular.module('listener.listenerActiveLecture.tabs.listenerInfoTab', [])
         'savedState',
         'lecture',
         '$sce',
+        'utilsService',
 
-        function ($scope, savedState, lecture, $sce) {
-            function getHtmlContent(link) {
-                return $sce.trustAsHtml(_.unescape(link.data.html));
-            }
-            $scope.getHtmlContent = getHtmlContent;
+        function ($scope, savedState, lecture, $sce, utilsService) {
+
+            $scope.getTrustHtmlContent = utilsService.getTrustHtmlContent;
             $scope.lecture = lecture;
         }
     ]

@@ -2,7 +2,8 @@
 
 angular.module('dialogs.lectureEditorDialog', [
 
-    'dialogs.lectureEditorDialog.linksEditor'
+    'dialogs.lectureEditorDialog.linksEditor',
+    'alloyEditor'
 
 ]).controller('LectureEditorDialogController', [
 

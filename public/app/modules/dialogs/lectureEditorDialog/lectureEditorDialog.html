@@ -26,10 +26,8 @@
                     Опис лекції
                 </label>
 
-                <div>
-                    <textarea rows="3" noresize class="form-control" required style="resize: none"
-                              ng-model="model.description">
-                    </textarea>
+                <div class="alloyeditor-container">
+                    <div alloy-editor="model"></div>
                 </div>
             </div>
             <div class="form-group col-md-12 column" style="margin-bottom: 0">

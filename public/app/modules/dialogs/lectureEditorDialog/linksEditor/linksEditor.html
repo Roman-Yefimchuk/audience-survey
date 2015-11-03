@@ -117,7 +117,7 @@
 
                             </div>
 
-                            <div ng-if="linkPointer.link.type == 'oEmbed'" ng-bind-html="getHtmlContent(linkPointer)" style="margin-top: 10px;" align="center"></div>
+                            <div ng-if="linkPointer.link.type == 'oEmbed'" ng-bind-html="getTrustHtmlContent(linkPointer.link.data.html)" style="margin-top: 10px;" align="center"></div>
 
                         </div>
 
