@@ -1,8 +1,8 @@
 "use strict";
 
-angular.module('dialogs.lectureEditorDialog.linksEditor', [])
+angular.module('lecturer.lectureEditor.lectureLinksEditor', [])
 
-    .directive('linksEditor', [
+    .directive('lectureLinksEditor', [
         '$q',
         "$sce",
         "$timeout",
@@ -11,9 +11,9 @@ angular.module('dialogs.lectureEditorDialog.linksEditor', [])
         function ($q, $sce, $timeout, utilsService) {
             return {
                 scope: {
-                    links: '=linksEditor'
+                    links: '=lectureLinksEditor'
                 },
-                templateUrl: '/public/app/modules/dialogs/lectureEditorDialog/linksEditor/linksEditor.html',
+                templateUrl: '/public/app/modules/lecturer/lecturerLectureEditor/lectureLinksEditor/lectureLinksEditor.html',
                 controller: ['$scope', function ($scope) {
                     var linkPattern = /^\[url=([^\]]+)\]([^\[]+)\[\/url\]$/;
 

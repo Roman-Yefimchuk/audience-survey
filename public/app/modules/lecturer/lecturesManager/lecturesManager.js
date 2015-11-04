@@ -70,30 +70,6 @@ angular.module('lecturer.lecturesManager', [
                 }
             }
 
-            function editLecture(lecture) {
-
-                dialogsService.showLectureEditor({
-                    name: lecture.name,
-                    description: lecture.description,
-                    links: lecture.links,
-                    onSave: function (model, closeCallback) {
-
-                        lecturesService.updateLecture(user.id, lecture.id, {
-                            name: model.name,
-                            description: model.description,
-                            links: model.links
-                        }).then(function () {
-
-                            lecture.name = model.name;
-                            lecture.description = model.description;
-                            lecture.links = model.links;
-
-                            closeCallback();
-                        });
-                    }
-                });
-            }
-
             function removeLecture(lecture) {
 
                 dialogsService.showConfirmation({
@@ -175,7 +151,6 @@ angular.module('lecturer.lecturesManager', [
             $scope.showPresentListeners = showPresentListeners;
 
             $scope.addLecture = addLecture;
-            $scope.editLecture = editLecture;
             $scope.removeLecture = removeLecture;
 
             $scope.startLecture = startLecture;
