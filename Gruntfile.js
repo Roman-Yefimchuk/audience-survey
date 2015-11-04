@@ -63,6 +63,19 @@ module.exports = function (grunt) {
                     ]
                 }
             },
+            replaceSocketIoClientUrl: {
+                files: {
+                    'production/build/': 'production/build/public/index.html'
+                },
+                options: {
+                    replacements: [
+                        {
+                            pattern: '/socket.io/socket.io.js',
+                            replacement: '/public/libs/socket.io-client/socket.io.js'
+                        }
+                    ]
+                }
+            },
             injectTemplatesModule: {
                 files: {
                     'production/build/': 'production/build/public/app/modules/application.js'
@@ -93,10 +106,9 @@ module.exports = function (grunt) {
                         'production/build/public/libs/angular-sanitize/angular-sanitize.js': 'public/libs/angular-sanitize/angular-sanitize.js',
                         'production/build/public/libs/Chart.js/Chart.js': 'public/libs/Chart.js/Chart.js',
                         'production/build/public/libs/jquery/dist/jquery.js': 'public/libs/jquery/dist/jquery.js',
-                        'production/build/public/libs/json3/lib/json3.js': 'public/libs/json3/lib/json3.js',
-                        'production/build/public/libs/notifyjs/dist/notify-combined.js': 'public/libs/notifyjs/dist/notify-combined.js',
                         'production/build/public/libs/underscore/underscore.js': 'public/libs/underscore/underscore.js',
-                        'production/build/public/libs/angular-chart.js/dist/angular-chart.js': 'public/libs/angular-chart.js/dist/angular-chart.js'
+                        'production/build/public/libs/angular-chart.js/dist/angular-chart.js': 'public/libs/angular-chart.js/dist/angular-chart.js',
+                        'production/build/public/libs/socket.io-client/socket.io.js': 'node_modules/socket.io/node_modules/socket.io-client/socket.io.js'
                     }
                 ]
             },
