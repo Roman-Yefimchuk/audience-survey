@@ -128,7 +128,18 @@ footer .a {
     margin-right: auto;
     display: block;
 }
-
+.ae-toolbars > * {
+    z-index: 2000;
+}
+.alloyeditor-container {
+    border: 1px solid #e5e5e4;
+    border-radius: 4px;
+    padding: 6px 12px;
+    min-height: 60px;
+}
+.alloyeditor-container > *:focus {
+    outline: 0;
+}
 @media screen and (min-width: 768px) {
     .footer {
         padding-left: 0;

@@ -4,7 +4,6 @@ angular.module('services.dialogsService', [
 
     'dialogs.confirmationDialog',
     'dialogs.alertDialog',
-    'dialogs.lectureEditorDialog',
     'dialogs.questionEditorDialog',
     'dialogs.suspendDialog',
     'dialogs.presentListeners',
@@ -44,19 +43,6 @@ angular.module('services.dialogsService', [
                     return showDialog({
                         templateUrl: '/public/app/modules/dialogs/alertDialog/alertDialog.html',
                         controller: 'AlertDialogController',
-                        backdrop: 'static',
-                        keyboard: false,
-                        resolve: {
-                            options: function () {
-                                return options;
-                            }
-                        }
-                    });
-                },
-                showLectureEditor: function (options) {
-                    return showDialog({
-                        templateUrl: '/public/app/modules/dialogs/lectureEditorDialog/lectureEditorDialog.html',
-                        controller: 'LectureEditorDialogController',
                         backdrop: 'static',
                         keyboard: false,
                         resolve: {

@@ -83,7 +83,7 @@
                     var pattern = new RegExp(':' + key, 'g');
 
                     if (typeof value == 'string') {
-                        formattedQuery = formattedQuery.replace(pattern, "'" + value + "'");
+                        formattedQuery = formattedQuery.replace(pattern, "'" + value.replace(new RegExp("'", 'g'),"\\'") + "'");
                     } else {
                         formattedQuery = formattedQuery.replace(pattern, value);
                     }

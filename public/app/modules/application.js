@@ -7,7 +7,8 @@ angular.module('application', [
     'notificationsWidget',
     'footerWidget',
     'routes',
-    'constants'
+    'constants',
+    'services.utils'
 
 ]).config([
 

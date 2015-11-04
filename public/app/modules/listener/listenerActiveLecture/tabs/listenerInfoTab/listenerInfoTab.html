@@ -19,10 +19,13 @@
     </div>
 
     <div ng-if="lecture.links['length'] > 0">
-        <h4>Додаткові повилання</h4>
+        <h4>Додаткові поcилання</h4>
 
         <div ng-repeat="link in lecture.links">
-            <a ng-href="{{ link.url }}" target="_blank">{{ link.title }}</a>
+            <div class="clearfix">
+                <a ng-href="{{ link.url }}" target="_blank">{{ link.title }}</a>
+                <div ng-if="link.type == 'oEmbed'" ng-bind-html="getHtmlContent(link)" style="margin-top: 10px;" align="center"></div>
+            </div>
         </div>
     </div>
 

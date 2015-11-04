@@ -16,6 +16,7 @@ angular.module('routes', [
     'lecturer.lecturerActiveLecture',
     'lecturer.lectureStatistic',
     'lecturer.questionsManager',
+    'lecturer.lectureEditor',
     'listener.activeLectures',
     'listener.listenerActiveLecture',
     'signIn',
@@ -254,6 +255,39 @@ angular.module('routes', [
             },
             options: {
                 title: 'Ститистика'
+            }
+        }).when('/lecturers/:lecturerId/lectures/:lectureId/editor/', {
+            templateUrl: '/public/app/modules/lecturer/lecturerLectureEditor/lecturerLectureEditor.html',
+            controller: 'LectureEditor',
+            resolve: {
+                user: [
+
+                    '$route',
+                    'usersService',
+
+                    function ($route, usersService) {
+
+                        var userId = getRouteParam($route, 'lecturerId');
+
+                        return usersService.getUser(userId);
+                    }
+                ],
+                lecture: [
+
+                    '$route',
+                    'lecturesService',
+
+                    function ($route, lecturesService) {
+
+                        var userId = getRouteParam($route, 'lecturerId');
+                        var lectureId = getRouteParam($route, 'lectureId');
+
+                        return lecturesService.getLecture(userId, lectureId);
+                    }
+                ]
+            },
+            options: {
+                title: 'Редагування лекції'
             }
         }).when('/listeners/:listenerId/activeLectures', {
             templateUrl: '/public/app/modules/listener/activeLectures/activeLectures.html',
