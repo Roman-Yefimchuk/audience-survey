@@ -37,87 +37,125 @@
     <div>
 
         <div ng-switch="links.length > 0">
-            <div ng-switch-when="true">
+            <div ng-switch-when="true" style="padding: 10px;border: 1px solid #ddd;border-radius: 4px;position: relative;">
 
-                <ul class="list-group"
-                    style="margin-bottom: 0">
+                <ul rn-carousel rn-carousel-controls class="list-group"
+                    style="margin-bottom: 0; height: 400px;">
                     <li ng-repeat="linkPointer in linkPointers" class="list-group-item">
 
-                        <div class="clearfix" style="margin-left: -5px;margin-right: -5px;">
+                        <div class="clearfix">
 
-                            <div ng-if="!linkPointer.editingLink"
-                                 style="display: flex;">
+                            <div ng-if="!linkPointer.editingLink">
 
-                                <div style="margin-right: 10px;width: 100%;">
+                                <div style="display: flex">
+                                    <div style="margin-right: 10px;width: 100%;">
                                     <span style="display: table;height: 34px;">
                                         <span style="display: table-cell;vertical-align: middle;">
-                                            <a href="{{ linkPointer.link['url'] }}" target="_blank">
-                                                {{ linkPointer.link['title'] }}
+                                            <a href="{{ linkPointer.link.url }}" target="_blank">
+                                                {{ linkPointer.link.title }}
                                             </a>
                                         </span>
                                     </span>
+                                    </div>
+
+                                <span style="display: flex;">
+
+                                    <span class="btn btn-primary"
+                                          tooltip="Редагувати варіант"
+                                          ng-click="editLink(linkPointer)"
+                                          style="margin-right: 10px;">
+                                        <i class="fa fa-pencil"></i>
+                                    </span>
+
+                                    <span class="btn btn-danger"
+                                          tooltip="Видалити варіант"
+                                          ng-click="removeLink(linkPointer)">
+                                        <i class="fa fa-trash-o" style="margin-left: 1px;"></i>
+                                    </span>
+
+                                </span>
                                 </div>
 
-                                    <span style="display: flex;">
+                                <div ng-if="linkPointer.link.type == 'oEmbed'" ng-bind-html="getTrustHtmlContent(linkPointer.link.data.html)" style="margin-top: 10px;" align="center"></div>
 
-                                        <span class="btn btn-primary"
-                                              tooltip="Редагувати варіант"
-                                              ng-click="editLink(linkPointer)"
-                                              style="margin-right: 10px;">
-                                            <i class="fa fa-pencil"></i>
-                                        </span>
+                                <div ng-if="linkPointer.link.type == 'regular'" class="alloyeditor-container" style="margin-top: 10px;">
+                                    <div ng-bind-html="getTrustHtmlContent(linkPointer.link.description)"></div>
+                                </div>
 
-                                        <span class="btn btn-danger"
-                                              tooltip="Видалити варіант"
-                                              ng-click="removeLink(linkPointer)">
-                                            <i class="fa fa-trash-o" style="margin-left: 1px;"></i>
-                                        </span>
-
-                                    </span>
                             </div>
 
-                            <div ng-if="linkPointer.editingLink"
-                                 style="display: flex;">
+                            <div ng-if="linkPointer.editingLink">
 
+                                <div class="form-group" style="display: flex;width: 100%;">
                                     <span class="form-group"
-                                          ng-class="{ 'has-feedback' : !!linkPointer.editingLink['text'] }"
+                                          ng-class="{ 'has-feedback' : !!linkPointer.editingLink.title }"
                                           style="margin-bottom: 0;margin-right: 10px;display: flex;width: 100%;">
 
-                                        <label class="control-label" ng-show="false"></label>
+                                    <label class="control-label" ng-show="false"></label>
 
-                                        <input type="text" class="form-control"
-                                               autofocus autocomplete="off" ng-model="linkPointer.editingLink['text']"
-                                               style="border-bottom-left-radius: 3px;border-top-left-radius: 3px;">
+                                    <input type="text" class="form-control"
+                                           autofocus autocomplete="off" placeholder="Введіть назву" ng-model="linkPointer.editingLink.title"
+                                           style="border-bottom-left-radius: 3px;border-top-left-radius: 3px;">
+
+                                    <div class="form-control-feedback" style="top: 0"
+                                         ng-show="!!linkPointer.editingLink.title">
+                                        <i class="fa fa-times" style="cursor: pointer"
+                                           tooltip="Очистити"
+                                           ng-click="linkPointer.editingLink.title= ''"></i>
+                                    </div>
+                                </span>
+
+                                <span style="display: flex;">
+
+                                    <span class="btn btn-primary"
+                                          tooltip="Зберегти варіант"
+                                          ng-click="updateLink(linkPointer)"
+                                          style="margin-right: 10px;"
+                                          ng-disabled="!linkPointer.editingLink.title || !linkPointer.editingLink['url']">
+                                        <i class="fa fa-floppy-o"></i>
+                                    </span>
+
+                                    <span class="btn btn-danger"
+                                          tooltip="Відновити варіант"
+                                          ng-click="restoreLink(linkPointer)">
+                                        <i class="fa fa-share" style="margin-right: -2px;"></i>
+                                    </span>
+
+                                </span>
+                                </div>
+
+                                <div class="form-group" style="display: flex;width: 100%;">
+                                    <div style="display: flex;width: 100%;margin-right: 10px;"
+                                         ng-class="{ 'has-feedback' : !!linkPointer.editingLink.url }">
+                                        <input type="text" class="form-control" ng-change="onChangeField(linkPointer)"
+                                            autofocus autocomplete="off" placeholder="Введіть посилання" ng-model="linkPointer.editingLink.url"
+                                            style="border-bottom-left-radius: 3px;border-top-left-radius: 3px;">
 
                                         <div class="form-control-feedback" style="top: 0"
-                                             ng-show="!!linkPointer.editingLink['text']">
-                                            <i class="fa fa-times" style="cursor: pointer"
-                                               tooltip="Очистити"
-                                               ng-click="linkPointer.editingLink['text'] = ''"></i>
+                                            ng-show="!!linkPointer.editingLink.url">
+                                            <i class="fa fa-times" style="cursor: pointer" tooltip="Очистити"
+                                            ng-click="linkPointer.editingLink.url = ''"></i>
                                         </div>
-                                    </span>
-
-                                    <span style="display: flex;">
-
+                                    </div>
+                                    <div style="display: flex;">
                                         <span class="btn btn-primary"
-                                              tooltip="Зберегти варіант"
-                                              ng-click="updateLink(linkPointer)"
-                                              style="margin-right: 10px;"
-                                              ng-disabled="!linkPointer.editingLink['text']">
-                                            <i class="fa fa-floppy-o"></i>
-                                        </span>
-
-                                        <span class="btn btn-danger"
-                                              tooltip="Відновити варіант"
-                                              ng-click="restoreLink(linkPointer)">
-                                            <i class="fa fa-share" style="margin-right: -2px;"></i>
-                                        </span>
-
+                                              tooltip="Переглянути превью"
+                                              ng-disabled="linkPointer.editingLink.disablePreview"
+                                              ng-click="updatePreview(linkPointer)">
+                                        <i class="fa fa-eye" style="margin-right: -2px;"></i>
                                     </span>
+                                    </div>
+                                </div>
 
+                                <div class="form-group" style="display: flex;width: 100%;">
+                                    <div class="alloyeditor-container" style="display: flex;width: 100%;">
+                                        <div alloy-editor="linkPointer.editingLink"></div>
+                                    </div>
+                                </div>
+
+                                <div ng-if="linkPointer.editingLink.type == 'oEmbed'" ng-bind-html="getTrustHtmlContent(linkPointer.editingLink.data.html)" style="margin-top: 10px;" align="center"></div>
                             </div>
 
-                            <div ng-if="linkPointer.link.type == 'oEmbed'" ng-bind-html="getTrustHtmlContent(linkPointer.link.data.html)" style="margin-top: 10px;" align="center"></div>
 
                         </div>
 

@@ -20,12 +20,21 @@
 
     <div ng-if="lecture.links['length'] > 0">
         <h4>Додаткові поcилання</h4>
+        <div style="position: relative">
+            <ul rn-carousel rn-carousel-controls class="list-group"
+                style="margin-bottom: 0; height: 400px;">
 
-        <div ng-repeat="link in lecture.links">
-            <div class="clearfix">
-                <a ng-href="{{ link.url }}" target="_blank">{{ link.title }}</a>
-                <div ng-if="link.type == 'oEmbed'" ng-bind-html="getTrustHtmlContent(link.data.html)" style="margin-top: 10px;" align="center"></div>
-            </div>
+                <li test ng-repeat="link in lecture.links" class="list-group-item">
+                    <div class="clearfix">
+                        <a ng-href="{{ link.url }}" target="_blank">{{ link.title }}</a>
+                        <div ng-if="link.type == 'oEmbed'" ng-bind-html="getTrustHtmlContent(link.data.html)" style="margin-top: 10px;" align="center"></div>
+                        <div ng-if="link.type == 'regular'" class="alloyeditor-container" style="margin-top: 10px;">
+                            <div ng-bind-html="getTrustHtmlContent(link.description)"></div>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
         </div>
     </div>
 

@@ -1,6 +1,8 @@
 "use strict";
 
-angular.module('lecturer.lectureEditor.lectureLinksEditor', [])
+angular.module('lecturer.lectureEditor.lectureLinksEditor', [
+    'angular-carousel'
+])
 
     .directive('lectureLinksEditor', [
         '$q',
@@ -17,10 +19,11 @@ angular.module('lecturer.lectureEditor.lectureLinksEditor', [])
                 controller: ['$scope', function ($scope) {
                     var linkPattern = /^\[url=([^\]]+)\]([^\[]+)\[\/url\]$/;
 
-                    function getLink(url) {
+                    function getLink(url, title, desc) {
                         var link = {
-                            title: url,
+                            title: title || url,
                             url: url,
+                            description: desc || "",
                             type: "regular",
                             data: {}
                         };
@@ -71,32 +74,17 @@ angular.module('lecturer.lectureEditor.lectureLinksEditor', [])
 
                         var link = linkPointer.link;
 
-                        if (link.title == link.url) {
-                            linkPointer.editingLink = {
-                                text: link.title
-                            };
-                        } else {
-                            linkPointer.editingLink = {
-                                text: '[url=@{url}]@{title}[/url]'.format(link)
-                            };
-                        }
+                        linkPointer.editingLink = _.extend({
+                            description: "",
+                            disablePreview: true
+                        },link);
                     }
 
                     function updateLink(linkPointer) {
-                        var url = linkPointer.editingLink['text'];
-                        if (linkPattern.test(url)) {
-                            text.replace(linkPattern, function (s, url, title) {
-                                linkPointer.link = {
-                                    title: title,
-                                    url: url
-                                };
-                            });
-                        } else {
-                            linkPointer.link = {
-                                title: url,
-                                url: url
-                            };
-                        }
+                        var url = linkPointer.editingLink.url;
+                        var title = linkPointer.editingLink.title;
+                        var description = linkPointer.editingLink.description;
+                        linkPointer.link = getLink(url, title, description);
                         tryLoadOEmbed(url).then(function (data) {
                             if (data.isOEmbed) {
                                 linkPointer.link.type = "oEmbed";
@@ -125,6 +113,25 @@ angular.module('lecturer.lectureEditor.lectureLinksEditor', [])
                         $scope.links = _.without($scope.links, $scope.links[index]);
                     }
 
+                    function onChangeField (linkPointer) {
+                        linkPointer.editingLink.disablePreview = isOEmbedLink(linkPointer.editingLink.url);
+                    }
+
+                    function updatePreview (linkPointer) {
+                        var editModel = linkPointer.editingLink;
+                        editModel.disablePreview = true;
+                        tryLoadOEmbed(editModel.url).then(function (data) {
+                            if (data.isOEmbed) {
+                                editModel.type = "oEmbed";
+                                data.data.html = _.escape(data.data.html.trim());
+                                editModel.data = data.data;
+                            } else {
+                                editModel.type = "regular";
+                                editModel.data = {};
+                            }
+                        });
+                    }
+
                     $scope.newLink = '';
                     $scope.linkPointers = [];
 
@@ -133,6 +140,8 @@ angular.module('lecturer.lectureEditor.lectureLinksEditor', [])
                     $scope.updateLink = updateLink;
                     $scope.restoreLink = restoreLink;
                     $scope.removeLink = removeLink;
+                    $scope.onChangeField = onChangeField;
+                    $scope.updatePreview = updatePreview;
                     $scope.getTrustHtmlContent = utilsService.getTrustHtmlContent;
 
                     _.forEach($scope.links, function (link) {

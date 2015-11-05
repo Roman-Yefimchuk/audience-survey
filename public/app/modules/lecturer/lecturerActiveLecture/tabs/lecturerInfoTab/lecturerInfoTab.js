@@ -1,6 +1,8 @@
 "use strict";
 
-angular.module('lecturer.lecturerActiveLecture.tabs.lecturerInfoTab', [])
+angular.module('lecturer.lecturerActiveLecture.tabs.lecturerInfoTab', [
+    'angular-carousel'
+])
 
     .controller('LecturerInfoTabController', [
 
