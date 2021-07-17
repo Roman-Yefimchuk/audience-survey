@@ -1,21 +1,19 @@
 {
-  "name": "Democratia",
-  "version": "0.9",
-  "dependencies": {
-    "alloyeditor": "~0.6.0",
-    "angular": "~1.3.14",
-    "angular-bootstrap": "~0.11.0",
-    "angular-chart.js": "~0.8.4",
-    "angular-cookies": "~1.2.25",
-    "angular-route": "~1.2.25",
-    "angular-sanitize": "~1.2.25",
-    "bootstrap": "~3.2.0",
-    "Chart.js": "~1.0.2",
-    "font-awesome": "fontawesome#~4.4.0",
-    "jquery": "~2.1.1",
-    "json3": "~3.3.2",
-    "notifyjs": "~0.3.2",
-    "underscore": "~1.7.0"
-  },
-  "appPath": "public"
+    "name": "Democratia",
+    "version": "0.9.0",
+    "dependencies": {
+        "alloyeditor": "~0.6.0",
+        "angular": "~1.3.14",
+        "angular-bootstrap": "~0.11.0",
+        "angular-chart.js": "~0.8.4",
+        "angular-cookies": "~1.2.25",
+        "angular-route": "~1.2.25",
+        "angular-sanitize": "~1.2.25",
+        "bootstrap": "~3.2.0",
+        "Chart.js": "~1.0.2",
+        "font-awesome": "fontawesome#~4.4.0",
+        "jquery": "~2.1.1",
+        "underscore": "~1.7.0"
+    },
+    "appPath": "public"
 }

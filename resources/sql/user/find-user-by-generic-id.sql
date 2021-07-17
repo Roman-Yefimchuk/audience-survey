@@ -1,4 +1,4 @@
 SELECT *
 FROM User
 WHERE genericId = :genericId
-FETCHPLAN "*:-1"
+FETCHPLAN *:-1

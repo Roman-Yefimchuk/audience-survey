@@ -108,6 +108,7 @@ module.exports = function (grunt) {
                         'production/build/public/libs/jquery/dist/jquery.js': 'public/libs/jquery/dist/jquery.js',
                         'production/build/public/libs/underscore/underscore.js': 'public/libs/underscore/underscore.js',
                         'production/build/public/libs/angular-chart.js/dist/angular-chart.js': 'public/libs/angular-chart.js/dist/angular-chart.js',
+                        'production/build/public/libs/alloyeditor/dist/alloy-editor/alloy-editor-all.js': 'public/libs/alloyeditor/dist/alloy-editor/alloy-editor-all.js',
                         'production/build/public/libs/socket.io-client/socket.io.js': 'node_modules/socket.io/node_modules/socket.io-client/socket.io.js'
                     }
                 ]

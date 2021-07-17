@@ -12,7 +12,7 @@
             }
         }
         console.log('Server started in STANDARD mode');
-        return 'standard';
+        return 'development';
     })();
 
     var express = require('express');

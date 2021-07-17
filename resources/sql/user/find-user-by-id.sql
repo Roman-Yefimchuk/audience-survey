@@ -1,4 +1,4 @@
 SELECT *
 FROM User
 WHERE @rid = :userId
-FETCHPLAN "*:-1"
+FETCHPLAN *:-1

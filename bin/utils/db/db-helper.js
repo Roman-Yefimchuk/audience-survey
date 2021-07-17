@@ -18,6 +18,7 @@
 
     var formatQuery = (function () {
 
+        var singleBracketPattern = new RegExp("'", 'g');
         var isObject = (function () {
 
             var toString = Object.prototype['toString'];
@@ -83,7 +84,7 @@
                     var pattern = new RegExp(':' + key, 'g');
 
                     if (typeof value == 'string') {
-                        formattedQuery = formattedQuery.replace(pattern, "'" + value.replace(new RegExp("'", 'g'),"\\'") + "'");
+                        formattedQuery = formattedQuery.replace(pattern, "'" + value.replace(singleBracketPattern, "\\'") + "'");
                     } else {
                         formattedQuery = formattedQuery.replace(pattern, value);
                     }
